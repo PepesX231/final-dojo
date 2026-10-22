@@ -1196,6 +1196,7 @@ MonoBehaviour:
     m_Extent: {x: 15.75, y: 3, z: 12.25}
   seed: 12345
   AutoStep: 1
+  SkillBusyUntil: 0
   DevHold: 0
 --- !u!1 &182740167
 GameObject:
@@ -1964,6 +1965,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Flow.SceneContext
   kind: 2
   defaultSpawn: {fileID: 0}
+  music: 0
 --- !u!4 &323170262
 Transform:
   m_ObjectHideFlags: 0
@@ -3215,6 +3217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Dream.DreamLevelManager
   killY: -6
+  anyOrderCheckpoints: 0
   player: {fileID: 1449368269}
 --- !u!4 &538034554
 Transform:
@@ -4507,6 +4510,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9005d3d3e1b069242bb0e9f812af2276, type: 3}
   m_Name: 
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.UI.DreamHUD
+  ShowCards: 1
 --- !u!4 &811402879
 Transform:
   m_ObjectHideFlags: 0
@@ -8031,6 +8035,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1427001925}
   - component: {fileID: 1427001924}
+  - component: {fileID: 1427001926}
   m_Layer: 0
   m_Name: DreamKeyLight
   m_TagString: Untagged
@@ -8118,6 +8123,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1427001926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427001923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1441621073
 GameObject:
   m_ObjectHideFlags: 0
