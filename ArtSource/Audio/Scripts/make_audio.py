@@ -176,50 +176,14 @@ saw = signal.sawtooth(2 * np.pi * np.cumsum(f) / SR)
 y = bp(saw, 400, 2400) * env(len(t), a=0.08, curve=2) * (0.6 + 0.4 * np.abs(np.sin(2 * np.pi * 9 * t)))
 save('SFX_ChairCreak', y, 0.55)
 
-# ---------------------------------------------------------------- cards
-d = 0.45; t = t_(d)  # camera flash: shutter click + bright whine
-shutter = mix(wood(1800, 0.03, 1.5), at(wood(2200, 0.03, 1.5), 0.05, 0.1))
-whine = sine_sweep(2500, 5200, 0.35) * env(int(SR * 0.35), a=0.01, curve=4) * 0.25
-save('SFX_Card_Flash', mix(shutter, at(whine, 0.04, d), at(bp(noise(0.3), 3000, 9000) * env(int(SR * 0.3), curve=6) * 0.5, 0.05, d)), 0.7)
-
-d = 0.4; t = t_(d)  # glue splat: wet low noise with pitch drop + drip
-splat = lp(noise(d), 1200) * np.exp(-t * 14) * (1 + np.sin(2 * np.pi * np.cumsum(220 * np.exp(-t * 5)) / SR))
-drip = at(sine_sweep(1200, 600, 0.06) * env(int(SR * 0.06), curve=5) * 0.4, 0.28, d)
-save('SFX_Card_Glue', mix(splat, drip), 0.7)
-
-y = mix(*[at(wood(1500, 0.025, 0.7) * 0.6, 0.045 * k, 1.0) for k in range(18)])  # reel ratchet
-save('SFX_Card_Reel', y, 0.55)
-
-d = 0.6; t = t_(d)  # grandpa: poof + low "hmm" wobble
-poof = lp(noise(d), 1500) * env(len(t), a=0.01, curve=7)
-hmm = np.sin(2 * np.pi * np.cumsum(170 * (1 - 0.15 * t / d) * (1 + 0.03 * np.sin(2 * np.pi * 5 * t))) / SR) * env(len(t), a=0.08, curve=3) * 0.6
-save('SFX_Card_Grandpa', mix(poof, at(hmm, 0.08, d)), 0.6)
-
-d = 0.25; t = t_(d)  # decoy: cardboard pop
-save('SFX_Card_Decoy', mix(sine_sweep(380, 900, 0.08) * env(int(SR * 0.08), curve=4), at(bp(noise(0.15), 300, 2000) * env(int(SR * 0.15), curve=8), 0.02, d)), 0.6)
-
-d = 0.6; t = t_(d)  # boing: spring with decaying vibrato
-f = 260 * (1 + 0.35 * np.sin(2 * np.pi * 14 * t) * np.exp(-t * 4)) * (1 + t)
-save('SFX_Card_Boing', np.sin(2 * np.pi * np.cumsum(f) / SR) * env(len(t), a=0.005, curve=3.5), 0.6)
-
-d = 0.25; t = t_(d)  # card fail: soft muted "bup-bup"
-y = mix(np.sin(2 * np.pi * 300 * t_(0.07)) * env(int(SR * 0.07), curve=5), at(np.sin(2 * np.pi * 240 * t_(0.09)) * env(int(SR * 0.09), curve=5), 0.1, d))
-save('SFX_Card_Fail', y, 0.45)
-
 # ---------------------------------------------------------------- UI / flow
 save('SFX_UI_Click', mix(wood(1600, 0.04, 0.5) * 0.6), 0.35)
 d = 0.25; t = t_(d)
 save('SFX_UI_Open', bp(noise(d), 1500, 7000) * env(len(t), a=0.03, curve=4) * (0.5 + 0.5 * np.sin(2 * np.pi * 30 * t)), 0.35)  # paper rustle
-d = 0.18; t = t_(d)
-save('SFX_Card_Deal', bp(noise(d), 2000, 8000) * env(len(t), a=0.01, curve=6) + 0.4 * sine_sweep(900, 1500, d) * env(len(t), curve=8), 0.45)
-y = mix(bell(midi(84), 0.9), at(bell(midi(88), 0.9), 0.08, 1.0), at(bell(midi(91), 1.0), 0.16, 1.2))
-save('SFX_Card_Pick', y, 0.5)
 y = mix(*[at(bell(midi(n), 1.6, decay=2.0), 0.28 * k, 3.0) for k, n in enumerate([79, 76, 72, 67])])  # falling asleep
 save('SFX_SleepChime', y, 0.45)
 y = mix(at(bell(midi(76), 1.2, decay=2.5), 0, 1.6), at(bell(midi(72), 1.2, decay=2.5), 0.35, 1.6))  # morning ding-dong
 save('SFX_WakeUp', y, 0.5)
-y = mix(*[at(bell(midi(n), 0.4, partials=((1, 1), (3, 0.3)), decay=8), 0.13 * k, 0.8) for k, n in enumerate([84, 84, 79])])
-save('SFX_LawWarn', y, 0.5)
 y = mix(*[at(bell(midi(n), 1.4, decay=2.2), 0.11 * k, 2.2) for k, n in enumerate([72, 76, 79, 84, 88])])
 save('SFX_Victory', y, 0.55)
 

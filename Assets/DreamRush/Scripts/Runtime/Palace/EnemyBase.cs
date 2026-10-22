@@ -285,7 +285,7 @@ namespace DreamRush.Palace
             Dead = true; Tokens.Remove(this);
             VFX.Play(VFXKind.Poof, transform.position + Vector3.up * height * 0.5f, 1.4f + height * 0.3f, VFX.Lavender);
             VFX.Play(VFXKind.Confetti, transform.position + Vector3.up, 0.8f);
-            Audio.AudioManager.Play(Audio.Sfx.CardPick, transform.position, 0.8f);
+            Audio.AudioManager.Play(Audio.Sfx.UiClick, transform.position, 0.8f);
             ReportDeath(this);
             if (PalaceDirector.Current != null) LostMinute.Burst(transform.position, Mathf.Clamp(Mathf.RoundToInt(maxHp / 55f), 1, 4));   // shadows drop the minutes they stole
             WonderDirector.Novelty(displayName.ToLowerInvariant() + " down");

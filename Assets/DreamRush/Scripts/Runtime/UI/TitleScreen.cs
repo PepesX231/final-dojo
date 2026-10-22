@@ -121,7 +121,7 @@ namespace DreamRush.UI
             {
                 key = "DREAM", tagCode = "TRIAL // 01", label = "ENTER DREAM",
                 sub = "เข้าสู่โลกความฝัน · ฝึกทักษะแก้ปัญหา",
-                help = "เข้าสู่โลกแห่งความฝัน สังเกตกฎของแต่ละมิติ ทดลอง และประยุกต์ใช้การ์ดเพื่อแก้ปัญหา",
+                help = "เข้าสู่โลกแห่งความฝัน สังเกตเส้นทาง ทดลอง และใช้สิ่งแวดล้อมเพื่อแก้ปัญหา",
                 act = Dream
             });
             _items.Add(new Item
@@ -135,7 +135,7 @@ namespace DreamRush.UI
             {
                 key = "BED", tagCode = "GEAR // 03", label = "UPGRADES",
                 sub = "อัปเกรดเตียง & ทักษะความฝัน",
-                help = $"ใช้ Dream Memory ({p.dreamMemory} แต้ม) อัปเกรดหมอนสุ่มการ์ด ผ้าห่มเพิ่มความเสถียร และฟูกเมฆ",
+                help = $"ใช้ Dream Memory ({p.dreamMemory} แต้ม) อัปเกรดผ้าห่มกันกระแทกและฟูกเมฆเพิ่มความเสถียร",
                 act = () => UIRoot.Get().Push(ModalPanel.Create<BedUpgradePanel>("UPGRADE BED", new Vector2(1180, 820)))
             });
             _items.Add(new Item
@@ -369,7 +369,7 @@ namespace DreamRush.UI
             UIFactory.Stretch(hTxt.rectTransform);
 
             _dossierText = Txt("Stats", _dossier,
-                $"SOLVED DREAMS: {runsWon}   ◆   METHODS: {methods}   ◆   MEMORY: {mem}\nทักษะหลัก: สังเกตกฎ · ทดลอง · ประยุกต์ใช้การ์ดแก้ปัญหา",
+                $"SOLVED DREAMS: {runsWon}   ◆   METHODS: {methods}   ◆   MEMORY: {mem}\nทักษะหลัก: สังเกตกฎ · ทดลอง · ประยุกต์ใช้สิ่งแวดล้อมแก้ปัญหา",
                 "ChakraPetch-Bold", 21, P5Paper, TextAnchor.MiddleLeft);
             UIFactory.Stretch(_dossierText.rectTransform);
             _dossierText.rectTransform.offsetMin = new Vector2(22, 8);
@@ -524,7 +524,7 @@ namespace DreamRush.UI
         {
             if (_leaving || _walking || UIRoot.Get().AnyPanelOpen) return;
             Select(i);
-            Audio.AudioManager.Play(Audio.Sfx.CardPick, Vector3.zero, 0.8f);
+            Audio.AudioManager.Play(Audio.Sfx.UiClick, Vector3.zero, 0.8f);
             _items[i].act?.Invoke();
         }
 
@@ -557,7 +557,7 @@ namespace DreamRush.UI
             Anchor(cap.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1800, 200), -14f);
             var o = cap.gameObject.AddComponent<Outline>(); o.effectColor = P5Obsidian; o.effectDistance = new Vector2(5, -5);
             UIStyle.HardShadow(cap, P5Yellow, new Vector2(10, -10));
-            Audio.AudioManager.Play(Audio.Sfx.CardDeal, Vector3.zero, 1f);
+            Audio.AudioManager.Play(Audio.Sfx.Whoosh, Vector3.zero, 1f);
             for (float t = 0; t < 0.7f; t += Time.unscaledDeltaTime)
             {
                 float k = UIStyle.OutCubic(t / 0.28f);

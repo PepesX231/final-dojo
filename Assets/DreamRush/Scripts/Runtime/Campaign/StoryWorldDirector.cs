@@ -112,7 +112,7 @@ namespace DreamRush.Campaign
                 float target=world==StoryWorldKind.ToyBoxMoon?.5f:node.targetBeat;
                 float distance=Mathf.Abs(Mathf.DeltaAngle(Beat*360,target*360))/360f;
                 float window=SaveManager.GetOrCreate().Data.settings.reduceFlashing?.31f:.24f;
-                if(!node.Assisted&&distance>window){UIRoot.Get().Toast("ฟังจังหวะก่อน… ลองใหม่ได้ ไม่มีการรีเซ็ตเส้นทาง",1.5f);Audio.AudioManager.Play(Audio.Sfx.CardFail,node.transform.position,.35f);return false;}
+                if(!node.Assisted&&distance>window){UIRoot.Get().Toast("ฟังจังหวะก่อน… ลองใหม่ได้ ไม่มีการรีเซ็ตเส้นทาง",1.5f);Audio.AudioManager.Play(Audio.Sfx.Clank,node.transform.position,.35f);return false;}
             }
             node.Completed=true;Stage++;
             if(unlockedPaths!=null)for(int i=0;i<unlockedPaths.Length;i++)if(unlockedPaths[i]!=null)unlockedPaths[i].SetActive(i<Stage);

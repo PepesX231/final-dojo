@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace DreamRush.Dream
 {
-    /// <summary>Moves back and forth between two local offsets (card test target, moving props).</summary>
+    /// <summary>Moves back and forth between two local offsets (moving props).</summary>
     public class PingPongMover : MonoBehaviour
     {
         public Vector3 offset = new Vector3(4, 0, 0);

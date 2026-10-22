@@ -14,7 +14,6 @@ namespace DreamRush.UI
             string method = run.Won ? MethodTitle(run.VictoryId) : (string.IsNullOrEmpty(run.EndReason) ? "-" : run.EndReason);
             p.Paragraph(run.Won ? "Dream complete! You slept like a log." : "The dream folded away before you could finish it.", 28, TextAnchor.MiddleCenter);
             p.Paragraph($"{(run.Won ? "Solution" : "Reason")}: {method}", 28, TextAnchor.MiddleCenter);
-            p.Paragraph($"Card: {(string.IsNullOrEmpty(run.ChosenCardId) ? "-" : run.ChosenCardId)}", 26, TextAnchor.MiddleCenter);
             p.Paragraph($"Dream Memory  +{run.DreamMemoryEarned}   (total {SaveManager.GetOrCreate().Data.progression.dreamMemory})", 28, TextAnchor.MiddleCenter);
             string mastery = run.NewPersonalBest ? "  — NEW PERSONAL BEST!" : "";
             var record = SaveManager.GetOrCreate().Data.progression.FindLevelRecord(run.LevelScene);

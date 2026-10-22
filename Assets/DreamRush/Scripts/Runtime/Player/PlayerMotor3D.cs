@@ -31,7 +31,7 @@ namespace DreamRush.Player
         /// <summary>When false the motor still simulates gravity but ignores commands (menus, cutscenes).</summary>
         public bool InputEnabled { get; set; } = true;
 
-        // Dream Law rule modifiers (pitch: "ห้ามกระโดด" / "ห้ามวิ่ง" / slippery floor)
+        // Movement modifiers used by environmental and combat effects.
         public bool AllowJump { get; set; } = true;
         public bool AllowSprint { get; set; } = true;
         /// <summary>Multiplies ground deceleration / turnaround (below 1 = slippery).</summary>

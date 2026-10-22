@@ -19,7 +19,7 @@ namespace DreamRush.DreamLogic
         Distractible = 1 << 7,
     }
 
-    /// <summary>Card actions (GDD §18.3).</summary>
+    /// <summary>Shared environmental and combat effect actions.</summary>
     public enum EffectAction { Root, Freeze, Pull, ChangeBehavior, SpawnDecoy, CreatePlatform }
 
     public struct EffectContext
@@ -28,7 +28,6 @@ namespace DreamRush.DreamLogic
         public PlayerMotor3D Source;
         public float Duration;
         public Vector3 Point;
-        public string CardId;
 
         public static DreamProperty RequiredProperty(EffectAction a) => a switch
         {

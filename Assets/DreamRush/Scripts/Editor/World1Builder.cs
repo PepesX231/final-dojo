@@ -41,7 +41,6 @@ namespace DreamRush.EditorTools
         public static void Build()
         {
             if (EditorApplication.isPlaying) { Debug.LogError("[DreamRush] Stop play mode first."); return; }
-            CardAssetsBuilder.Build();
             DreamLookSetup.Ensure();
             var prefab = MovementGymBuilder.BuildPlayerPrefab();
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -641,7 +640,6 @@ namespace DreamRush.EditorTools
             chairGo.AddComponent<DreamLogic.ChairEffectReceiver>();
             var anim = chairGo.AddComponent<ChairAnimator>();
             anim.chair = ctrl; anim.fx = GrayboxAssets.FxLibrary(); anim.visual = chairGo.transform.Find("Visual");
-            new GameObject("DreamLawDirector").AddComponent<Cards.DreamLawDirector>();
             encounter = new GameObject("BossEncounter").AddComponent<BossEncounter>();
             encounter.chair = ctrl; encounter.arenaSurface = surface;
             encounter.revealTriggerZ = C.z - R + 2.5f;
@@ -649,11 +647,11 @@ namespace DreamRush.EditorTools
             var skills = chairGo.AddComponent<ChairSkills>(); skills.chair = ctrl; skills.encounter = encounter;
             climb.chair = ctrl; climb.skills = skills; climb.encounter = encounter;
 
-            Section(g, "5-A", "Synthesize: Hall of Analysis", "ขั้นสรุป: ทบทวนคุณสมบัติการ์ดแก้ปัญหา (ปุ่ม Q) ก่อนเข้าสู่ห้องทดสอบสุดท้าย", new Vector3(0, 6, Z + 24), new Vector3(16, 20, 46));
-            Section(g, "5-B", "Final Exam: Throne of Refusal", "ประยุกต์ใช้การ์ดแก้ปัญหา + ปรับตัวตามกฎความฝัน (Dream Law) เพื่อบังคับนั่งเก้าอี้!", new Vector3(0, 6, C.z), new Vector3(50, 30, 50));
+            Section(g, "5-A", "Synthesize: Hall of Analysis", "ขั้นสรุป: สังเกตเส้นทางหนีและจุดพักของเก้าอี้ก่อนเข้าสู่ห้องทดสอบสุดท้าย", new Vector3(0, 6, Z + 24), new Vector3(16, 20, 46));
+            Section(g, "5-B", "Final Exam: Throne of Refusal", "อ่านจังหวะและใช้ทางลัดเข้าประชิดเก้าอี้ตอนหยุดพัก แล้วกด [E] นั่ง!", new Vector3(0, 6, C.z), new Vector3(50, 30, 50));
             CognitiveTotem(g, "Trial_Ch5_Synthesis", new Vector3(3.4f, 0f, Z + 38f),
                 "TRIAL 05 // MULTI-RULE SYNTHESIS",
-                "พร้อมทำข้อสอบสุดท้าย! ใช้การ์ดแก้ปัญหา [Q] สร้างช่องโหว่ให้เก้าอี้ แล้วกด [E] นั่งค้าง 2 วินาทีเพื่อพิชิตฝัน!",
+                "พร้อมทำข้อสอบสุดท้าย! ตามเก้าอี้จนเหนื่อย ใช้ทางลัดเข้าประชิดตอนหยุดพัก แล้วกด [E] นั่งค้าง 2 วินาทีเพื่อพิชิตฝัน!",
                 null);
             return ch;
         }

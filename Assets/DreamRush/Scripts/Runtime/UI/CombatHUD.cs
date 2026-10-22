@@ -31,7 +31,7 @@ namespace DreamRush.UI
             var br = _burst.rectTransform; br.anchorMin = br.anchorMax = new Vector2(0, 0); br.pivot = new Vector2(0, 0);
             br.anchoredPosition = new Vector2(BarW + 20, 18); br.sizeDelta = new Vector2(320, 36);
             UIStyle.HardShadow(_burst, UIStyle.Plum, new Vector2(3, -3));
-            if (GetComponent<SkillBar>() == null) gameObject.AddComponent<SkillBar>().combat = combat;   // M18 skill cards
+            if (GetComponent<SkillBar>() == null) gameObject.AddComponent<SkillBar>().combat = combat;   // Contextual skill indicators
             _stamCg = _stam.parent.gameObject.AddComponent<CanvasGroup>();
             _shownAt = Time.unscaledTime;
         }
@@ -64,7 +64,7 @@ namespace DreamRush.UI
                 "<b>ต่อยโดน → SPACE</b>  อัปเปอร์คัตเสยลอยฟ้า\n" +
                 "<b>แตะ Shift</b>  กลิ้งหลบ  →  <b>LMB</b>  จรวดหมัด พุ่งทะลุ\n" +
                 "<b>หลบพอดี (DREAM DODGE) → LMB</b>  สวนกลับ ×2\n" +
-                "<b>V</b>  DREAM BURST เมื่อเพชรชมพูเต็ม   ·   <b>R / คลิกกลาง</b>  ล็อกเป้า   ·   การ์ดสีทอง = ใช้ได้ตอนนี้!";
+                "<b>V</b>  DREAM BURST เมื่อเพชรชมพูเต็ม   ·   <b>R / คลิกกลาง</b>  ล็อกเป้า   ·   ไอคอนสีทอง = ใช้ได้ตอนนี้!";
             var l = UIFactory.Label("Text", _moves, txt, 19, Color.white, TextAnchor.UpperLeft);
             l.supportRichText = true; l.font = UIStyle.BodyFont;
             UIFactory.Stretch(l.rectTransform, 14);
@@ -77,7 +77,6 @@ namespace DreamRush.UI
             _root.anchoredPosition = new Vector2(36, Mathf.Lerp(_root.anchoredPosition.y, 34f + lift, 1f - Mathf.Exp(-8f * Time.unscaledDeltaTime)));
             if (_moves != null) _moves.anchoredPosition = new Vector2(40, _root.anchoredPosition.y + 116f);
             if (_tab != null) _tab.anchoredPosition = new Vector2(40, _root.anchoredPosition.y + 116f);
-            if (DreamHUD.Current != null && DreamHUD.Current.ShowCards) DreamHUD.Current.ShowCards = false;
             float dt = Time.unscaledDeltaTime;
             _stamShown = Mathf.MoveTowards(_stamShown, combat.Stamina / combat.maxStamina, dt * 3f);
             _dreamShown = Mathf.MoveTowards(_dreamShown, combat.Meter / 100f, dt * 1.5f);

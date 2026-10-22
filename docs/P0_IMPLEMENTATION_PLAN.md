@@ -159,3 +159,9 @@ M0 Foundation ──► M1 Apple Movement ──► M2 Bedroom Hub ──► M3 
 |---|---|---|
 | 2026-10-20 | User broadened scope beyond P0 to existing World 1 and Palace; selected detailed stylized art inside/out; World 2 requires persisted World 1 clear | Preserve Claude M17–M20 and legacy prototypes; menu placeholders are not implemented levels; audit/art status recorded separately in CURRENT_CAMPAIGN_STATUS.md and AUDIT_AFTER_M20.md |
 
+
+### Decision update — 2026-10-23
+
+| Date | Decision | Reason |
+|---|---|---|
+| 2026-10-23 | Remove the complete card system and Dream Laws, including reroll progression, UI, input, assets, builders and card-only tests. Enter the selected world directly. Keep movement, combat and environmental mechanisms. | Explicit user request: “เอาระบบ การ์ด ออกไป ให้หมดเลย”. This supersedes historic card requirements. Legacy pillow save data is inert; no real save was edited. |

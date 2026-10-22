@@ -52,11 +52,11 @@ namespace DreamRush.UI
             var save = SaveManager.GetOrCreate();
             if (!BedUpgrades.TryBuy(save.Data.progression, id))
             {
-                Audio.AudioManager.Play(Audio.Sfx.CardFail, Vector3.zero);
+                Audio.AudioManager.Play(Audio.Sfx.Clank, Vector3.zero);
                 return false;
             }
             save.Save();
-            Audio.AudioManager.Play(Audio.Sfx.CardPick, Vector3.zero);
+            Audio.AudioManager.Play(Audio.Sfx.UiClick, Vector3.zero);
             UIRoot.Get().Toast(BedUpgrades.Get(id).Name + " upgraded!", 1.8f);
             Purchased?.Invoke();
             Refresh();

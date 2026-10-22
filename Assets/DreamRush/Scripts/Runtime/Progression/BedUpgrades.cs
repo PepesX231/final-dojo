@@ -3,7 +3,7 @@ using DreamRush.Core;
 
 namespace DreamRush.Progression
 {
-    public enum BedUpgrade { CloudMattress, LuckyPillow, ComfortBlanket }
+    public enum BedUpgrade { CloudMattress = 0, ComfortBlanket = 2 }
 
     /// <summary>
     /// Permanent bed progression (GDD §21.3 first-playable scope). Pure rules: costs, caps, effects. Purchases
@@ -21,7 +21,6 @@ namespace DreamRush.Progression
         public static readonly Info[] All =
         {
             new Info(BedUpgrade.CloudMattress, "CLOUD MATTRESS", "+1 max Sleep Stability per level", new[] { 20, 35, 55 }),
-            new Info(BedUpgrade.LuckyPillow, "LUCKY PILLOW", "1 card reroll every dream", new[] { 30 }),
             new Info(BedUpgrade.ComfortBlanket, "COMFORT BLANKET", "the first bump of each dream is absorbed", new[] { 25 }),
         };
 
@@ -30,7 +29,6 @@ namespace DreamRush.Progression
         public static int Level(ProgressionData p, BedUpgrade id) => id switch
         {
             BedUpgrade.CloudMattress => p.mattressLevel,
-            BedUpgrade.LuckyPillow => p.pillowLevel,
             _ => p.blanketLevel
         };
 
@@ -39,7 +37,6 @@ namespace DreamRush.Progression
             switch (id)
             {
                 case BedUpgrade.CloudMattress: p.mattressLevel = v; break;
-                case BedUpgrade.LuckyPillow: p.pillowLevel = v; break;
                 default: p.blanketLevel = v; break;
             }
         }
@@ -49,7 +46,7 @@ namespace DreamRush.Progression
         {
             var info = Get(id);
             int lv = Level(p, id);
-            return lv >= info.MaxLevel ? -1 : info.Costs[lv];
+            return info.Costs == null || lv < 0 || lv >= info.MaxLevel ? -1 : info.Costs[lv];
         }
 
         public static bool CanBuy(ProgressionData p, BedUpgrade id)
@@ -68,7 +65,6 @@ namespace DreamRush.Progression
 
         // ---- effects used by the dream
         public static int BonusStability(ProgressionData p) => Math.Max(0, Math.Min(p.mattressLevel, Get(BedUpgrade.CloudMattress).MaxLevel));
-        public static int RerollsPerRun(ProgressionData p) => p.pillowLevel > 0 ? 1 : 0;
         public static int StartShields(ProgressionData p) => p.blanketLevel > 0 ? 1 : 0;
     }
 }

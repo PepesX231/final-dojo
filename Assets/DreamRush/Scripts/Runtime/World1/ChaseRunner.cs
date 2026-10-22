@@ -143,7 +143,7 @@ namespace DreamRush.World1
             var b = go.AddComponent<RollingBook>();
             b.Init(this, _s - 1.5f, _player);
             _books.Add(b);
-            Audio.AudioManager.Play(Audio.Sfx.CardDeal, p, 0.7f);
+            Audio.AudioManager.Play(Audio.Sfx.Whoosh, p, 0.7f);
         }
 
         public Vector3 SamplePath(float s, out Vector3 dir) => PointAt(s, out dir);

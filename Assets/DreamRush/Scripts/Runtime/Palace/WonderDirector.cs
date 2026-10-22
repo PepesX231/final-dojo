@@ -113,7 +113,7 @@ namespace DreamRush.Palace
                 g.transform.localScale = Vector3.one * Random.Range(0.6f, 1.1f);
                 list.Add((g.transform, off, Random.Range(0f, 6f)));
             }
-            Audio.AudioManager.Play(Audio.Sfx.CardDeal, c, 0.8f);
+            Audio.AudioManager.Play(Audio.Sfx.Whoosh, c, 0.8f);
             for (float t = 0; t < 5.5f; t += Time.deltaTime)
             {
                 foreach (var (tr, off, ph) in list)
@@ -230,7 +230,7 @@ namespace DreamRush.Palace
         {
             var sp = Look.StylePack.Current;
             UI.UIRoot.Get().Toast("— TIME SKIP —  นาฬิกาทั้งเมืองหมุนเร็วผิดปกติ", 2f);
-            Audio.AudioManager.Play(Audio.Sfx.CardFail, Vector3.zero, 0.8f);
+            Audio.AudioManager.Play(Audio.Sfx.Clank, Vector3.zero, 0.8f);
             for (float t = 0; t < 1.4f; t += Time.deltaTime)
             {
                 if (sp != null) sp.Glitch = Mathf.Sin(t / 1.4f * Mathf.PI) * (0.6f + Mathf.PingPong(t * 8f, 0.4f));

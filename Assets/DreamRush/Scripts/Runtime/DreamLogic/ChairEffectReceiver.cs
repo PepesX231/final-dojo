@@ -4,7 +4,7 @@ using UnityEngine;
 namespace DreamRush.DreamLogic
 {
     /// <summary>
-    /// Translates card effects into chair statuses (GDD §18.4 pipeline). Never wins the fight by itself:
+    /// Translates environmental effects into chair statuses. Never wins the fight by itself:
     /// every effect produces a state the player must still exploit by walking up and sitting (§18.6).
     /// </summary>
     [RequireComponent(typeof(BossChairController))]
@@ -38,10 +38,6 @@ namespace DreamRush.DreamLogic
                 case EffectAction.Freeze: _chair.ApplyStatus(ChairState.Frozen, c.Duration, "Frozen"); break;
                 case EffectAction.Pull: _chair.BeginPulled(c.Source.transform.position, c.Duration); break;
                 case EffectAction.ChangeBehavior: _chair.SetSocialCue(c.Duration); break;
-                case EffectAction.SpawnDecoy:
-                    var decoy = FindFirstObjectByType<DecoyApple>();
-                    if (decoy != null) _chair.SetThreatOverride(decoy.transform, c.Duration);
-                    break;
             }
         }
     }

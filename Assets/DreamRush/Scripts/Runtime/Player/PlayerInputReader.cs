@@ -13,7 +13,7 @@ namespace DreamRush.Player
     {
         public InputActionMap Actions { get; private set; }
 
-        InputAction _move, _lookMouse, _lookStick, _jump, _sprint, _interact, _useCard, _pause, _objective, _debug, _focus, _dash, _pound, _attack, _lock, _skill;
+        InputAction _move, _lookMouse, _lookStick, _jump, _sprint, _interact, _pause, _objective, _debug, _focus, _dash, _pound, _attack, _lock, _skill;
         float _sprintDownAt = -1f;
 
         /// <summary>Mouse delta in pixels this frame.</summary>
@@ -22,7 +22,6 @@ namespace DreamRush.Player
         public Vector2 LookStick => _lookStick != null ? _lookStick.ReadValue<Vector2>() : Vector2.zero;
         public bool InteractPressed => _interact != null && _interact.WasPressedThisFrame();
         public bool InteractHeld => _interact != null && _interact.IsPressed();
-        public bool UseCardPressed => _useCard != null && _useCard.WasPressedThisFrame();
         public bool PausePressed => _pause != null && _pause.WasPressedThisFrame();
         public bool ObjectivePressed => _objective != null && _objective.WasPressedThisFrame();
         public bool DebugTogglePressed => _debug != null && _debug.WasPressedThisFrame();
@@ -61,8 +60,6 @@ namespace DreamRush.Player
             _interact = Actions.AddAction("Interact", InputActionType.Button, "<Keyboard>/e");
             _interact.AddBinding("<Gamepad>/buttonWest");
 
-            _useCard = Actions.AddAction("UseCard", InputActionType.Button, "<Keyboard>/q");
-            _useCard.AddBinding("<Gamepad>/dpad/up");   // RB is the attack button (it used to fire both)
 
             _pause = Actions.AddAction("Pause", InputActionType.Button, "<Keyboard>/escape");
             _pause.AddBinding("<Gamepad>/start");

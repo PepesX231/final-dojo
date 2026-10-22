@@ -622,7 +622,6 @@ GameObject:
   - component: {fileID: 7315622735007009716}
   - component: {fileID: 8083864776870702207}
   - component: {fileID: 3865608071973011785}
-  - component: {fileID: 673544838744571723}
   - component: {fileID: 2984304894084140217}
   m_Layer: 0
   m_Name: PF_Player
@@ -727,18 +726,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51951565326359a4a85450631127b583, type: 3}
   m_Name: 
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.UI.PlayerUIBridge
---- !u!114 &673544838744571723
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3594966786384932325}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c515ee02d1128746bc740d2636dd472, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Cards.PlayerCardController
 --- !u!114 &2984304894084140217
 MonoBehaviour:
   m_ObjectHideFlags: 0

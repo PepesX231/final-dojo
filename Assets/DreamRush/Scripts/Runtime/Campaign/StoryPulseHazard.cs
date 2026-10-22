@@ -25,7 +25,7 @@ namespace DreamRush.Campaign
             if(!burst||_player==null||Time.time<_nextDamage)return;
             var delta=_player.transform.position-transform.position;
             if(new Vector2(delta.x,delta.z).sqrMagnitude<radius*radius&&Mathf.Abs(delta.y)<2&&_player.IsGrounded){
-                Dream.SleepStability.Current?.Damage("คลื่นกำลังผ่าน — กระโดดหรือชะลอด้วยการ์ด");_nextDamage=Time.time+period*.6f;
+                Dream.SleepStability.Current?.Damage("คลื่นกำลังผ่าน — สังเกตสัญญาณแล้วกระโดดข้าม");_nextDamage=Time.time+period*.6f;
             }
         }
         public bool CanReceive(EffectContext c)=>(Properties&EffectContext.RequiredProperty(c.Action))!=0;

@@ -159,14 +159,4 @@ for k in range(teeth, -1, -1):
 poly(d, pts, (255, 255, 255, 255))
 save('UI3_Wipe', down(img, W, H))
 
-# 13 Card frame (card select): chamfered card with inner frame lines, not tinted (cream face, plum frame, red corner)
-W, H = 360, 520; C = 34
-img = canvas(W, H); d = ImageDraw.Draw(img)
-poly(d, [(0, 0), (W - C, 0), (W, C), (W, H), (C, H), (0, H - C)], PLUM + (255,))
-poly(d, [(10, 10), (W - C - 4, 10), (W - 10, C + 4), (W - 10, H - 10), (C + 4, H - 10), (10, H - C - 4)], CREAM + (255,))
-poly(d, [(W - C - 4, 10), (W - 10, 10), (W - 10, C + 4)], RED + (255,))
-poly(d, [(10, H - C - 4), (10, H - 10), (C + 4, H - 10)], RED + (255,))
-# (divider drawn in UI code)
-# d.line([(22 * SS, 330 * SS), ((W - 22) * SS, 330 * SS)], fill=PLUM + (255,), width=3 * SS)
-save('UI3_Card', down(img, W, H))
 print('ui kit v3 ->', OUT)

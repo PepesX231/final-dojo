@@ -7,8 +7,8 @@ namespace DreamRush.UI
 {
     /// <summary>
     /// Dream HUD v3 (GDD §23.3 + docs/RESEARCH_V2.md §1 fixed zones):
-    /// objective + sleep moons top-left, boss name + "tired" meter top-centre, dream law top-right,
-    /// equipped card bottom-right, sit meter bottom-centre. Persona slabs, Chakra Petch / Kanit, hard shadows.
+    /// objective + sleep moons top-left, boss name + "tired" meter top-centre,
+    /// sit meter bottom-centre. Persona slabs, Chakra Petch / Kanit, hard shadows.
     /// </summary>
     public class DreamHUD : MonoBehaviour
     {
@@ -34,8 +34,6 @@ namespace DreamRush.UI
             BuildObjective();
             BuildStability();
             BuildBoss();
-            BuildCardSlot();
-            BuildLawBadge();
 
             _level = DreamLevelManager.Current;
             if (_level != null)
@@ -151,118 +149,9 @@ namespace DreamRush.UI
             _sitBar.gameObject.SetActive(false);
         }
 
-        // ---------------------------------------------------------------- card slot + dream law badge
-        RectTransform _cardSlot, _cdFill, _lawBadge, _keyCap;
-        /// <summary>Combat levels (Midnight Palace) play with the blade, not dream cards: the card slot stays hidden.</summary>
-        public bool ShowCards = true;
-        RawImage _cardIcon;
-        Text _cardName, _cardKey, _lawText;
-        Cards.PlayerCardController _cards;
-        Cards.DreamLawDirector _laws;
-        bool _wasReady;
-        float _readyPop;
-
-        void BuildCardSlot()
-        {
-            var holder = UIFactory.Rect("CardSlot", Root);
-            _cardSlot = holder;
-            holder.anchorMin = holder.anchorMax = new Vector2(1, 0); holder.pivot = new Vector2(1, 0);
-            holder.anchoredPosition = new Vector2(-42, 36); holder.sizeDelta = new Vector2(246, 336);
-            holder.localRotation = Quaternion.Euler(0, 0, 4.5f);
-
-            var shadow = UIStyle.Image("TarotShadow", holder, UIStyle.Slab, UIStyle.Red);
-            UIFactory.Stretch(shadow.rectTransform, -6);
-            shadow.rectTransform.anchoredPosition = new Vector2(10, -12);
-
-            var obsidian = UIStyle.Image("TarotObsidian", holder, UIStyle.Slab, UIStyle.Obsidian);
-            UIFactory.Stretch(obsidian.rectTransform);
-
-            var face = UIStyle.Image("Face", holder, UIStyle.Cut, UIStyle.Cream);
-            UIFactory.Stretch(face.rectTransform, 10);
-
-            var headerBar = UIStyle.Image("HeaderBar", face.rectTransform, UIStyle.Slab, UIStyle.Obsidian);
-            headerBar.rectTransform.anchorMin = new Vector2(0, 1); headerBar.rectTransform.anchorMax = new Vector2(1, 1);
-            headerBar.rectTransform.pivot = new Vector2(0.5f, 1);
-            headerBar.rectTransform.sizeDelta = new Vector2(-12, 26); headerBar.rectTransform.anchoredPosition = new Vector2(0, -6);
-            var hTxt = UIStyle.Hud("HeaderTxt", headerBar.rectTransform, "SOLUTION CARD", 13, UIStyle.RebelYellow, TextAnchor.MiddleCenter);
-            UIFactory.Stretch(hTxt.rectTransform);
-
-            var artBg = UIStyle.Image("ArtBg", face.rectTransform, UIStyle.Cut, UIStyle.Red);
-            artBg.rectTransform.anchorMin = new Vector2(0, 1); artBg.rectTransform.anchorMax = new Vector2(1, 1); artBg.rectTransform.pivot = new Vector2(0.5f, 1);
-            artBg.rectTransform.sizeDelta = new Vector2(-22, 168); artBg.rectTransform.anchoredPosition = new Vector2(0, -36);
-            if (UIStyle.Stripes != null) UIFactory.Stretch(UIStyle.Pattern("Stripes", artBg.rectTransform, UIStyle.Stripes, new Color(0, 0, 0, 0.18f), 1.2f).rectTransform);
-            var icon = UIFactory.Rect("Icon", artBg.rectTransform);
-            icon.sizeDelta = new Vector2(154, 154);
-            _cardIcon = icon.gameObject.AddComponent<RawImage>(); _cardIcon.raycastTarget = false;
-
-            var ruleStrip = UIStyle.Image("RuleStrip", face.rectTransform, UIStyle.Slash, UIStyle.RebelYellow);
-            ruleStrip.rectTransform.anchorMin = new Vector2(0.06f, 0); ruleStrip.rectTransform.anchorMax = new Vector2(0.94f, 0);
-            ruleStrip.rectTransform.sizeDelta = new Vector2(0, 6); ruleStrip.rectTransform.anchoredPosition = new Vector2(0, 122);
-
-            _cardName = UIStyle.Title("Name", face.rectTransform, "", 25, UIStyle.Obsidian, TextAnchor.MiddleCenter, redDrop: false);
-            Destroy(_cardName.GetComponent<Outline>());
-            _cardName.rectTransform.anchorMin = new Vector2(0, 0); _cardName.rectTransform.anchorMax = new Vector2(1, 0);
-            _cardName.rectTransform.sizeDelta = new Vector2(-18, 52); _cardName.rectTransform.anchoredPosition = new Vector2(0, 92);
-            _cardKey = UIStyle.Hud("State", face.rectTransform, "READY", 21, UIStyle.Red, TextAnchor.MiddleRight);
-            _cardKey.rectTransform.anchorMin = new Vector2(0, 0); _cardKey.rectTransform.anchorMax = new Vector2(1, 0);
-            _cardKey.rectTransform.sizeDelta = new Vector2(-84, 38); _cardKey.rectTransform.anchoredPosition = new Vector2(24, 34);
-            _keyCap = UIStyle.Key(face.rectTransform, "Q", 44);
-            _keyCap.anchorMin = _keyCap.anchorMax = new Vector2(0, 0); _keyCap.anchoredPosition = new Vector2(44, 34);
-            var cd = UIStyle.Image("Cooldown", face.rectTransform, null, new Color(UIStyle.Obsidian.r, UIStyle.Obsidian.g, UIStyle.Obsidian.b, 0.76f));
-            cd.sprite = UIFactory.RoundedSmall;
-            _cdFill = cd.rectTransform;
-            _cdFill.anchorMin = Vector2.zero; _cdFill.anchorMax = new Vector2(1, 0); _cdFill.offsetMin = new Vector2(8, 8); _cdFill.offsetMax = new Vector2(-8, 0);
-            _cardSlot.gameObject.SetActive(false);
-        }
-
-        void BuildLawBadge()
-        {
-            var holder = UIFactory.Rect("DreamLaw", Root);
-            _lawBadge = holder;
-            holder.anchorMin = holder.anchorMax = new Vector2(1, 1); holder.pivot = new Vector2(1, 1);
-            holder.anchoredPosition = new Vector2(-20, -10); holder.sizeDelta = new Vector2(480, 150);
-            var burst = UIStyle.Image("Burst", holder, UIStyle.Burst, UIStyle.Red, false);
-            UIFactory.Stretch(burst.rectTransform);
-            UIStyle.HardShadow(burst, UIStyle.Plum, new Vector2(8, -8));
-            _lawText = UIStyle.Title("Text", holder, "", 30, Color.white, TextAnchor.MiddleCenter, redDrop: false);
-            UIFactory.Stretch(_lawText.rectTransform, 30);
-            _lawBadge.gameObject.SetActive(false);
-        }
-
         void Update()
         {
             float dt = Time.unscaledDeltaTime;
-            if (_cardSlot != null)
-            {
-                if (_cards == null) _cards = FindFirstObjectByType<Cards.PlayerCardController>();
-                bool has = ShowCards && _cards != null && _cards.Card != null;
-                _cardSlot.gameObject.SetActive(has);
-                if (has)
-                {
-                    _cardIcon.texture = _cards.Card.icon;
-                    _cardName.text = _cards.Card.displayName.ToUpperInvariant();
-                    bool ready = _cards.Ready;
-                    _cardKey.text = ready ? "READY" : $"{_cards.CooldownRemaining:0.0}s";
-                    _cardKey.color = ready ? UIStyle.Red : UIStyle.Plum;
-                    _cdFill.anchorMax = new Vector2(1, _cards.CooldownNormalized);
-                    if (ready && !_wasReady) _readyPop = 1f;
-                    _wasReady = ready;
-                    _readyPop = Mathf.MoveTowards(_readyPop, 0f, dt * 3f);
-                    float bob = ready ? Mathf.Sin(Time.unscaledTime * 4f) * 0.03f : 0f;
-                    _cardSlot.localScale = Vector3.one * (1f + bob + 0.18f * Mathf.Sin(_readyPop * Mathf.PI));
-                }
-            }
-            if (_lawBadge != null)
-            {
-                if (_laws == null) _laws = FindFirstObjectByType<Cards.DreamLawDirector>();
-                bool active = _laws != null && _laws.ActiveLaw != null;
-                _lawBadge.gameObject.SetActive(active);
-                if (active)
-                {
-                    _lawText.text = $"DREAM LAW!\n{_laws.ActiveLaw.displayName.ToUpperInvariant()}  {Mathf.CeilToInt(_laws.ActiveRemaining)}";
-                    _lawBadge.localRotation = Quaternion.Euler(0, 0, Mathf.Sin(Time.unscaledTime * 3f) * 3f);
-                }
-            }
             if (_bossTag != null && _bossTag.gameObject.activeSelf)
             {
                 if (_chair == null) _chair = FindFirstObjectByType<Boss.BossChairController>();

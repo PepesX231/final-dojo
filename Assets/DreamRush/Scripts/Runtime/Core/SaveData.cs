@@ -48,6 +48,7 @@ namespace DreamRush.Core
     {
         public int dreamMemory;
         public int mattressLevel;
+        // Legacy save field only; the removed reroll upgrade has no runtime effect.
         public int pillowLevel;
         public int blanketLevel;
         public List<LevelRecord> levelRecords = new List<LevelRecord>();

@@ -140,8 +140,6 @@ namespace DreamRush.Boss
             DreamHUD.Current?.SetObjective("SIT ON THE CHAIR");
             DreamHUD.Current?.ShowBoss("THE CHAIR");
             chair.Activate();
-            var laws = FindFirstObjectByType<Cards.DreamLawDirector>();
-            if (laws != null) laws.Begin(chair.seed);
             _fightTime = 0f;
             _lastProgressTime = 0f;
             SetPhase(Phase.Fight);
@@ -209,7 +207,6 @@ namespace DreamRush.Boss
             if (CurrentPhase != Phase.Fight) return; // victory triggers only once
             VictoryMethod = method;
             SetPhase(Phase.Victory);
-            FindFirstObjectByType<Cards.DreamLawDirector>()?.Stop();
             Audio.AudioManager.PlayMusic(Audio.Music.None, 0.8f); // the victory sting plays from the chair (Defeated)
             StartCoroutine(VictoryRoutine(method));
         }
@@ -233,7 +230,6 @@ namespace DreamRush.Boss
         {
             if (CurrentPhase == Phase.Victory || CurrentPhase == Phase.Lost) return;
             SetPhase(Phase.Lost);
-            FindFirstObjectByType<Cards.DreamLawDirector>()?.Stop();
             if (GameFlowManager.Exists) GameFlowManager.Get().EndDream(false, null, "Sleep Stability ran out");
         }
 

@@ -147,11 +147,11 @@ namespace DreamRush.Flow
             if (Done || p == null) return false;
             if (!CanEnter(p))
             {
-                Audio.AudioManager.Play(Audio.Sfx.CardFail, Vector3.zero);
+                Audio.AudioManager.Play(Audio.Sfx.Clank, Vector3.zero);
                 UIRoot.Get().Toast(WorldAccess.Reason(p.sceneName, p.locked), 3f);
                 return false;
             }
-            Audio.AudioManager.Play(Audio.Sfx.CardPick, Vector3.zero);
+            Audio.AudioManager.Play(Audio.Sfx.UiClick, Vector3.zero);
             Presentation.VFX.Play(Presentation.VFXKind.StarBurst, p.transform.position, 4f);
             ChosenScene = string.IsNullOrEmpty(p.sceneName) ? GameFlowManager.DreamScene : p.sceneName;
             Done = true;

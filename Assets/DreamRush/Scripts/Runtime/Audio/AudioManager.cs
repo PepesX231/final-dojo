@@ -1,20 +1,48 @@
 using System.Collections.Generic;
 using DreamRush.Core;
-using DreamRush.DreamLogic;
 using UnityEngine;
 
 namespace DreamRush.Audio
 {
     public enum Sfx
     {
-        Footstep, Jump, Land, Hurt, Kick,
-        ChairStep, ChairGasp, ChairYelp, ChairStumble, ChairTired, ChairCreak,
-        CardFlash, CardGlue, CardReel, CardGrandpa, CardDecoy, CardBoing, CardFail,
-        UiClick, UiOpen, CardDeal, CardPick, SleepChime, WakeUp, LawWarn, Victory,
-        // M15 combat / movement / world set
-        Whoosh, Swing, SwingHeavy, Hit, HitHeavy, Clank, Burst, Coin, Door, Grind, Reflect, EnemyAlert, Shock, UiHover, UiBack, Pickup,
-        // M18/M19 fists + clockwork boss
-        Punch, PunchHeavy, BellToll, Ratchet, Tick
+        Footstep = 0,
+        Jump = 1,
+        Land = 2,
+        Hurt = 3,
+        Kick = 4,
+        ChairStep = 5,
+        ChairGasp = 6,
+        ChairYelp = 7,
+        ChairStumble = 8,
+        ChairTired = 9,
+        ChairCreak = 10,
+        UiClick = 18,
+        UiOpen = 19,
+        SleepChime = 22,
+        WakeUp = 23,
+        Victory = 25,
+        Whoosh = 26,
+        Swing = 27,
+        SwingHeavy = 28,
+        Hit = 29,
+        HitHeavy = 30,
+        Clank = 31,
+        Burst = 32,
+        Coin = 33,
+        Door = 34,
+        Grind = 35,
+        Reflect = 36,
+        EnemyAlert = 37,
+        Shock = 38,
+        UiHover = 39,
+        UiBack = 40,
+        Pickup = 41,
+        Punch = 42,
+        PunchHeavy = 43,
+        BellToll = 44,
+        Ratchet = 45,
+        Tick = 46
     }
 
     public enum Music { None, Bedroom, Dream, Boss, World1, Palace, Midnight, Galaxy, Interior, ToyBoxMoon, BubbleBathSea, MidnightTeacup, DreamFinale, Credits }
@@ -94,9 +122,6 @@ namespace DreamRush.Audio
 
         public static string FileName(Sfx s) => s switch
         {
-            Sfx.CardFlash => "SFX_Card_Flash", Sfx.CardGlue => "SFX_Card_Glue", Sfx.CardReel => "SFX_Card_Reel",
-            Sfx.CardGrandpa => "SFX_Card_Grandpa", Sfx.CardDecoy => "SFX_Card_Decoy", Sfx.CardBoing => "SFX_Card_Boing",
-            Sfx.CardFail => "SFX_Card_Fail", Sfx.CardDeal => "SFX_Card_Deal", Sfx.CardPick => "SFX_Card_Pick",
             Sfx.UiClick => "SFX_UI_Click", Sfx.UiOpen => "SFX_UI_Open",
             _ => "SFX_" + s
         };
@@ -117,19 +142,6 @@ namespace DreamRush.Audio
             src.volume = Mathf.Clamp01(volume) * _sfxVolume;
             src.Play();
             PlayedCount++; LastPlayed = sfx;
-        }
-
-        public static void PlayCard(EffectAction action, Vector3 position)
-        {
-            Play(action switch
-            {
-                EffectAction.Freeze => Sfx.CardFlash,
-                EffectAction.Root => Sfx.CardGlue,
-                EffectAction.Pull => Sfx.CardReel,
-                EffectAction.ChangeBehavior => Sfx.CardGrandpa,
-                EffectAction.SpawnDecoy => Sfx.CardDecoy,
-                _ => Sfx.CardBoing
-            }, position);
         }
 
         AudioSource FreeSource()

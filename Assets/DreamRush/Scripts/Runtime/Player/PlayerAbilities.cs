@@ -58,7 +58,7 @@ namespace DreamRush.Player
                 var v = _m.Velocity; v.y *= poundJumpScale; _m.SetVelocity(v);
                 VFX.Play(VFXKind.LandingRing, transform.position, 1.6f, VFX.Gold);
                 VFX.Play(VFXKind.StarBurst, transform.position + Vector3.up * 0.4f, 0.9f, VFX.Gold);
-                Audio.AudioManager.Play(Audio.Sfx.CardPick, transform.position, 0.6f);
+                Audio.AudioManager.Play(Audio.Sfx.UiClick, transform.position, 0.6f);
                 _flipT = 0f;
             }
             _sincePoundLand = 99f;
@@ -117,7 +117,7 @@ namespace DreamRush.Player
                 _m.SetVelocity(v + Vector3.up * _m.Config.JumpVelocity * doubleJumpScale);
                 _flipT = 0f;
                 VFX.Play(VFXKind.LandingRing, transform.position, 0.9f, VFX.Lavender);
-                VFX.Play(VFXKind.CardBurst, transform.position + Vector3.up * 0.2f, 0.5f);
+                VFX.Play(VFXKind.PaperBurst, transform.position + Vector3.up * 0.2f, 0.5f);
                 Audio.AudioManager.Play(Audio.Sfx.Jump, transform.position, 0.9f);
             }
 
@@ -129,7 +129,7 @@ namespace DreamRush.Player
                 _m.Dash(dir, dashSpeed, dashTime);
                 if (_trail != null) { _trail.Clear(); _trail.emitting = true; }
                 VFX.Play(VFXKind.Poof, transform.position + Vector3.up * 0.5f - dir.normalized * 0.4f, 0.7f, VFX.Lavender);
-                Audio.AudioManager.Play(Audio.Sfx.CardDeal, transform.position, 1f);
+                Audio.AudioManager.Play(Audio.Sfx.Whoosh, transform.position, 1f);
                 CameraShake.Add(0.12f);
             }
             if (_trail != null) _trail.emitting = _m.IsDashing || (_m.IsBallistic && air);

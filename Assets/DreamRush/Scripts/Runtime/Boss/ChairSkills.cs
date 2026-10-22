@@ -236,7 +236,7 @@ namespace DreamRush.Boss
                 {
                     // wrong chair! it poofs and bonks you away (no moon lost — it's a trick, not an attack)
                     VFX.Play(VFXKind.Poof, d.transform.position + Vector3.up * 0.6f, 1.6f);
-                    Audio.AudioManager.Play(Audio.Sfx.CardFail, d.transform.position, 0.8f);
+                    Audio.AudioManager.Play(Audio.Sfx.Clank, d.transform.position, 0.8f);
                     _player.Launch(Flat(to).normalized * 6f + Vector3.up * 4.5f);
                     UI.UIRoot.Get().Toast("ตัวปลอม! (POOF)", 1.2f);
                     Destroy(d); _decoys[i] = null;

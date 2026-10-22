@@ -29,7 +29,6 @@ namespace DreamRush.Tests
             SaveManager.SetInstance(sm);
             if (GameFlowManager.Exists) GameFlowManager.Get().ResetForTests();
             GameFlowManager.Get().SequenceSpeed = 8f;
-            GameFlowManager.Get().CardDrawStep = null; // card selection is covered by CardSystem tests
             Time.timeScale = 1f;
         }
 

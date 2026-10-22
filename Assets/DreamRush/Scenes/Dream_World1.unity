@@ -6785,7 +6785,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 143884217}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 292933674}
+  m_Script: {fileID: 11500000, guid: a2b0aeb817754a1da826e7d9cf557ccb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.World1.CognitiveTrialNode
   TrialCode: TRIAL 01-A // PATTERN OBSERVATION
@@ -13494,21 +13494,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 292410058}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!115 &292933674
-MonoScript:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  serializedVersion: 7
-  m_DefaultReferences: {}
-  m_Icon: {fileID: 0}
-  m_Type: 0
-  m_ExecutionOrder: 0
-  m_ClassName: CognitiveTrialNode
-  m_Namespace: DreamRush.World1
-  m_AssemblyName: DreamRush.Runtime
 --- !u!1 &293559268
 GameObject:
   m_ObjectHideFlags: 0
@@ -19841,8 +19826,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Dream.DreamSection
   sectionId: 5-A
   displayName: 'Synthesize: Hall of Analysis'
-  objective: "\u0E02\u0E31\u0E49\u0E19\u0E2A\u0E23\u0E38\u0E1B: \u0E17\u0E1A\u0E17\u0E27\u0E19\u0E04\u0E38\u0E13\u0E2A\u0E21\u0E1A\u0E31\u0E15\u0E34\u0E01\u0E32\u0E23\u0E4C\u0E14\u0E41\u0E01\u0E49\u0E1B\u0E31\u0E0D\u0E2B\u0E32
-    (\u0E1B\u0E38\u0E48\u0E21 Q) \u0E01\u0E48\u0E2D\u0E19\u0E40\u0E02\u0E49\u0E32\u0E2A\u0E39\u0E48\u0E2B\u0E49\u0E2D\u0E07\u0E17\u0E14\u0E2A\u0E2D\u0E1A\u0E2A\u0E38\u0E14\u0E17\u0E49\u0E32\u0E22"
+  objective: "\u0e02\u0e31\u0e49\u0e19\u0e2a\u0e23\u0e38\u0e1b: \u0e2a\u0e31\u0e07\u0e40\u0e01\u0e15\u0e40\u0e2a\u0e49\u0e19\u0e17\u0e32\u0e07\u0e2b\u0e19\u0e35\u0e41\u0e25\u0e30\u0e08\u0e38\u0e14\u0e1e\u0e31\u0e01\u0e02\u0e2d\u0e07\u0e40\u0e01\u0e49\u0e32\u0e2d\u0e35\u0e49\u0e01\u0e48\u0e2d\u0e19\u0e40\u0e02\u0e49\u0e32\u0e2a\u0e39\u0e48\u0e2b\u0e49\u0e2d\u0e07\u0e17\u0e14\u0e2a\u0e2d\u0e1a\u0e2a\u0e38\u0e14\u0e17\u0e49\u0e32\u0e22"
   order: 12
   size: {x: 16, y: 20, z: 46}
 --- !u!1 &402351237
@@ -55375,16 +55359,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1192691516}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 292933674}
+  m_Script: {fileID: 11500000, guid: a2b0aeb817754a1da826e7d9cf557ccb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.World1.CognitiveTrialNode
   TrialCode: TRIAL 05 // MULTI-RULE SYNTHESIS
   HypothesisPrompt: "\u0E27\u0E34\u0E40\u0E04\u0E23\u0E32\u0E30\u0E2B\u0E4C\u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A\u0E01\u0E32\u0E23\u0E40\u0E04\u0E25\u0E37\u0E48\u0E2D\u0E19\u0E17\u0E35\u0E48"
-  SolvedMessage: "\u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E17\u0E33\u0E02\u0E49\u0E2D\u0E2A\u0E2D\u0E1A\u0E2A\u0E38\u0E14\u0E17\u0E49\u0E32\u0E22!
-    \u0E43\u0E0A\u0E49\u0E01\u0E32\u0E23\u0E4C\u0E14\u0E41\u0E01\u0E49\u0E1B\u0E31\u0E0D\u0E2B\u0E32
-    [Q] \u0E2A\u0E23\u0E49\u0E32\u0E07\u0E0A\u0E48\u0E2D\u0E07\u0E42\u0E2B\u0E27\u0E48\u0E43\u0E2B\u0E49\u0E40\u0E01\u0E49\u0E32\u0E2D\u0E35\u0E49
-    \u0E41\u0E25\u0E49\u0E27\u0E01\u0E14 [E] \u0E19\u0E31\u0E48\u0E07\u0E04\u0E49\u0E32\u0E07
-    2 \u0E27\u0E34\u0E19\u0E32\u0E17\u0E35\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E1E\u0E34\u0E0A\u0E34\u0E15\u0E1D\u0E31\u0E19!"
+  SolvedMessage: "\u0e1e\u0e23\u0e49\u0e2d\u0e21\u0e17\u0e33\u0e02\u0e49\u0e2d\u0e2a\u0e2d\u0e1a\u0e2a\u0e38\u0e14\u0e17\u0e49\u0e32\u0e22! \u0e15\u0e32\u0e21\u0e40\u0e01\u0e49\u0e32\u0e2d\u0e35\u0e49\u0e08\u0e19\u0e40\u0e2b\u0e19\u0e37\u0e48\u0e2d\u0e22 \u0e43\u0e0a\u0e49\u0e17\u0e32\u0e07\u0e25\u0e31\u0e14\u0e40\u0e02\u0e49\u0e32\u0e1b\u0e23\u0e30\u0e0a\u0e34\u0e14\u0e15\u0e2d\u0e19\u0e2b\u0e22\u0e38\u0e14\u0e1e\u0e31\u0e01 \u0e41\u0e25\u0e49\u0e27\u0e01\u0e14 [E] \u0e19\u0e31\u0e48\u0e07\u0e04\u0e49\u0e32\u0e07 2 \u0e27\u0e34\u0e19\u0e32\u0e17\u0e35\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e1e\u0e34\u0e0a\u0e34\u0e15\u0e1d\u0e31\u0e19!"
   CrystalVisual: {fileID: 1128518277}
   BeaconLight: {fileID: 263552601}
   HelperBridge: {fileID: 0}
@@ -55786,57 +55766,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1200613828}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1200882556
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1200882558}
-  - component: {fileID: 1200882557}
-  m_Layer: 0
-  m_Name: DreamLawDirector
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1200882557
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1200882556}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8efbe9875de9fe479c1464d1995371a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Cards.DreamLawDirector
-  player: {fileID: 0}
-  firstLawAfter: 35
-  interval: 40
-  warning: 2
-  lawDuration: 15
-  seed: 1
-  running: 0
---- !u!4 &1200882558
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1200882556}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1203251266
 GameObject:
   m_ObjectHideFlags: 0
@@ -64612,7 +64541,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1380480984}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 292933674}
+  m_Script: {fileID: 11500000, guid: a2b0aeb817754a1da826e7d9cf557ccb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.World1.CognitiveTrialNode
   TrialCode: TRIAL 01-B // RULE DEDUCTION & BYPASS
@@ -67306,9 +67235,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Dream.DreamSection
   sectionId: 5-B
   displayName: 'Final Exam: Throne of Refusal'
-  objective: "\u0E1B\u0E23\u0E30\u0E22\u0E38\u0E01\u0E15\u0E4C\u0E43\u0E0A\u0E49\u0E01\u0E32\u0E23\u0E4C\u0E14\u0E41\u0E01\u0E49\u0E1B\u0E31\u0E0D\u0E2B\u0E32
-    + \u0E1B\u0E23\u0E31\u0E1A\u0E15\u0E31\u0E27\u0E15\u0E32\u0E21\u0E01\u0E0E\u0E04\u0E27\u0E32\u0E21\u0E1D\u0E31\u0E19
-    (Dream Law) \u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E1A\u0E31\u0E07\u0E04\u0E31\u0E1A\u0E19\u0E31\u0E48\u0E07\u0E40\u0E01\u0E49\u0E32\u0E2D\u0E35\u0E49!"
+  objective: "\u0e2d\u0e48\u0e32\u0e19\u0e08\u0e31\u0e07\u0e2b\u0e27\u0e30\u0e41\u0e25\u0e30\u0e43\u0e0a\u0e49\u0e17\u0e32\u0e07\u0e25\u0e31\u0e14\u0e40\u0e02\u0e49\u0e32\u0e1b\u0e23\u0e30\u0e0a\u0e34\u0e14\u0e40\u0e01\u0e49\u0e32\u0e2d\u0e35\u0e49\u0e15\u0e2d\u0e19\u0e2b\u0e22\u0e38\u0e14\u0e1e\u0e31\u0e01 \u0e41\u0e25\u0e49\u0e27\u0e01\u0e14 [E] \u0e19\u0e31\u0e48\u0e07!"
   order: 13
   size: {x: 50, y: 30, z: 50}
 --- !u!1 &1436542832
@@ -82563,7 +82490,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1769198253}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 292933674}
+  m_Script: {fileID: 11500000, guid: a2b0aeb817754a1da826e7d9cf557ccb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.World1.CognitiveTrialNode
   TrialCode: TRIAL 02 // LATERAL PERSPECTIVE SHIFT
@@ -85352,7 +85279,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1836424524}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 292933674}
+  m_Script: {fileID: 11500000, guid: a2b0aeb817754a1da826e7d9cf557ccb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.World1.CognitiveTrialNode
   TrialCode: TRIAL 04 // ROUTE OPTIMIZATION
@@ -97661,7 +97588,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2069967344}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 292933674}
+  m_Script: {fileID: 11500000, guid: a2b0aeb817754a1da826e7d9cf557ccb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.World1.CognitiveTrialNode
   TrialCode: TRIAL 03 // ORBITAL SYNCHRONIZATION
@@ -133134,7 +133061,6 @@ SceneRoots:
   - {fileID: 677273995}
   - {fileID: 577178193}
   - {fileID: 1824038045}
-  - {fileID: 1200882558}
   - {fileID: 1134248963}
   - {fileID: 83174407}
   - {fileID: 566822857}

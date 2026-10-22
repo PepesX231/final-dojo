@@ -49,7 +49,7 @@ namespace DreamRush.Player
         public float leafDamping = 7f;
         public float leafMaxAngle = 45f;
 
-        [Header("States set by cutscenes / cards")]
+        [Header("States set by cutscenes")]
         public bool sleeping;
         [Tooltip("Sitting on the chair: legs stick out forward.")]
         public bool sitting;
@@ -376,7 +376,7 @@ namespace DreamRush.Player
             if (_bubble == null) return;
             var fx = Presentation.FXLibrary.Instance;
             if (fx != null) Presentation.WorldFX.Spawn(fx.poof, _bubble.position, 0.5f, 0.3f);
-            Audio.AudioManager.Play(Audio.Sfx.CardDecoy, _bubble.position, 0.6f);
+            Audio.AudioManager.Play(Audio.Sfx.UiOpen, _bubble.position, 0.6f);
             Destroy(_bubble.gameObject);
             _bubble = null;
             _sleepT = 0f;

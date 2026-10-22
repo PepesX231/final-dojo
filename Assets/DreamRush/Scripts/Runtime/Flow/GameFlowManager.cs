@@ -20,7 +20,7 @@ namespace DreamRush.Flow
 
 {
 
-    public enum FlowState { Boot, Hub, FallingAsleep, LevelSelect, CardDraw, Dream, Victory, WakingUp }
+    public enum FlowState { Boot, Hub, FallingAsleep, LevelSelect, LoadingDream, Dream, Victory, WakingUp }
 
 
 
@@ -33,8 +33,6 @@ namespace DreamRush.Flow
         public int Seed;
 
         public float StartTime;
-
-        public string ChosenCardId;
 
         public string VictoryId;
 
@@ -50,10 +48,6 @@ namespace DreamRush.Flow
 
         public bool NewPersonalBest;
 
-        /// <summary>Card rerolls left this run (Lucky Pillow).</summary>
-
-        public int RerollsLeft;
-
         /// <summary>Level chosen in the Dream Galaxy (null = default dream scene).</summary>
 
         public string LevelScene;
@@ -66,7 +60,7 @@ namespace DreamRush.Flow
 
     /// <summary>
 
-    /// Owns the Hub → Sleep → (Cards) → Dream → Victory/Wake → Hub loop (GDD §13.2, §22).
+    /// Owns the Hub → Sleep → Galaxy → Dream → Victory/Wake → Hub loop (GDD §13.2, §22).
 
     /// Persistent singleton; scenes declare what they are with <see cref="SceneContext"/>.
 
@@ -118,11 +112,7 @@ namespace DreamRush.Flow
 
         public event Action<FlowState> StateChanged;
 
-        /// <summary>Hook for the card draw (M6). Return a coroutine that finishes when a card is chosen.</summary>
-
-        public Func<RunState, IEnumerator> CardDrawStep;
-
-        /// <summary>Hook for the Dream Galaxy level select (sleep → galaxy → cards → level). Null skips it.</summary>
+        /// <summary>Hook for the Dream Galaxy level select (sleep → galaxy → level). Null skips it.</summary>
 
         public Func<RunState, IEnumerator> LevelSelectStep;
 
@@ -136,7 +126,6 @@ namespace DreamRush.Flow
 
         {
 
-            CardDrawStep = UI.CardSelectPanel.Run; // GDD §22.1 step 9
 
             LevelSelectStep = GalaxyStep;
 
@@ -176,7 +165,7 @@ namespace DreamRush.Flow
 
             yield return new WaitForSecondsRealtime(W(0.5f));
 
-            SetState(FlowState.CardDraw);
+            SetState(FlowState.LoadingDream);
 
         }
 
@@ -221,7 +210,7 @@ namespace DreamRush.Flow
 
             if (kind == SceneKind.Hub && State != FlowState.FallingAsleep) SetState(FlowState.Hub);
 
-            if (kind == SceneKind.Dream && State != FlowState.CardDraw)
+            if (kind == SceneKind.Dream && State != FlowState.LoadingDream)
 
             {
 
@@ -311,25 +300,24 @@ namespace DreamRush.Flow
 
             save.Save();
 
-            CurrentRun = new RunState(Environment.TickCount) { RerollsLeft = Progression.BedUpgrades.RerollsPerRun(save.Data.progression) };
+            CurrentRun = new RunState(Environment.TickCount);
 
 
 
-            // 8b: Dream Galaxy — pick a world (after sleeping, before the cards)
+            // 8b: Dream Galaxy — pick a world
 
             if (LevelSelectStep != null) yield return LevelSelectStep(CurrentRun);
 
 
 
-            // 9: card selection (M6 hook)
+            // 9: load the chosen world directly
 
-            SetState(FlowState.CardDraw);
-
-            if (CardDrawStep != null) yield return CardDrawStep(CurrentRun);
+            SetState(FlowState.LoadingDream);
 
 
 
-            // 10: dream level begins
+
+            // Dream level begins
 
             ReturningFromDream = false;
 
@@ -468,7 +456,6 @@ namespace DreamRush.Flow
 
             CurrentRun = null; LastRun = null; ReturningFromDream = false;
 
-            CardDrawStep = null;
 
             LevelSelectStep = null;
 

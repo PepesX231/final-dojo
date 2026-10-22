@@ -78,7 +78,7 @@ namespace DreamRush.Palace
             _r.sharedMaterial.SetColor("_Emission", new Color(2f, 1.5f, 0.3f));
             if (_trail != null) { _trail.startColor = new Color(1f, 0.9f, 0.4f, 1f); _trail.endColor = new Color(1f, 0.9f, 0.4f, 0f); }
             _t = 0f; life = 3f;
-            Audio.AudioManager.Play(Audio.Sfx.CardDeal, transform.position, 1f);
+            Audio.AudioManager.Play(Audio.Sfx.Whoosh, transform.position, 1f);
             UI.UIRoot.Get().Toast("REFLECT!", 0.6f);
             return true;
         }

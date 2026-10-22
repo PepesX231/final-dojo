@@ -31,7 +31,7 @@ namespace DreamRush.UI
         public static Font BodyFont => _body ??= Resources.Load<Font>("DreamRush/Fonts/ChakraPetch-SemiBold") ?? HudFont;
         public static Font StoryFont => _story ??= Resources.Load<Font>("DreamRush/Fonts/Mali-SemiBold") ?? BodyFont;
 
-        static Sprite _slab, _cut, _window, _burst, _half, _stripes, _brush, _diamond, _pointer, _moonF, _moonE, _key, _wipe, _card;
+        static Sprite _slab, _cut, _window, _burst, _half, _stripes, _brush, _diamond, _pointer, _moonF, _moonE, _key, _wipe;
         public static Sprite Slab => _slab ??= Kit("UI3_Slab", new Vector4(34, 8, 34, 8));
         public static Sprite Slash => Slab;
         public static Sprite Cut => _cut ??= Kit("UI3_Cut", new Vector4(22, 22, 22, 22));
@@ -46,7 +46,6 @@ namespace DreamRush.UI
         public static Sprite MoonEmpty => _moonE ??= Kit("UI3_MoonEmpty", Vector4.zero);
         public static Sprite KeyCap => _key ??= Kit("UI3_Key", new Vector4(16, 16, 16, 16));
         public static Sprite Wipe => _wipe ??= Kit("UI3_Wipe", Vector4.zero);
-        public static Sprite CardFrame => _card ??= Kit("UI3_Card", new Vector4(40, 40, 40, 40));
 
         static Sprite _chronoGear, _swirlRing;
         /// <summary>Procedural Chrono-Punk / Persona 5 mechanical gear + inner clockwork ring sprite.</summary>

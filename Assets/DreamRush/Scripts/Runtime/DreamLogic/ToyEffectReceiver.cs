@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace DreamRush.DreamLogic
 {
-    /// <summary>Card-experiment wind-up toy (GDD §13.6): reacts to the same effects so cards are learned by play.</summary>
+    /// <summary>Wind-up toy: reacts to shared environmental effects.</summary>
     public class ToyEffectReceiver : MonoBehaviour, IEffectReceiver
     {
         public DreamProperty properties = DreamProperty.Movable | DreamProperty.Rootable | DreamProperty.Freezeable |

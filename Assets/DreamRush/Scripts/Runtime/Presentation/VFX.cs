@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DreamRush.Presentation
 {
-    public enum VFXKind { DustPuff, LandingRing, StarBurst, ImpactRing, Confetti, CardBurst, Zzz, Poof, Embers, HitSpark, Flare, FlareStreak, Rays }
+    public enum VFXKind { DustPuff, LandingRing, StarBurst, ImpactRing, Confetti, PaperBurst, Zzz, Poof, Embers, HitSpark, Flare, FlareStreak, Rays }
 
     /// <summary>
     /// Real particle VFX built in code (docs/RESEARCH_V2.md §3): Anticipation → Impact (first 25% of life) →
@@ -46,7 +46,7 @@ namespace DreamRush.Presentation
             Spawned++;
             var ret = ps.GetComponent<VFXReturn>();
             ret.Arm(kind, stack);
-            if (kind == VFXKind.StarBurst || kind == VFXKind.ImpactRing || kind == VFXKind.CardBurst || kind == VFXKind.Flare)
+            if (kind == VFXKind.StarBurst || kind == VFXKind.ImpactRing || kind == VFXKind.PaperBurst || kind == VFXKind.Flare)
                 LightFlash(position + Vector3.up * 0.6f, tint ?? Gold, 2.6f * scale, 5f * scale, 0.28f);
             return ps;
         }
@@ -114,10 +114,10 @@ namespace DreamRush.Presentation
                     break;
                 }
                 case VFXKind.StarBurst:
-                case VFXKind.CardBurst:
+                case VFXKind.PaperBurst:
                 {
                     r.sharedMaterial = lib.sparkleAdd;
-                    bool card = kind == VFXKind.CardBurst;
+                    bool card = kind == VFXKind.PaperBurst;
                     main.duration = 0.8f; main.startLifetime = new ParticleSystem.MinMaxCurve(0.35f, 0.8f);
                     main.startSpeed = new ParticleSystem.MinMaxCurve(3f, card ? 9f : 6f);
                     main.startSize = new ParticleSystem.MinMaxCurve(0.2f, card ? 0.6f : 0.45f);

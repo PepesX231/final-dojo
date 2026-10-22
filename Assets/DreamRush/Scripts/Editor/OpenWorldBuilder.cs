@@ -42,7 +42,6 @@ namespace DreamRush.EditorTools
         public static void Build()
         {
             if (EditorApplication.isPlaying) { Debug.LogError("[DreamRush] Stop play mode first."); return; }
-            CardAssetsBuilder.Build();
             DreamLookSetup.Ensure();
             var prefab = MovementGymBuilder.BuildPlayerPrefab();
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);

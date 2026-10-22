@@ -50,7 +50,6 @@ namespace DreamRush.Player
             {
                 root.AddComponent<Interaction.InteractionSystem>();
                 root.AddComponent<UI.PlayerUIBridge>();
-                root.AddComponent<Cards.PlayerCardController>();
             }
 
             var visual = new GameObject("Visual");

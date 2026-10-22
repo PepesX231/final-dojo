@@ -1,6 +1,5 @@
 using System.Collections;
 using System.IO;
-using DreamRush.Cards;
 using DreamRush.Core;
 using DreamRush.Dream;
 using DreamRush.Flow;
@@ -14,7 +13,7 @@ using UnityEngine.TestTools;
 
 namespace DreamRush.Tests
 {
-    /// <summary>M7: bed upgrades in the hub, Lucky Pillow reroll, toy-car hazards in the arena.</summary>
+    /// <summary>M7: bed upgrades in the hub and toy-car hazards in the arena.</summary>
     public class ProgressionPlayModeTests
     {
         string _savePath;
@@ -56,7 +55,6 @@ namespace DreamRush.Tests
             UIRoot.Get().Push(panel);
             Assert.IsTrue(panel.Buy(BedUpgrade.CloudMattress));
             Assert.IsTrue(panel.Buy(BedUpgrade.ComfortBlanket));
-            Assert.IsFalse(panel.Buy(BedUpgrade.LuckyPillow), "15 memory left, pillow costs 30");
             Assert.That(save.Data.progression.dreamMemory, Is.EqualTo(15));
             Assert.IsTrue(visuals.transform.Find("Upgrade_Mattress_1").gameObject.activeSelf, "mattress puffs appear");
             Assert.IsTrue(visuals.transform.Find("Upgrade_Blanket").gameObject.activeSelf, "quilt appears");
@@ -73,30 +71,6 @@ namespace DreamRush.Tests
             var st = Object.FindFirstObjectByType<SleepStability>();
             Assert.That(st.Max, Is.EqualTo(4));
             Assert.That(st.Shields, Is.EqualTo(1));
-        }
-
-        [UnityTest] // Lucky Pillow: one reroll gives a new hand, then the button is gone
-        public IEnumerator LuckyPillow_RerollsOnce()
-        {
-            var run = new RunState(4242) { RerollsLeft = 1 };
-            var co = CardSelectPanel.Run(run);
-            Assert.IsTrue(co.MoveNext());
-            var first = Object.FindFirstObjectByType<CardSelectPanel>();
-            Assert.IsNotNull(first.transform.Find("Reroll"), "reroll button shown");
-            var lib = CardLibrary.Load();
-            var hand2 = CardDrawManager.DrawThree(lib.starterPool, 4242 + 7919);
-            first.Reroll();
-            yield return null;
-            Assert.IsTrue(co.MoveNext(), "a new hand is dealt");
-            var second = Object.FindFirstObjectByType<CardSelectPanel>();
-            Assert.IsNotNull(second);
-            Assert.AreNotSame(first, second);
-            Assert.That(run.RerollsLeft, Is.EqualTo(0));
-            Assert.IsNull(second.transform.Find("Reroll"), "no rerolls left");
-            second.Pick(0);
-            float t = 0f;
-            while (co.MoveNext() && t < 3f) { t += Time.unscaledDeltaTime; yield return null; }
-            Assert.That(run.ChosenCardId, Is.EqualTo(hand2[0].cardId));
         }
 
         [UnityTest] // pitch: a toy car knocks you back and costs a Sleep moon; jumping over it is safe

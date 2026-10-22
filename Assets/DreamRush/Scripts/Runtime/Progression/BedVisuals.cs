@@ -20,7 +20,6 @@ namespace DreamRush.Progression
                 if (!t.name.StartsWith("Upgrade_")) continue;
                 bool on = false;
                 if (t.name.StartsWith("Upgrade_Mattress_") && int.TryParse(t.name.Substring("Upgrade_Mattress_".Length), out int lv)) on = p.mattressLevel >= lv;
-                else if (t.name == "Upgrade_Pillow") on = p.pillowLevel > 0;
                 else if (t.name == "Upgrade_Blanket") on = p.blanketLevel > 0;
                 t.gameObject.SetActive(on);
             }

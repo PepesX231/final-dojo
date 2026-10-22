@@ -846,3 +846,14 @@ Preserved M21 city/interior builder hashes and authored furniture. Added worlds 
 Validation: World 1/Palace 32 selected gameplay cases passed in the combined run; the run had one Moon bot-position failure (40/41 total). After bot recovery and the final non-colliding art pass, all 10 campaign gameplay/presentation cases passed. Cinematic/image verification repeated after the two deprecated shader-keyword removals. No unused maps/EditMode inventory suite was run. Windows development player built from only seven active scenes. Exact raw totals/build details/limits: docs/CAMPAIGN_FIVE_REPORT.md.
 
 Not a release-art approval or human fun/performance certification. No real-save unlocks granted; campaign baseline/final SHA256 match. Prior M20 save pollution remains documented historically.
+
+
+## 2026-10-23 — Remove the card system (user request)
+
+- Removed draw/selection, equipped-card controller and input, cooldowns, rerolls/Lucky Pillow, Dream Laws, HUD/summary, card data/assets/sounds, card builders/generators and card-only tests. Sleep now goes through Galaxy directly into the chosen world. Kept combat, movement and environmental mechanisms. Updated current design overrides and authored World 1 instructions.
+- Patched the existing player prefab/scene references, without rebuilding the player or worlds. Preserved unrelated BedroomHub/Palace and other concurrent user changes. Legacy pillow save field is inert; real saves/currency/unlocks were not edited.
+- Strict scene regression exposed six pre-existing World 1 puzzle nodes using an embedded MonoScript for a secondary class. Extracted CognitiveTrialNode.cs and replaced only those script references with its stable GUID; the six nodes deserialize in the passing test.
+- Validation: relevant Runtime/Editor/EditMode/PlayMode assemblies compiled with 0 errors; focused card-free PlayMode **3/3 passed** (all five used worlds plus real sleep/Galaxy/world/wake), remaining bed-upgrade EditMode **4/4 passed**. Temporary-save suite verified the real Editor save SHA256 unchanged. Static audit found no references to deleted card GUIDs.
+- Recorded earlier failures: first **1 passed / 2 failed**, second **2 passed / 1 failed**; final **3 passed / 0 failed**. A specific unrelated background MCP authorization error is expected by the new fixture; game errors remain failures. Unity domain-reload hang required a restart explicitly approved by the user.
+- Runtime World 1 screenshot reviewed with no card HUD. This is a camera-render capture, not final-art approval. No human keyboard playthrough, standalone build/performance test, or subjective fun claim in this change.
+- Details, changed systems and evidence: docs/CARD_REMOVAL_REPORT.md; local originals and hashes: DevBridge/card-removal-backup/manifest.json.

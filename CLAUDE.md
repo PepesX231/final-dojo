@@ -1,15 +1,18 @@
 # DREAM RUSH — The Apple Dream (Unity project: `final dojo`)
 
+## Current user decision — 2026-10-23
+- Remove the entire card system, including Dream Laws and Lucky Pillow rerolls. Select a Galaxy world and enter it directly. Do not regenerate card scripts/assets or restore card requirements from historic documents. Movement, environmental mechanisms, combat and manual seating remain.
+
 ## Source of Truth
 - `docs/GDD.md` = Master GDD v2.0 (ผู้ใช้กำหนดให้เป็น Source of Truth). เอกสารอื่นต้องไม่ขัด GDD; ถ้าจำเป็นต้องเบี่ยง ให้บันทึกใน Decision Log ของ `docs/P0_IMPLEMENTATION_PLAN.md`
 - ขอบเขตตามคำขอผู้ใช้ 2026-10-20: ตรวจ/พัฒนาระบบที่มีจริงทั้ง World 1 และ Midnight Palace (งานเดิมถึง M20); P0 Chair ยังเก็บไว้เป็น prototype. ห้ามนับ placeholder เป็นด่านที่สร้างแล้ว
-- ลำดับ: Movement → Bedroom Hub → Sleep transition → Chair stage graybox → Chair AI → 3 cards → Art/Anim/VFX/SFX/UI → Playtest
+- ลำดับ: Movement → Bedroom Hub → Sleep transition → Chair stage graybox → Chair AI → environmental problem solving → Art/Anim/VFX/SFX/UI → Playtest
 
 ## Hard Rules
 1. PLAYABILITY → FUN → VISUAL QUALITY. ห้ามข้าม graybox/prototype ไปทำฉากสวย
 2. ห้ามรายงานว่าระบบเสร็จ/ผ่าน ถ้ายังไม่ได้ compile + รัน test + เล่นจริง — ระบุสิ่งที่ยังไม่ได้ทดสอบตรง ๆ
 3. ห้ามใช้ art asset ที่ไม่ผ่าน `docs/ART_DIRECTION_CHECKLIST.md` (Applebook Surrealism); ห้ามลอก IP อ้างอิง; ห้ามโลโก้ Apple Inc.
-4. การ์ดห้าม hard-code ชนะบอส — ต้องผ่าน property/status (GDD §18.6)
+4. ไม่มีระบบการ์ด; การชนะต้องผ่านเงื่อนไขเกมเพลและ interaction จริง
 5. ทุก milestone เพิ่มรายงานใน `docs/MILESTONE_REPORTS.md`: features, files, tests run, actual results, known bugs, design risks, art findings, next
 
 ## Layout

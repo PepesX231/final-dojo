@@ -5,12 +5,12 @@ using UnityEngine.UI;
 namespace DreamRush.UI
 {
     /// <summary>
-    /// M18 skill UI/UX (user: "if there are skills, make the UI/UX good"). A row of fist-move cards bottom-right, each
-    /// with an icon, its input and a short name. Cards are context-aware, the way action games teach optional inputs:
+    /// M18 skill UI/UX (user: "if there are skills, make the UI/UX good"). A row of fist-move indicators bottom-right, each
+    /// with an icon, its input and a short name. Indicators are context-aware, the way action games teach optional inputs:
     ///   • DIM   — can't be used right now (no stamina, no air spins left)
     ///   • HOT   — usable *this instant* and worth it (counter window after a DREAM DODGE, dash-punch window after a roll,
     ///             launcher after a landed hit, air spin while airborne): gold glow, bob and a shrinking timer ring
-    ///   • PUNCH — the card kicks and flashes when that move fires, tying input → effect
+    ///   • PUNCH — the indicator kicks and flashes when that move fires, tying input → effect
     /// DREAM BURST sits on the end as a big diamond that fills with the DREAM meter and throbs when ready.
     /// </summary>
     public class SkillBar : MonoBehaviour
@@ -18,8 +18,8 @@ namespace DreamRush.UI
         public PlayerCombat combat;
         public RectTransform Root { get; private set; }
         public int HotCount { get; private set; }
-        class Card { public string id; public RectTransform rt, glow; public Image icon, bg, ring; public Text key; public float kick, hot; }
-        Card[] _cards; Card _burst; Image _burstFill; Text _burstLabel;
+        class SkillIndicator { public string id; public RectTransform rt, glow; public Image icon, bg, ring; public Text key; public float kick, hot; }
+        SkillIndicator[] _indicators; SkillIndicator _burst; Image _burstFill; Text _burstLabel;
         static readonly Color Dim = new Color(1f, 1f, 1f, 0.28f), HotGold = new Color(1f, 0.82f, 0.3f);
 
         static readonly (string id, string icon, string key, string name)[] Defs =
@@ -39,8 +39,8 @@ namespace DreamRush.UI
             Root = UIFactory.Rect("SkillBar", hud);
             Root.anchorMin = Root.anchorMax = new Vector2(1, 0); Root.pivot = new Vector2(1, 0);
             Root.anchoredPosition = new Vector2(-34, 30); Root.sizeDelta = new Vector2(Defs.Length * 96 + 150, 150);
-            _cards = new Card[Defs.Length];
-            for (int i = 0; i < Defs.Length; i++) _cards[i] = MakeCard(Defs[i], new Vector2(i * 96, 0));
+            _indicators = new SkillIndicator[Defs.Length];
+            for (int i = 0; i < Defs.Length; i++) _indicators[i] = MakeIndicator(Defs[i], new Vector2(i * 96, 0));
             // DREAM BURST diamond
             var b = UIFactory.Rect("Burst", Root); b.anchorMin = b.anchorMax = new Vector2(0, 0); b.pivot = new Vector2(0.5f, 0.5f);
             b.anchoredPosition = new Vector2(Defs.Length * 96 + 72, 70); b.sizeDelta = new Vector2(118, 118);
@@ -51,7 +51,7 @@ namespace DreamRush.UI
             _burstLabel = UIStyle.Hud("Key", b, "V  BURST", 17, Color.white, TextAnchor.MiddleCenter);
             var kr = _burstLabel.rectTransform; kr.anchorMin = new Vector2(0, 0); kr.anchorMax = new Vector2(1, 0); kr.pivot = new Vector2(0.5f, 1f); kr.anchoredPosition = new Vector2(0, 2); kr.sizeDelta = new Vector2(40, 24);
             UIStyle.HardShadow(_burstLabel, UIStyle.Plum, new Vector2(2, -2));
-            _burst = new Card { id = "burst", rt = b, icon = ic, bg = dBg };
+            _burst = new SkillIndicator { id = "burst", rt = b, icon = ic, bg = dBg };
             combat.MoveUsed += OnMove;
         }
 
@@ -61,9 +61,9 @@ namespace DreamRush.UI
             return t == null ? null : Sprite.Create(t, new Rect(0, 0, t.width, t.height), new Vector2(0.5f, 0.5f), 100f);
         }
 
-        Card MakeCard((string id, string icon, string key, string name) d, Vector2 pos)
+        SkillIndicator MakeIndicator((string id, string icon, string key, string name) d, Vector2 pos)
         {
-            var c = new Card { id = d.id };
+            var c = new SkillIndicator { id = d.id };
             c.rt = UIFactory.Rect("Skill_" + d.id, Root); c.rt.anchorMin = c.rt.anchorMax = new Vector2(0, 0); c.rt.pivot = new Vector2(0.5f, 0.5f);
             c.rt.anchoredPosition = pos + new Vector2(46, 78); c.rt.sizeDelta = new Vector2(88, 88);
             c.rt.localRotation = Quaternion.Euler(0, 0, (pos.x / 96f % 2f < 1f) ? 3f : -3f);   // paper-cut jitter, matches the UI kit
@@ -87,8 +87,8 @@ namespace DreamRush.UI
         {
             if (id == "burst") { _burst.kick = 1f; return; }
             if (id == "heavy") id = "charge";
-            foreach (var c in _cards) if (c.id == id) c.kick = 1f;
-            if (combat != null && combat.CounterOpen && id != "counter") foreach (var c in _cards) if (c.id == "counter") c.kick = 1f;
+            foreach (var c in _indicators) if (c.id == id) c.kick = 1f;
+            if (combat != null && combat.CounterOpen && id != "counter") foreach (var c in _indicators) if (c.id == "counter") c.kick = 1f;
         }
 
         /// <summary>usable (false = dim), hot (usable now and worth it), timer (0..1 ring, -1 none).</summary>
@@ -112,9 +112,9 @@ namespace DreamRush.UI
             if (combat == null || Root == null) return;
             float dt = Time.unscaledDeltaTime, now = Time.unscaledTime;
             int hot = 0;
-            for (int i = 0; i < _cards.Length; i++)
+            for (int i = 0; i < _indicators.Length; i++)
             {
-                var c = _cards[i]; var (ok, isHot, timer) = StateOf(c.id);
+                var c = _indicators[i]; var (ok, isHot, timer) = StateOf(c.id);
                 if (isHot) hot++;
                 c.hot = Mathf.MoveTowards(c.hot, isHot ? 1f : 0f, dt * (isHot ? 14f : 4f));
                 c.kick = Mathf.MoveTowards(c.kick, 0f, dt * 4f);

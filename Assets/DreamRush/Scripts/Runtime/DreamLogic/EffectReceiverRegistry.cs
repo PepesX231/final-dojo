@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DreamRush.DreamLogic
 {
-    /// <summary>All live effect receivers (for card targeting) — registered by their components.</summary>
+    /// <summary>All live environmental and combat effect receivers — registered by their components.</summary>
     public static class EffectReceiverRegistry
     {
         static readonly List<IEffectReceiver> Receivers = new List<IEffectReceiver>();

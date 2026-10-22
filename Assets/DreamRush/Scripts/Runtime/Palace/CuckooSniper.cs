@@ -65,7 +65,7 @@ namespace DreamRush.Palace
                             Vector3 from = transform.position + transform.forward * 0.8f + Vector3.up * 0.7f;
                             Vector3 aim = (player.position + Vector3.up * 0.7f - from).normalized;
                             for (int k = -1; k <= 1; k++) EnemyBullet.Fire(from, Quaternion.AngleAxis(k * 16f, Vector3.up) * aim * orbSpeed, this, player, recv);
-                            Audio.AudioManager.Play(Audio.Sfx.CardDeal, from, 0.9f);
+                            Audio.AudioManager.Play(Audio.Sfx.Whoosh, from, 0.9f);
                             Current = State.Hover; _fire = fireEvery;
                         }
                     }

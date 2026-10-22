@@ -58,7 +58,7 @@ namespace DreamRush.World1
             if (!on) { _charging = false; _charge = 0f; return; }
             if (windup > 0f)
             {
-                if (!_charging) { _charging = true; _charge = 0f; Audio.AudioManager.Play(Audio.Sfx.CardDeal, transform.position, 0.5f); }
+                if (!_charging) { _charging = true; _charge = 0f; Audio.AudioManager.Play(Audio.Sfx.Whoosh, transform.position, 0.5f); }
                 _charge += dt;
                 if (_charge < windup) return;
             }

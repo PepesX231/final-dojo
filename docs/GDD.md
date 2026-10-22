@@ -2,6 +2,8 @@
 ## MASTER GAME DESIGN DOCUMENT · ART BIBLE · TECHNICAL SPECIFICATION
 ### Version 2.0 — Production Blueprint for Claude Opus
 
+> **Current design override — 2026-10-23:** User requested complete removal of the card system. There is no draw, selection, equipped card, card input, cooldown, reroll upgrade, or Dream Law card. Current loop: BedroomHub → sleep → DreamGalaxy → chosen world → BedroomHub. Solve encounters with movement, timing, interaction, combat, and authored environmental mechanisms. Older card sections below are historical design, superseded by this decision; do not rebuild them.
+
 **Project codename:** DREAM RUSH  
 **Status:** Pre-production / First Playable Design  
 **Genre:** 3D Action Platformer / Roguelite / Absurd Boss Rush / Action Puzzle  

@@ -49,7 +49,7 @@ namespace DreamRush.Palace
         public static bool Buy(Item it)
         {
             var pd = PalaceDirector.Current; if (pd == null) return false;
-            if (pd.Upgrade(it.id) >= it.max || !pd.Spend(it.cost)) { Audio.AudioManager.Play(Audio.Sfx.CardFail, Vector3.zero, 0.6f); return false; }
+            if (pd.Upgrade(it.id) >= it.max || !pd.Spend(it.cost)) { Audio.AudioManager.Play(Audio.Sfx.Clank, Vector3.zero, 0.6f); return false; }
             pd.AddUpgrade(it.id);
             var st = Dream.SleepStability.Current; var c = Combat.PlayerCombat.Current;
             switch (it.id)
@@ -61,7 +61,7 @@ namespace DreamRush.Palace
                 case "milk": if (st != null) st.Heal(); break;
             }
             Audio.AudioManager.Play(Audio.Sfx.Coin, Vector3.zero, 0.9f);
-            Presentation.VFX.Play(Presentation.VFXKind.CardBurst, Player.PlayerMotor3D.Instance != null ? Player.PlayerMotor3D.Instance.transform.position + Vector3.up : Vector3.zero, 0.8f);
+            Presentation.VFX.Play(Presentation.VFXKind.PaperBurst, Player.PlayerMotor3D.Instance != null ? Player.PlayerMotor3D.Instance.transform.position + Vector3.up : Vector3.zero, 0.8f);
             return true;
         }
 

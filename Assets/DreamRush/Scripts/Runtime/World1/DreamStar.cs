@@ -36,8 +36,8 @@ namespace DreamRush.World1
             if (Collected) return;
             Collected = true; CollectedThisRun++;
             VFX.Play(VFXKind.StarBurst, transform.position, 1.6f, VFX.Gold);
-            VFX.Play(VFXKind.CardBurst, transform.position, 1f);
-            Audio.AudioManager.Play(Audio.Sfx.CardPick, transform.position, 1f);
+            VFX.Play(VFXKind.PaperBurst, transform.position, 1f);
+            Audio.AudioManager.Play(Audio.Sfx.UiClick, transform.position, 1f);
             UI.UIRoot.Get().Toast($"DREAM STAR!  {CollectedThisRun} / {TotalInLevel}", 1.8f);
             gameObject.SetActive(false);
         }

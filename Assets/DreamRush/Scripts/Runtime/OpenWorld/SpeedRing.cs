@@ -25,9 +25,9 @@ namespace DreamRush.OpenWorld
             Vector3 dir = transform.forward * Mathf.Sign(Vector3.Dot(_player.Velocity, transform.forward) + 0.001f);
             _player.SetVelocity(_player.PlanarVelocity + Vector3.up * lift);   // a little hop out of the ring...
             _player.Dash(dir, boost, boostTime);                                 // ...then the burst along its axis
-            VFX.Play(VFXKind.CardBurst, transform.position, 1.2f);
+            VFX.Play(VFXKind.PaperBurst, transform.position, 1.2f);
             VFX.Play(VFXKind.LandingRing, transform.position, 1f, VFX.Gold);
-            Audio.AudioManager.Play(Audio.Sfx.CardPick, transform.position, 0.8f);
+            Audio.AudioManager.Play(Audio.Sfx.UiClick, transform.position, 0.8f);
             CameraShake.Add(0.15f);
             Palace.WonderDirector.Novelty("speed ring");
         }

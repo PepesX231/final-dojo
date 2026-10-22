@@ -37,7 +37,7 @@ namespace DreamRush.Campaign
             if(!CanReceive(c))return;
             _assistedUntil=Time.time+Mathf.Max(2.5f,c.Duration);
             if(c.Action==EffectAction.Pull&&director!=null&&director.world==StoryWorldKind.BubbleBathSea){turns=(correctTurns+3)%4;SetRotation();}
-            Presentation.VFX.Play(Presentation.VFXKind.CardBurst,transform.position+Vector3.up,1.2f);
+            Presentation.VFX.Play(Presentation.VFXKind.PaperBurst,transform.position+Vector3.up,1.2f);
             UI.UIRoot.Get().Toast("กลไกชะลอแล้ว — ใช้จังหวะนี้ด้วยตัวเอง",2);
         }
     }

@@ -16,7 +16,7 @@ namespace DreamRush.Boss
     /// <summary>
     /// THE CHAIR (GDD §15): fair flee AI with readable openings. See docs/CHAIR_BOSS_DESIGN.md.
     /// Steppable (<see cref="Step"/>) for deterministic bot tests; <see cref="AutoStep"/> drives it in play.
-    /// Card effects (M6) enter through <see cref="ApplyStatus"/>; victory requires the seat interaction.
+    /// Environmental effects enter through <see cref="ApplyStatus"/>; victory requires the seat interaction.
     /// </summary>
     public class BossChairController : MonoBehaviour
     {
@@ -117,7 +117,7 @@ namespace DreamRush.Boss
         public void Activate() { if (State == ChairState.Dormant || State == ChairState.Reveal) SetState(ChairState.Flee); }
         public void SetDormant() => SetState(ChairState.Dormant);
 
-        // ------------------------------------------------------------ card hooks (M6, via ChairEffectReceiver)
+        // ------------------------------------------------------------ environmental effect hooks (via ChairEffectReceiver)
         Transform _threatOverride;
         float _threatUntil, _socialUntil, _pullDuration;
 
@@ -129,11 +129,11 @@ namespace DreamRush.Boss
             _replanTimer = 0f;
         }
 
-        /// <summary>Social cue (Be a Grandpa): while active, the chair offers its seat when the player is near.</summary>
+        /// <summary>Social cue: while active, the chair offers its seat when the player is near.</summary>
         public void SetSocialCue(float seconds) => _socialUntil = _time + seconds;
         public bool SocialCueActive => _time < _socialUntil;
 
-        /// <summary>Fishing rod: reeled toward <paramref name="toward"/>, then a recovery window (Pulled opening).</summary>
+        /// <summary>Pull effect: moved toward <paramref name="toward"/>, then a recovery window (Pulled opening).</summary>
         const float PullSpeed = 8f;
         public bool BeginPulled(Vector3 toward, float seconds)
         {
@@ -151,7 +151,7 @@ namespace DreamRush.Boss
         Vector3 ThreatPosition => _threatOverride != null && _time < _threatUntil ? _threatOverride.position : player.transform.position;
         public void BeginReveal() => SetState(ChairState.Reveal);
 
-        /// <summary>Card / effect entry point (M6). Duration in seconds. Returns false if not applicable now.</summary>
+        /// <summary>Environmental effect entry point. Duration in seconds. Returns false if not applicable now.</summary>
         public bool ApplyStatus(ChairState status, float duration, string cause)
         {
             if (State == ChairState.Sitting || State == ChairState.Defeated || State == ChairState.Dormant) return false;
@@ -274,7 +274,7 @@ namespace DreamRush.Boss
 
             if (IsPerched)
             {
-                // on the tower top: anything that would make it run (cancelled sit, card expiry, reel) → back on the throne
+                // on the tower top: anything that would make it run (cancelled sit, effect expiry, pull) → back on the throne
                 if (State == ChairState.Flee || State == ChairState.Panic || State == ChairState.Hesitate || State == ChairState.Alert ||
                     State == ChairState.Idle || State == ChairState.Reposition || State == ChairState.Pulled)
                 { Locomotion.Stop(hard: true); SetState(ChairState.Perched); }

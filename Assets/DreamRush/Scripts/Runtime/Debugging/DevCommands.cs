@@ -36,47 +36,6 @@ namespace DreamRush.Debugging
             return "sleep started=" + Flow.GameFlowManager.Get().BeginSleep(bed, motor);
         }
 
-        public static string PickCard(string index)
-        {
-            var p = Object.FindFirstObjectByType<UI.CardSelectPanel>();
-            if (p == null) return "no card panel";
-            p.Pick(int.Parse(index));
-            return "picked " + index;
-        }
-
-        public static string EquipCard(string id)
-        {
-            var c = Object.FindFirstObjectByType<Cards.PlayerCardController>();
-            var lib = Cards.CardLibrary.Load();
-            var def = lib != null ? lib.Find(id) : null;
-            if (c == null || def == null) return "no controller/card";
-            c.Equip(def); c.ResetCooldown();
-            return "equipped " + id;
-        }
-
-        /// <summary>Turn the apple toward the chair and use the held card. Optional arg: first stand this many metres from it.</summary>
-        public static string UseCardOnChair(string standDistance)
-        {
-            var c = Object.FindFirstObjectByType<Cards.PlayerCardController>();
-            var chair = Object.FindFirstObjectByType<Boss.BossChairController>();
-            if (c == null) return "no card controller";
-            if (chair != null)
-            {
-                if (!string.IsNullOrEmpty(standDistance) && float.TryParse(standDistance, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float d))
-                {
-                    Vector3 center = chair.arenaBounds.center; center.y = chair.transform.position.y;
-                    Vector3 away = center - chair.transform.position; away.y = 0f;
-                    if (away.sqrMagnitude < 0.01f) away = Vector3.back;
-                    var m = c.GetComponent<PlayerMotor3D>();
-                    m.Teleport(chair.transform.position + away.normalized * d + Vector3.up * 0.15f, Quaternion.LookRotation(-away));
-                }
-                Vector3 to = chair.transform.position - c.transform.position; to.y = 0f;
-                if (to.sqrMagnitude > 0.01f) c.transform.rotation = Quaternion.LookRotation(to);
-            }
-            var r = c.TryUse();
-            return $"used={r.Used} msg={r.Message} chair={(chair != null ? chair.State.ToString() : "-")}";
-        }
-
         /// <summary>Art review: park the main camera in front of the chair ("off" restores the stage camera). Arg = yaw offset in degrees.</summary>
         public static string FocusChair(string arg)
         {
@@ -155,14 +114,6 @@ namespace DreamRush.Debugging
             UI.TitleScreen.ShownThisSession = false;
             UI.TitleScreen.Enabled = true;
             return UI.TitleScreen.ShowIfFirstBoot() != null ? "title shown" : "title not shown";
-        }
-
-        public static string ShowCardSelect()
-        {
-            var lib = Cards.CardLibrary.Load();
-            if (lib == null) return "no lib";
-            UI.CardSelectPanel.Show(Cards.CardDrawManager.DrawThree(lib.starterPool, 1234), 1);
-            return "card select shown";
         }
 
         public static string BossIntro() { UI.BossIntroCard.Show("THE CHAIR", "THRONE OF REFUSAL"); return "boss intro"; }
@@ -498,7 +449,6 @@ namespace DreamRush.Debugging
         {
             if (UI.UIRoot.Exists) UI.UIRoot.Get().CloseAll();
             UI.TitleScreen.Dismiss();
-            foreach (var cs in Object.FindObjectsByType<UI.CardSelectPanel>(FindObjectsSortMode.None)) Object.Destroy(cs.gameObject);
             Time.timeScale = 1f;
             return "ui closed, timeScale=1";
         }
@@ -536,15 +486,6 @@ namespace DreamRush.Debugging
             if (mode == "turn") c.Move = new Vector2(0, -1);
             _drive.Cmd = c;
             return "driving " + mode;
-        }
-
-        public static string Grandpa()
-        {
-            var m = Object.FindFirstObjectByType<PlayerMotor3D>();
-            if (m == null) return "no player";
-            var t = m.GetComponent<Cards.PlayerTransformation>(); if (t == null) t = m.gameObject.AddComponent<Cards.PlayerTransformation>();
-            t.BecomeGrandpa(60f);
-            return "grandpa for 60 s";
         }
 
         public static string ForceVictory() => "victory=" + Flow.GameFlowManager.Get().EndDream(true, "Exhaustion", null);

@@ -103,9 +103,6 @@ namespace DreamRush.Combat
         void Start()
         {
             _cam = FindFirstObjectByType<ThirdPersonCameraController>();
-            // combat levels use the fist kit, not dream cards (user: the card HUD showed up in level 2)
-            var cards = GetComponent<Cards.PlayerCardController>(); if (cards != null) cards.enabled = false;
-            if (UI.DreamHUD.Current != null) UI.DreamHUD.Current.ShowCards = false;
             if (UI.UIRoot.Exists && GetComponent<UI.CombatHUD>() == null) gameObject.AddComponent<UI.CombatHUD>().combat = this;
         }
 
@@ -204,7 +201,7 @@ namespace DreamRush.Combat
                 if (score < bestScore) { bestScore = score; best = t; }
             }
             Target = best;
-            if (best != null) Audio.AudioManager.Play(Audio.Sfx.CardPick, transform.position, 0.45f);
+            if (best != null) Audio.AudioManager.Play(Audio.Sfx.UiClick, transform.position, 0.45f);
         }
 
         // ================================================================== light combo
@@ -384,7 +381,7 @@ namespace DreamRush.Combat
                 Swing(transform.position + Vector3.up * 0.8f, burstRadius, 360f, burstDamage, 60f, true, "Burst", launch: 9f);
                 VFX.Play(VFXKind.StarBurst, transform.position + Vector3.up, 3.2f, VFX.Gold);
                 VFX.Play(VFXKind.ImpactRing, transform.position, 3f, VFX.Lavender);
-                VFX.Play(VFXKind.CardBurst, transform.position + Vector3.up, 1.6f);
+                VFX.Play(VFXKind.PaperBurst, transform.position + Vector3.up, 1.6f);
                 CameraShake.Add(0.7f);
                 var sp = Look.StylePack.Current; if (sp != null) { sp.Glitch = 1f; _glitchOff = Time.unscaledTime + 0.25f; }
             }
@@ -415,7 +412,7 @@ namespace DreamRush.Combat
                 {
                     HitsLanded++;
                     if (src != "Burst") AddDream(dreamPerHit * meterGainMul);
-                    if (counter) { Counters++; _counterUntil = -9f; UI.UIRoot.Get().Toast("COUNTER!", 0.7f); VFX.Play(VFXKind.CardBurst, p, 0.9f); }
+                    if (counter) { Counters++; _counterUntil = -9f; UI.UIRoot.Get().Toast("COUNTER!", 0.7f); VFX.Play(VFXKind.PaperBurst, p, 0.9f); }
                     HitLanded?.Invoke(info);
                     VFX.Play(VFXKind.StarBurst, p, heavy ? 1.3f : 0.8f, heavy ? VFX.Gold : VFX.Cream);
                     VFX.Play(VFXKind.HitSpark, p, heavy || counter ? 1.5f : 1f, counter ? new Color(1f, 0.6f, 0.85f) : (Color?)null);
@@ -515,7 +512,7 @@ namespace DreamRush.Combat
                     Stamina = Mathf.Min(maxStamina, Stamina + rollCost);
                     Time.timeScale = 0.3f; _slowUntil = Time.unscaledTime + 0.55f;
                     VFX.Play(VFXKind.LandingRing, transform.position, 1.6f, VFX.Lavender);
-                    VFX.Play(VFXKind.CardBurst, transform.position + Vector3.up, 0.8f);
+                    VFX.Play(VFXKind.PaperBurst, transform.position + Vector3.up, 0.8f);
                     UI.UIRoot.Get().Toast("DREAM DODGE!", 0.9f);
                     Audio.AudioManager.Play(Audio.Sfx.SleepChime, transform.position, 0.8f);
                 }

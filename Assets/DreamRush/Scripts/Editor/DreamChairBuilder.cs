@@ -17,7 +17,7 @@ namespace DreamRush.EditorTools
     /// <summary>
     /// M4 graybox of "THE CHAIR THAT REFUSED" (GDD §11, §13, §14). Linear along +Z over the dream void:
     ///   A Arrival (z −3..11) → B Tutorial: walk / ottoman / cushion gaps (z 11..35) → C Little Stool + paper bridge (z 37..51)
-    ///   → D Card experiment (z 57.5..69) → E Boss arena 32×25 (z 69..94).
+    ///   → D Moving toy (z 57.5..69) → E Boss arena 32×25 (z 69..94).
     /// Jump distances respect the M1 envelope (max 2.1 high; gaps ≤ 2.5 in tutorial). Rebuild: DreamRush/Build/Dream Chair.
     /// </summary>
     public static class DreamChairBuilder
@@ -32,7 +32,6 @@ namespace DreamRush.EditorTools
         public static void Build()
         {
             if (EditorApplication.isPlaying) { Debug.LogError("[DreamRush] Stop play mode before building scenes."); return; }
-            CardAssetsBuilder.Build();
             var prefab = MovementGymBuilder.BuildPlayerPrefab();
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
@@ -152,9 +151,9 @@ namespace DreamRush.EditorTools
 
         static void BuildSectionD(Transform root)
         {
-            var d = Group(root, "Section_D_CardExperiment");
-            Box(d, "CardRoom_Floor", new Vector3(0, -0.25f, 63.25f), new Vector3(12, 0.5f, 11.5f), _carpet);
-            // card-compatible test object: a wind-up toy that patrols (Root/Freeze/Pull targets in M6)
+            var d = Group(root, "Section_D_MovingToy");
+            Box(d, "ToyRoom_Floor", new Vector3(0, -0.25f, 63.25f), new Vector3(12, 0.5f, 11.5f), _carpet);
+            // A patrolling wind-up toy teaches observation and safe timing.
             var toy = Group(d, "PROP_WindUpToy");
             toy.localPosition = new Vector3(-3f, 0, 63f);
             Box(toy, "Body", new Vector3(0, 0.4f, 0), new Vector3(0.9f, 0.8f, 1.2f), _interact);
@@ -244,7 +243,6 @@ namespace DreamRush.EditorTools
             anim.fx = GrayboxAssets.FxLibrary();
             anim.visual = chairGo.transform.Find("Visual");
 
-            new GameObject("DreamLawDirector").AddComponent<Cards.DreamLawDirector>();
             var enc = new GameObject("BossEncounter").AddComponent<BossEncounter>();
             enc.chair = ctrl;
             enc.arenaSurface = root.Find("Section_E_BossArena").GetComponent<NavMeshSurface>();
@@ -321,7 +319,7 @@ namespace DreamRush.EditorTools
             Section(g, "A", "Arrival", "Where am I...? Head toward the strange living room.", 0, new Vector3(0, 3, 4), new Vector3(14, 14, 16));
             Section(g, "B", "Tutorial", "Hop over the ottoman and across the cushions.", 1, new Vector3(0, 3, 23.5f), new Vector3(12, 14, 23));
             Section(g, "C", "Little Stool", "That stool won't hold still. Catch it!", 2, new Vector3(0, 3, 45.5f), new Vector3(16, 14, 19));
-            Section(g, "D", "Card Test", "Something here reacts to dream cards.", 3, new Vector3(0, 3, 62.5f), new Vector3(14, 14, 13));
+            Section(g, "D", "Moving Toy", "Watch the moving toy and find a safe route past it.", 3, new Vector3(0, 3, 62.5f), new Vector3(14, 14, 13));
             Section(g, "E", "The Living Room", "???", 4, new Vector3(0, 3, 81.5f), new Vector3(34, 14, 26));
             Check(g, 0, new Vector3(0, 0, 0), true);
             Check(g, 1, new Vector3(0, 0, 13), false);

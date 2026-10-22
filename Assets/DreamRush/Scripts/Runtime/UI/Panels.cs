@@ -59,10 +59,6 @@ namespace DreamRush.UI
         public static readonly (string id, string title, string hint)[] ChairVictories =
         {
             ("Exhaustion", "Tired Out", "It can't run forever."),
-            ("Rooted", "Stuck Fast", "Something sticky."),
-            ("Frozen", "Say Cheese", "A sudden flash."),
-            ("Pulled", "Reeled In", "Fishing for furniture."),
-            ("Grandpa", "Respect Your Elders", "Who gets offered a seat?"),
             ("Shortcut", "Head 'Em Off", "Take the high road."),
             ("Obstacle", "Cornered", "Block the escape."),
         };

@@ -31882,7 +31882,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 807254939}
-  - component: {fileID: 807254938}
   m_Layer: 0
   m_Name: DreamLawDirector
   m_TagString: Untagged
@@ -31890,25 +31889,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &807254938
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 807254937}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8efbe9875de9fe479c1464d1995371a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Cards.DreamLawDirector
-  player: {fileID: 0}
-  firstLawAfter: 35
-  interval: 40
-  warning: 2
-  lawDuration: 15
-  seed: 1
-  running: 0
 --- !u!4 &807254939
 Transform:
   m_ObjectHideFlags: 0
