@@ -1,0 +1,31 @@
+RUNNING PlayMode 23:27:29
+FINISHED 23:27:52
+RESULT Passed  passed=15 failed=0 skipped=0 inconclusive=0 duration=11.6s
+  [Passed] DreamRush.Tests.HubFlowPlayModeTests.Hub_BedIsSelectableNextToBed_AndLampOpensSettings (1.27s)
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+  [Passed] DreamRush.Tests.HubFlowPlayModeTests.SleepWakeLoop_FiveTimes_NoLeaks (9.41s)
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.BlobShadow_StaysOnGroundWhileAirborne (0.07s)
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.BufferedJump_FiresOnLanding_WithNormalHeight (0.05s)
+      out: [MOV-03] buffered jump apex = 2.100
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.Camera_PullsInFrontOfWall (0.08s)
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.CeilingBonk_StartsFallingImmediately (0.06s)
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.CoyoteJump_WorksJustAfterWalkingOffLedge_AndNotLater (0.05s)
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.FullJump_ReachesConfiguredHeight (0.06s)
+      out: [MOV-06] full jump apex = 2.100 (target 2.1)
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.PushingIntoWall_DoesNotStoreSpeed (0.05s)
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.SecondPressInAir_DoesNotDoubleJump (0.05s)
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.ShortTap_IsClearlyLowerThanFullJump (0.06s)
+      out: [MOV-07] tap apex = 1.096, full = 2.100, ratio 0.52
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.Sprint_IsFasterThanWalk (0.06s)
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.StandingStill_StaysGrounded_AtHighAndLowFrameRates (0.08s)
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.Walk_ReachesSpeedQuickly_AndStopsQuickly (0.06s)
+      out: [MOV-08] time to walk speed 0.200s, stop 0.167s
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.WalkingDown35DegreeSlope_StaysGrounded (0.06s)
+      out: [MOV-10] airborne frames on 35° descent: 0/120

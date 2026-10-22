@@ -1,0 +1,1 @@
+[00:40:23.129] Log: [CHAIR-03] wins 50/50, avg 26.8s, min 5s, max 29s, methods Exhaustion=49,Shortcut=1, invalidFrames 0, softlockRecoveries 0

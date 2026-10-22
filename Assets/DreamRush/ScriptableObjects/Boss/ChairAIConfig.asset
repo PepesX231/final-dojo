@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da3c064b3c0d9424e8aae074fe8c2200, type: 3}
+  m_Name: ChairAIConfig
+  m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Boss.ChairAIConfig
+  awarenessRadius: 7
+  escapeTriggerRadius: 4
+  panicRadius: 2.5
+  panicAfterSeconds: 1
+  alertDuration: 0.4
+  forgetAfterSeconds: 2
+  normalSpeed: 6.1
+  panicSpeed: 7.2
+  acceleration: 12
+  turnRate: 280
+  repositionInterval: 1.2
+  minEscapeDistance: 5
+  maxEscapeDistance: 11
+  minDistanceFromPlayer: 4
+  pathClearanceFromPlayer: 2
+  candidateSpacing: 2.5
+  topChoices: 3
+  recentMemorySeconds: 8
+  exhaustionThreshold: 36
+  fatigueRunRate: 1
+  fatiguePanicRate: 1.5
+  fatigueRestRate: 1.5
+  exhaustionDuration: 3
+  fatigueAfterExhaustion: 0.25
+  stumbleDuration: 1.5
+  sharpTurnAngle: 110
+  stumbleChanceOnSharpTurn: 0.35
+  hesitationMin: 0.5
+  hesitationMax: 0.9
+  shortcutLandingRadius: 3
+  shortcutMinFall: 1
+  sitRange: 1.7
+  sitDuration: 2
+  stuckSeconds: 2
+  minY: -2

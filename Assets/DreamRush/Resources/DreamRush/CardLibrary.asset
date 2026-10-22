@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983e33ef1eb62df45ace873c7bd59b57, type: 3}
+  m_Name: CardLibrary
+  m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Cards.CardLibrary
+  starterPool:
+  - {fileID: 11400000, guid: 2072155fffc1dad4a99b39004b32a96b, type: 2}
+  - {fileID: 11400000, guid: 14267e74344524246837ddcd677f530f, type: 2}
+  - {fileID: 11400000, guid: c02c6152de3706c4caf311f8e2b0a9e1, type: 2}
+  - {fileID: 11400000, guid: f70c03c8954892f48ba01a54696bb5db, type: 2}
+  - {fileID: 11400000, guid: d0ba52c353d675f4e90e57c5706ae6c2, type: 2}
+  - {fileID: 11400000, guid: aad090a57ef05004fa9124df3295b14d, type: 2}
+  dreamLaws:
+  - {fileID: 11400000, guid: a8b2da06f212b474498c0d1a8206d9f1, type: 2}
+  - {fileID: 11400000, guid: 194635b9d25d43848a3816b250957d36, type: 2}
+  - {fileID: 11400000, guid: b9bb399219a327d4ba9fb28a965a3447, type: 2}

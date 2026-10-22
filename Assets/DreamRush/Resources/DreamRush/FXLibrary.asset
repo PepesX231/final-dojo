@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1477eede91ffad4da36e1c74698c3aa, type: 3}
+  m_Name: FXLibrary
+  m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Presentation.FXLibrary
+  exclaim: {fileID: 2100000, guid: 8aedd6cb7607fcc4ab49ec354c29bd59, type: 2}
+  sweat: {fileID: 2100000, guid: ecf94852c41941040a16d4271d679977, type: 2}
+  dizzy: {fileID: 2100000, guid: 313d7eadbb94fb84d92195179bfd308b, type: 2}
+  poof: {fileID: 2100000, guid: 6f37962077ef4644ead28239541e4fdc, type: 2}
+  tired: {fileID: 2100000, guid: 67c60577be44da94c85bfcd65ce504a0, type: 2}
+  flash: {fileID: 2100000, guid: 8401b861bfdba254eb7dc10bd7e4f4ed, type: 2}
+  glueSplat: {fileID: 2100000, guid: 71d44245baadd0d4aa2238d377056674, type: 2}
+  dust: {fileID: 2100000, guid: ca60d908572592c40bfa7b0a1cd8cc43, type: 2}
+  heart: {fileID: 2100000, guid: eb92dbb4118727b40b95d592b829b296, type: 2}
+  confetti: {fileID: 2100000, guid: abc408222c63d2a4faa7eba50b7cb5a1, type: 2}
+  ouch: {fileID: 2100000, guid: 0c45b09f94a4c8e40a59be5c663f51d2, type: 2}
+  decoyStandee: {fileID: 2100000, guid: 6f6b243e8147cd54e89cbc99d6c81306, type: 2}

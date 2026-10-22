@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0eaf47f28b9cc247989e0de79c49b1f, type: 3}
+  m_Name: CARD_FishingRod
+  m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Cards.CardDefinition
+  cardId: FishingRod
+  displayName: FISHING ROD
+  category: 0
+  rarity: 1
+  targetMode: 1
+  range: 11
+  coneDegrees: 50
+  cooldown: 12
+  duration: 1.2
+  action: 2
+  lawRule: 0
+  description: Reels a far-away thing toward you. It wobbles after.
+  icon: {fileID: 2800000, guid: bf0f1a344990bc042a079bf37141154e, type: 3}
+  vfxRef: 
+  sfxRef: 

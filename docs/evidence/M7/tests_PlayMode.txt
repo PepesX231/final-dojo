@@ -1,0 +1,174 @@
+RUNNING PlayMode 09:12:46
+FINISHED 09:14:10
+RESULT Passed  passed=42 failed=0 skipped=0 inconclusive=0 duration=59.4s
+  [Passed] DreamRush.Tests.BossChairPlayModeTests.BotChase_50Seeds_NoSoftlock_BaselineWinnable (8.52s)
+      out: [CHAIR-03] wins 50/50, avg 26.3s, min 5s, max 30s, methods Exhaustion=49,Shortcut=1, invalidFrames 0, softlockRecoveries 0
+      out: seed 0: WIN 29s (Exhaustion) openings=1 recov=0; seed 1: WIN 28s (Exhaustion) openings=1 recov=0; seed 2: WIN 27s (Exhaustion) openings=1 recov=0; seed 3: WIN 26s (Exhaustion) openings=1 recov=0; seed 4: WIN 23s (Exhaustion) openings=1 recov=0; seed 5: WIN 28s (Exhaustion) openings=1 recov=0; seed 6: WIN 28s (Exhaustion) openings=1 recov=0; seed 7: WIN 28s (Exhaustion) openings=1 recov=0; seed 8: WIN 29s (Exhaustion) openings=1 recov=0; seed 9: WIN 29s (Exhaustion) openings=1 recov=0; seed 10: WIN 29s (Exhaustion) openings=1 recov=0; seed 11: WIN 29s (Exhaustion) openings=1 recov=0; seed 12: WIN 27s (Exhaustion) openings=1 recov=0; seed 13: WIN 28s (Exhaustion) openings=1 recov=0; seed 14: WIN 29s (Exhaustion) openings=1 recov=0; seed 15: WIN 27s (Exhaustion) openings=1 recov=0; seed 16: WIN 28s (Exhaustion) openings=1 recov=0; seed 17: WIN 28s (Exhaustion) openings=1 recov=0; seed 18: WIN 13s (Exhaustion) openings=1 recov=0; seed 19: WIN 29s (Exhaustion) openings=1 recov=0; seed 20: WIN 28s (Exhaustion) openings=1 recov=0; seed 21: WIN 29s (Exhaustion) openings=1 recov=0; seed 22: WIN 29s (Exhaustion) openings=1 recov=0; seed 23: WIN 28s (Exhaustion) openings=1 recov=0; seed 24: WIN 29s (Exhaustion) openings=1 recov=0; seed 25: WIN 27s (Exhaustion) openings=1 recov=0; seed 26: WIN 5s (Exhaustion) openings=1 recov=0; seed 27: WIN 28s (Exhaustion) openings=1 recov=0; seed 28: WIN 28s (Exhaustion) openings=1 recov=0; seed 29: WIN 29s (Exhaustion) openings=1 recov=0; seed 30: WIN 29s (Exhaustion) openings=1 recov=0; seed 31: WIN 29s (Exhaustion) openings=1 recov=0; seed 32: WIN 29s (Exhaustion) openings=1 recov=0; seed 33: WIN 27s (Exhaustion) openings=1 recov=0; seed 34: WIN 28s (Exhaustion) openings=1 recov=0; seed 35: WIN 28s (Exhaustion) openings=1 recov=0; seed 36: WIN 28s (Exhaustion) openings=1 recov=0; seed 37: WIN 28s (Exhaustion) openings=1 recov=0; seed 38: WIN 5s (Shortcut) openings=1 recov=0; seed 39: WIN 28s (Exhaustion) openings=1 recov=0; seed 40: WIN 30s (Exhaustion) openings=1 recov=0; seed 41: WIN 28s (Exhaustion) openings=1 recov=0; seed 42: WIN 22s (Exhaustion) openings=1 recov=0; seed 43: WIN 11s (Exhaustion) openings=1 recov=0; seed 44: WIN 28s (Exhaustion) openings=1 recov=0; seed 45: WIN 29s (Exhaustion) openings=1 recov=0; seed 46: WIN 23s (Exhaustion) openings=1 recov=0; seed 47: WIN 28s (Exhaustion) openings=1 recov=0; seed 48: WIN 28s (Exhaustion) openings=1 recov=0; seed 49: WIN 28s (Exhaustion) openings=1 recov=0;
+  [Passed] DreamRush.Tests.BossChairPlayModeTests.Chair_FleesFromApproachingPlayer (1.11s)
+      out: [CHAIR-01] distance 5.0 → 12.6, state Flee
+  [Passed] DreamRush.Tests.BossChairPlayModeTests.ChairOutsideArena_IsRepositioned_Visibly (0.83s)
+  [Passed] DreamRush.Tests.BossChairPlayModeTests.SeatValidation_RejectsBadContexts (0.63s)
+  [Passed] DreamRush.Tests.BossChairPlayModeTests.ShortcutLanding_InFront_CausesStumble (0.73s)
+  [Passed] DreamRush.Tests.BossChairPlayModeTests.Sitting_RequiresOpening_AndTwoSeconds_VictoryOnce (0.66s)
+  [Passed] DreamRush.Tests.BossRevealPlayModeTests.EnteringArena_PlaysRevealKick_ThenFightStarts (3.64s)
+  [Passed] DreamRush.Tests.BossRevealPlayModeTests.StabilityDepleted_EndsDreamAsDefeat (0.60s)
+  [Passed] DreamRush.Tests.CardSystemPlayModeTests.BeAGrandpa_ChairOffersSeat_ThenSitWins (1.17s)
+  [Passed] DreamRush.Tests.CardSystemPlayModeTests.BouncyCushion_LaunchesPlayer (1.14s)
+  [Passed] DreamRush.Tests.CardSystemPlayModeTests.CameraFlash_FreezesChair_ThenSitWins (1.20s)
+  [Passed] DreamRush.Tests.CardSystemPlayModeTests.CardFeedback_VisualAndAudio (1.71s)
+  [Passed] DreamRush.Tests.CardSystemPlayModeTests.CardSelect_StoresChosenCard (1.18s)
+  [Passed] DreamRush.Tests.CardSystemPlayModeTests.Cooldown_BlocksImmediateReuse (0.59s)
+  [Passed] DreamRush.Tests.CardSystemPlayModeTests.DecoyApple_ChairFleesFromDecoy (0.88s)
+  [Passed] DreamRush.Tests.CardSystemPlayModeTests.DreamLaw_ForbidsThenRestores (0.84s)
+  [Passed] DreamRush.Tests.CardSystemPlayModeTests.FishingRod_PullsChairClose_ThenSitWins (0.86s)
+  [Passed] DreamRush.Tests.CardSystemPlayModeTests.InvalidTarget_DoesNothing (0.73s)
+  [Passed] DreamRush.Tests.CardSystemPlayModeTests.Library_HasSixStarterCards_AndThreeLaws_WithIcons (0.55s)
+  [Passed] DreamRush.Tests.CardSystemPlayModeTests.SuperGlue_RootsChair_ThenSitWins (0.66s)
+  [Passed] DreamRush.Tests.DreamChairLevelTests.Arena_HasRequiredFeatures (1.64s)
+  [Passed] DreamRush.Tests.DreamChairLevelTests.FallingIntoVoid_RespawnsAtCheckpoint (1.26s)
+  [Passed] DreamRush.Tests.DreamChairLevelTests.LittleStool_IsCatchable_AndOpensBridge (4.47s)
+      out: [LVL-02] stool caught=True after ~1.8s (fled=True, moved 3.5 m)
+  [Passed] DreamRush.Tests.DreamChairLevelTests.Tutorial_IsTraversable_WithoutFalling (3.41s)
+      out: [LVL-01] reached z=39.3 in 7.3s sim, falls=0
+  [Passed] DreamRush.Tests.HubFlowPlayModeTests.Hub_BedIsSelectableNextToBed_AndLampOpensSettings (1.48s)
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+  [Passed] DreamRush.Tests.HubFlowPlayModeTests.SleepWakeLoop_FiveTimes_NoLeaks (14.47s)
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.BlobShadow_StaysOnGroundWhileAirborne (0.11s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.BufferedJump_FiresOnLanding_WithNormalHeight (0.13s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: [MOV-03] buffered jump apex = 2.100
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.Camera_PullsInFrontOfWall (0.14s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.CeilingBonk_StartsFallingImmediately (0.05s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.CoyoteJump_WorksJustAfterWalkingOffLedge_AndNotLater (0.11s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.FullJump_ReachesConfiguredHeight (0.07s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: [MOV-06] full jump apex = 2.100 (target 2.1)
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.PushingIntoWall_DoesNotStoreSpeed (0.06s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.SecondPressInAir_DoesNotDoubleJump (0.04s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.ShortTap_IsClearlyLowerThanFullJump (0.05s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: [MOV-07] tap apex = 1.096, full = 2.100, ratio 0.52
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.Sprint_IsFasterThanWalk (0.10s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.StandingStill_StaysGrounded_AtHighAndLowFrameRates (0.14s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.Walk_ReachesSpeedQuickly_AndStopsQuickly (0.07s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: [MOV-08] time to walk speed 0.200s, stop 0.167s
+  [Passed] DreamRush.Tests.PlayerMotorPlayModeTests.WalkingDown35DegreeSlope_StaysGrounded (0.05s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: [MOV-10] airborne frames on 35° descent: 0/120
+  [Passed] DreamRush.Tests.ProgressionPlayModeTests.BedUpgradePanel_Buys_SavesAndShowsOnBed (1.78s)
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+      out: Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+  [Passed] DreamRush.Tests.ProgressionPlayModeTests.LuckyPillow_RerollsOnce (0.69s)
+  [Passed] DreamRush.Tests.ProgressionPlayModeTests.ToyCar_HitCostsStability_JumpingIsSafe (0.58s)

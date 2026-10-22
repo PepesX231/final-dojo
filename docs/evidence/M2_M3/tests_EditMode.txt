@@ -1,0 +1,29 @@
+RUNNING EditMode 23:25:08
+FINISHED 23:25:09
+RESULT Passed  passed=24 failed=0 skipped=0 inconclusive=0 duration=0.1s
+  [Passed] DreamRush.Tests.InteractionScoringTests.BehindOrOutOfRange_IsRejected (0.02s)
+  [Passed] DreamRush.Tests.InteractionScoringTests.NearerAndInFront_ScoresHigher (0.00s)
+  [Passed] DreamRush.Tests.InteractionScoringTests.VeryClose_IgnoresAngle (0.00s)
+  [Passed] DreamRush.Tests.JumpAssistTests.Buffer_ExpiresAfterWindow (0.00s)
+  [Passed] DreamRush.Tests.JumpAssistTests.Buffer_JumpPressedBeforeLanding_FiresOnLanding (0.00s)
+  [Passed] DreamRush.Tests.JumpAssistTests.Coyote_AllowsJumpShortlyAfterLeavingGround (0.00s)
+  [Passed] DreamRush.Tests.JumpAssistTests.Coyote_ExpiresAfterWindow (0.00s)
+  [Passed] DreamRush.Tests.JumpAssistTests.HoldingJumpWithoutNewPress_DoesNotRepeat (0.00s)
+  [Passed] DreamRush.Tests.JumpAssistTests.NoDoubleJump_InAir (0.00s)
+  [Passed] DreamRush.Tests.JumpMathTests.InitialVelocity_IsSqrtTwoGH (0.00s)
+  [Passed] DreamRush.Tests.JumpMathTests.IntegratedApex_MatchesHeight_AtSeveralFrameRates (0.00s)
+  [Passed] DreamRush.Tests.MovementMathTests.Acceleration_UsesTurnaroundWhenReversing (0.00s)
+  [Passed] DreamRush.Tests.MovementMathTests.CameraRelative_ForwardFollowsCameraYaw (0.00s)
+  [Passed] DreamRush.Tests.MovementMathTests.CameraRelative_PreservesAnalogMagnitude (0.00s)
+  [Passed] DreamRush.Tests.MovementMathTests.CameraRelative_RightIsCameraRight (0.00s)
+  [Passed] DreamRush.Tests.MovementMathTests.CameraRelative_StraightDownCamera_StillValid (0.00s)
+  [Passed] DreamRush.Tests.MovementMathTests.Config_SprintFasterThanWalk_DefaultsMatchGdd (0.00s)
+  [Passed] DreamRush.Tests.MovementMathTests.Gravity_FallAndJumpCutMultipliers (0.00s)
+  [Passed] DreamRush.Tests.SaveManagerTests.CorruptFile_FallsBackToFresh_AndKeepsBackup (0.02s)
+      out: IgnoreFailingMessages:true
+      out: [DreamRush] Save unreadable (JSON parse error: Missing a name for object member.); keeping a backup and starting fresh.
+  [Passed] DreamRush.Tests.SaveManagerTests.Diary_DiscoverOnlyOnce (0.00s)
+  [Passed] DreamRush.Tests.SaveManagerTests.SaveAndLoad_RoundTrips (0.00s)
+  [Passed] DreamRush.Tests.SaveManagerTests.SavingTwice_ReplacesFile_NoTempLeft (0.01s)
+  [Passed] DreamRush.Tests.SaveManagerTests.Settings_AreClamped (0.00s)
+  [Passed] DreamRush.Tests.SaveManagerTests.Version0File_IsMigrated_WithDefaults (0.00s)
