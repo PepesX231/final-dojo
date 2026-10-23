@@ -1,0 +1,82 @@
+Layer audit MamasKitchen: renderers=1352 axisBoxes=806 zfight=76 (nudged 2) floating=5 buried=0 strays=0
+Z-FIGHT House/Wall/Base <> House/Wall/SideW axis=Y- area=0.1500m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideS axis=Z+ area=0.0108m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideN axis=Z- area=0.0108m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideE axis=Y- area=0.1500m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideW axis=Y- area=0.4500m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideE axis=Y- area=0.4500m2
+Z-FIGHT House/Wall/SideE <> House/Wall/Base axis=X- area=0.0108m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideN axis=Y- area=0.3000m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideS axis=Y- area=0.3000m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideE axis=X- area=0.0108m2
+Z-FIGHT House/Wall/Base <> House/Trim axis=Y- area=0.0144m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.1800m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.1500m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideN axis=Y- area=0.1500m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideN axis=Y- area=0.1800m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.1125m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideN axis=Y- area=0.1125m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.3375m2
+Z-FIGHT House/Wall/SideN <> House/Trim axis=X+ area=0.1650m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.3375m2
+Z-FIGHT House/Wall/SideS <> House/Trim axis=X+ area=0.1650m2
+Z-FIGHT House/Wall/Base <> House/Trim axis=X+ area=0.0216m2
+Z-FIGHT House/Trim <> House/Wall/Base axis=Y- area=0.0144m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.2550m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.2550m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Z- area=0.0108m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideW axis=X+ area=0.0108m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.1050m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideN axis=Y- area=0.1050m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideN axis=Y- area=0.1200m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideS axis=Y- area=0.1200m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Z+ area=0.0108m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.5250m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.5250m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.2475m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideN axis=Y- area=0.2475m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.1425m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.1425m2
+Z-FIGHT House/Trim <> House/Wall/SideN axis=X- area=0.1650m2
+Z-FIGHT House/Trim <> House/Wall/Base axis=X- area=0.0216m2
+Z-FIGHT House/Trim <> House/Wall/SideS axis=X- area=0.1650m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.2850m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideS axis=Y- area=0.2850m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.0750m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.0750m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.0525m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.0525m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideN axis=Y- area=0.3225m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideS axis=Y- area=0.3225m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.2250m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideN axis=Y- area=0.2250m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideS axis=Y- area=0.1050m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.3000m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.1050m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.1500m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.3750m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.3750m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideS axis=Y- area=0.1125m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.3225m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.3225m2
+Z-FIGHT Rooms/Party/Party cake/Tablecloth <> Rooms/Dining/Runner axis=Y- area=0.5100m2  -> nudged Runner 3mm out
+Z-FIGHT Rooms/Party/Party cake/Tablecloth <> Rooms/Dining/Runner axis=Y+ area=0.5100m2  -> nudged Runner 3mm out
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.1125m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.0900m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.0900m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideS axis=Y- area=0.6000m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideN axis=Y- area=0.6000m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideN axis=Y- area=0.2625m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideS axis=Y- area=0.2625m2
+Z-FIGHT House/Wall/SideN <> House/Wall/Base axis=Y- area=0.4050m2
+Z-FIGHT House/Wall/SideS <> House/Wall/Base axis=Y- area=0.4050m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideS axis=Y- area=0.2250m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideW axis=Y- area=0.1875m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideE axis=Y- area=0.1875m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideW axis=Y- area=0.1125m2
+Z-FIGHT House/Wall/Base <> House/Wall/SideE axis=Y- area=0.1125m2
+FLOATING Goldfish bottomY=0.970
+FLOATING Party cup bottomY=0.410
+FLOATING Goldfish bottomY=0.970
+FLOATING Fire extinguisher bottomY=0.450
+FLOATING Goldfish bottomY=0.970

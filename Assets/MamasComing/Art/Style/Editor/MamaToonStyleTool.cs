@@ -12,7 +12,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace MamasComing.Style.Editor
 {
-    /// <summary>"Toybox Comic" art pass (docs/MAMA_ART_STYLE.md). Visual only: materials, textures, sky, volume, renderer features.
+    /// <summary>"Bright Comic" art pass (docs/MAMA_ART_STYLE.md). Visual only: materials, textures, sky, volume, renderer features.
     /// Never moves geometry or touches colliders/gameplay. Safe to re-run after a level rebuild.</summary>
     public static class MamaToonStyleTool
     {
@@ -23,9 +23,9 @@ namespace MamasComing.Style.Editor
         const string WitchScene = "Assets/MamasComing/WitchTest/Scenes/AppleWitch_Test.unity";
         const string RendererPath = "Assets/Settings/PC_Renderer.asset";
 
-        static Texture2D wood, tile, wallpaper, fabric, plaster, paint;
+        static Texture2D wood, tile, wallpaper, fabric, plaster, brick, paint;
 
-        [MenuItem("MamasComing/Style/Apply Toybox Comic Look (both levels)")]
+        [MenuItem("MamasComing/Style/Apply Bright Comic Look (both levels)")]
         public static void ApplyBothLevels()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Leave Play mode first.");
@@ -41,7 +41,30 @@ namespace MamasComing.Style.Editor
             Debug.Log("[MamaToonStyle] " + log);
         }
 
-        [MenuItem("MamasComing/Style/Apply Toybox Comic Look (open scene)")]
+        /// <summary>Command-line entry: -executeMethod MamasComing.Style.Editor.MamaToonStyleTool.Batch (applies, audits layering, captures, quits).</summary>
+        public static void Batch()
+        {
+            int code = 0;
+            try
+            {
+                var log = new StringBuilder();
+                foreach (var path in new[] { KitchenScene, WitchScene })
+                {
+                    EditorSceneManager.OpenScene(path);
+                    log.AppendLine(ApplyActiveScene());
+                    log.AppendLine(MamaLayerAudit.AuditActiveScene("docs/evidence/style", fixThinOverlaps: true));
+                    EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+                }
+                log.AppendLine(Capture("docs/evidence/style", "bright"));
+                Directory.CreateDirectory("docs/evidence/style");
+                File.WriteAllText("docs/evidence/style/batch.log", log.ToString());
+                Debug.Log("[MamaToonStyle] batch\n" + log);
+            }
+            catch (Exception e) { Debug.LogException(e); code = 1; }
+            if (Application.isBatchMode) EditorApplication.Exit(code);
+        }
+
+        [MenuItem("MamasComing/Style/Apply Bright Comic Look (open scene)")]
         public static void ApplyOpenSceneMenu() => Debug.Log("[MamaToonStyle] " + ApplyActiveScene());
 
         public static string ApplyActiveScene()
@@ -75,12 +98,13 @@ namespace MamasComing.Style.Editor
         public static void EnsureAssets()
         {
             Directory.CreateDirectory(TexDir); Directory.CreateDirectory(MatDir);
-            wood = Tex("TEX_ToonWoodPlanks", Wood, true);
-            tile = Tex("TEX_ToonTile", Tile, true);
-            wallpaper = Tex("TEX_ToonWallpaper", Wallpaper, true);
-            fabric = Tex("TEX_ToonFabric", Fabric, true);
-            plaster = Tex("TEX_ToonPlaster", Plaster, true);
-            paint = Tex("TEX_PaintGrain", PaintGrain, false);
+            wood = Tex("TEX_ComicWoodPlanks", Wood, true, 1);
+            tile = Tex("TEX_ComicTile", Tile, true, 2);
+            wallpaper = Tex("TEX_ComicWallpaper", Wallpaper, true, 3);
+            fabric = Tex("TEX_ComicFabric", Fabric, true, 4);
+            plaster = Tex("TEX_ComicPlaster", Plaster, true, 5);
+            brick = Tex("TEX_ComicBrick", Brick, true, 6);
+            paint = TexRGB("TEX_ComicPaint", PaintGrime, false);
             EnsureRendererFeatures();
         }
 
@@ -189,7 +213,8 @@ namespace MamasComing.Style.Editor
                 if (tn.Contains("tile") || (n.Contains("floor") && ceramic) || (!t && n.Contains("tile"))) { assign = tile; metres = 1.2f; }
                 if (tn.Contains("wallpaper") || (!t && Any(n, "stripe", "wallk_", "walll_", "wallpaper"))) { assign = wallpaper; metres = 1.6f; }
                 if (tn.Contains("fabric") || tn.Contains("toonfabric") || (!t && soft && !Any(n, "skin", "hair", "teddy", "bear"))) { assign = fabric; metres = 0.7f; }
-                if (!t && assign == null && Any(n, "wall", "ceiling", "plaster", "house", "facade")) { assign = plaster; metres = 2.5f; }
+                if (!t && assign == null && Any(n, "brick", "exterior", "outer", "facade", "chimney", "garden", "yard", "alley")) { assign = brick; metres = 2.2f; }
+                if (!t && assign == null && Any(n, "wall", "ceiling", "plaster", "house", "skirting", "baseboard")) { assign = plaster; metres = 2.5f; }
                 if (witch) metres *= 0.25f;   // the witch kitchen is seen from a 12 cm apple
             }
             if (assign)
@@ -207,7 +232,7 @@ namespace MamasComing.Style.Editor
         static VolumeProfile SetupVolume(bool witch)
         {
             var volume = UnityEngine.Object.FindObjectsByType<Volume>(FindObjectsSortMode.None).FirstOrDefault(v => v.isGlobal && v.gameObject.scene == EditorSceneManager.GetActiveScene());
-            string path = MatDir.Replace("/Materials", "") + (witch ? "/VP_Witch_ToyboxComic.asset" : "/VP_Kitchen_ToyboxComic.asset");
+            string path = MatDir.Replace("/Materials", "") + (witch ? "/VP_Witch_BrightComic.asset" : "/VP_Kitchen_BrightComic.asset");
             var profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(path);
             if (!profile)
             {
@@ -230,39 +255,50 @@ namespace MamasComing.Style.Editor
             volume.sharedProfile = profile; volume.priority = Mathf.Max(volume.priority, 1); volume.weight = 1;
             EditorUtility.SetDirty(volume);
 
+            // "Bright Comic" grade: the refs' ink, halftone and street-art flavour, but sunny, vivid and kid-friendly.
+            // No dirty colour cast; light vignette, a hint of chromatic fringe and a gentle CRT bulge for the comic-panel feel.
             var tm = Get<Tonemapping>(profile); tm.mode.Override(TonemappingMode.Neutral);
             var ca = Get<ColorAdjustments>(profile);
-            ca.postExposure.Override(witch ? 0.3f : 0.12f); ca.contrast.Override(witch ? 18f : 14f); ca.saturation.Override(witch ? 16f : 22f);
-            ca.colorFilter.Override(witch ? new Color(0.97f, 0.95f, 1.03f) : Color.white); ca.hueShift.Override(0f);
+            ca.postExposure.Override(witch ? 0.05f : 0.15f); ca.contrast.Override(witch ? 24f : 16f); ca.saturation.Override(witch ? 42f : 34f);
+            ca.colorFilter.Override(Color.white); ca.hueShift.Override(0f);
+            var lgg = Get<LiftGammaGain>(profile);
+            lgg.lift.Override(new Vector4(1f, 1f, 1f, 0f));
+            lgg.gamma.Override(new Vector4(1f, 1f, 1f, 0.02f));
+            lgg.gain.Override(witch ? new Vector4(1f, 1f, 1.02f, 0.04f) : new Vector4(1.03f, 1.01f, 0.97f, 0.04f));
             var bloom = Get<Bloom>(profile);
-            bloom.threshold.Override(witch ? 0.9f : 1.0f); bloom.intensity.Override(witch ? 0.9f : 0.55f);
-            bloom.scatter.Override(0.68f); bloom.tint.Override(new Color(1f, 0.86f, 0.74f)); bloom.highQualityFiltering.Override(true);
+            bloom.threshold.Override(witch ? 0.9f : 1.0f); bloom.intensity.Override(witch ? 0.9f : 0.6f);
+            bloom.scatter.Override(0.7f); bloom.tint.Override(witch ? new Color(0.85f, 0.8f, 1f) : new Color(1f, 0.92f, 0.78f)); bloom.highQualityFiltering.Override(true);
             var vig = Get<Vignette>(profile);
-            vig.intensity.Override(witch ? 0.32f : 0.2f); vig.smoothness.Override(0.45f); vig.color.Override(witch ? new Color(0.08f, 0.03f, 0.12f) : new Color(0.2f, 0.08f, 0.2f));
+            vig.intensity.Override(witch ? 0.26f : 0.2f); vig.smoothness.Override(0.4f); vig.rounded.Override(true);
+            vig.color.Override(new Color(0.05f, 0.04f, 0.1f));
             var smh = Get<ShadowsMidtonesHighlights>(profile);
-            smh.shadows.Override(witch ? new Vector4(0.92f, 0.95f, 1.12f, 0f) : new Vector4(0.96f, 0.95f, 1.08f, 0f));
-            smh.highlights.Override(new Vector4(1.05f, 1.0f, 0.95f, 0f));
-            var wb = Get<WhiteBalance>(profile); wb.temperature.Override(witch ? -4f : 6f); wb.tint.Override(witch ? 6f : 3f);
+            smh.shadows.Override(new Vector4(0.98f, 0.98f, 1.04f, 0f));
+            smh.highlights.Override(new Vector4(1.04f, 1.02f, 0.96f, 0f));
+            var wb = Get<WhiteBalance>(profile); wb.temperature.Override(witch ? -4f : 3f); wb.tint.Override(witch ? -6f : -4f);
+            var chroma = Get<ChromaticAberration>(profile); chroma.intensity.Override(0.08f);
+            var grain = Get<FilmGrain>(profile); grain.type.Override(FilmGrainLookup.Thin1); grain.intensity.Override(0.12f); grain.response.Override(0.85f);
+            var lens = Get<LensDistortion>(profile); lens.intensity.Override(0.08f); lens.scale.Override(0.985f);
 
             var st = Get<MamaToonStyle>(profile);
-            st.inkStrength.Override(witch ? 0.9f : 0.85f);
-            st.inkColor.Override(witch ? new Color(0.07f, 0.04f, 0.11f) : new Color(0.16f, 0.09f, 0.17f));
-            st.inkKeepsColor.Override(0.3f);
-            st.inkThickness.Override(witch ? 1.5f : 1.3f);
-            st.depthThreshold.Override(witch ? 0.04f : 0.05f);
-            st.normalThreshold.Override(0.4f);
-            st.inkFadeStart.Override(witch ? 1.2f : 14f); st.inkFadeEnd.Override(witch ? 5f : 45f); st.inkFar.Override(0.35f);
-            st.shadowTint.Override(witch ? new Color(0.45f, 0.42f, 0.78f) : new Color(0.62f, 0.56f, 0.88f));
-            st.shadowTintAmount.Override(witch ? 0.6f : 0.5f);
-            st.celSharpness.Override(witch ? 0.6f : 0.55f);
-            st.ambientBoost.Override(witch ? 0.2f : 0.08f);
-            st.shadowLift.Override(0.05f);
-            st.rimColor.Override(witch ? new Color(0.72f, 0.82f, 1f) : new Color(1f, 0.9f, 0.78f));
-            st.rimStrength.Override(witch ? 0.45f : 0.32f);
-            st.halftoneStrength.Override(witch ? 0.45f : 0.35f);
-            st.halftoneCell.Override(5f);
-            st.paintGrain.Override(witch ? 0.4f : 0.35f);
-            st.paintGrainScale.Override(witch ? 0.25f : 1.6f);
+            st.inkStrength.Override(1f);
+            st.inkColor.Override(witch ? new Color(0.06f, 0.03f, 0.1f) : new Color(0.07f, 0.04f, 0.08f));
+            st.inkKeepsColor.Override(0.12f);
+            st.inkThickness.Override(witch ? 2.2f : 2.0f);
+            st.depthThreshold.Override(witch ? 0.035f : 0.045f);
+            st.normalThreshold.Override(0.35f);
+            st.inkFadeStart.Override(witch ? 1.5f : 16f); st.inkFadeEnd.Override(witch ? 6f : 50f); st.inkFar.Override(0.45f);
+            st.shadowTint.Override(witch ? new Color(0.42f, 0.4f, 0.85f) : new Color(0.58f, 0.52f, 0.95f));
+            st.shadowTintAmount.Override(0.45f);
+            st.celSharpness.Override(0.75f);
+            st.ambientBoost.Override(witch ? 0.25f : 0.12f);
+            st.shadowLift.Override(0.06f);
+            st.rimColor.Override(witch ? new Color(0.6f, 0.95f, 1f) : new Color(1f, 0.95f, 0.75f));
+            st.rimStrength.Override(witch ? 0.5f : 0.38f);
+            st.halftoneStrength.Override(0.35f);
+            st.halftoneCell.Override(6f);
+            st.paintGrain.Override(0.25f);
+            st.paintGrainScale.Override(witch ? 0.3f : 1.8f);
+            st.grime.Override(0.06f);   // a little lived-in wear, never dirty
             EditorUtility.SetDirty(profile);
             return profile;
         }
@@ -277,15 +313,15 @@ namespace MamasComing.Style.Editor
 
         static void SetupSky(bool witch)
         {
-            var sky = Mat(witch ? "SKY_ToonMoonlit" : "SKY_ToonGoldenHour", "MamasComing/ToonSky");
+            var sky = Mat(witch ? "SKY_BrightMagicNight" : "SKY_BrightComicDay", "MamasComing/ToonSky");
             if (witch)
             {
                 sky.SetFloat("_FollowSun", 0); sky.SetVector("_SunDir", new Vector4(-0.45f, 0.42f, -0.8f, 0));
-                sky.SetColor("_Top", new Color(0.05f, 0.05f, 0.18f)); sky.SetColor("_Mid", new Color(0.17f, 0.12f, 0.38f));
-                sky.SetColor("_Horizon", new Color(0.58f, 0.32f, 0.56f)); sky.SetColor("_Ground", new Color(0.08f, 0.06f, 0.12f));
-                sky.SetColor("_SunColor", new Color(1.7f, 1.62f, 1.35f)); sky.SetColor("_SunGlow", new Color(0.55f, 0.45f, 0.88f));
+                sky.SetColor("_Top", new Color(0.08f, 0.06f, 0.3f)); sky.SetColor("_Mid", new Color(0.3f, 0.15f, 0.55f));
+                sky.SetColor("_Horizon", new Color(0.95f, 0.45f, 0.7f)); sky.SetColor("_Ground", new Color(0.1f, 0.06f, 0.18f));
+                sky.SetColor("_SunColor", new Color(1.8f, 1.7f, 1.3f)); sky.SetColor("_SunGlow", new Color(0.7f, 0.55f, 1f));
                 sky.SetFloat("_SunSize", 0.0045f); sky.SetFloat("_MoonPhase", 0.65f);
-                sky.SetColor("_CloudLit", new Color(0.56f, 0.5f, 0.82f)); sky.SetColor("_CloudShade", new Color(0.26f, 0.2f, 0.46f)); sky.SetColor("_CloudInk", new Color(0.08f, 0.05f, 0.15f));
+                sky.SetColor("_CloudLit", new Color(0.75f, 0.6f, 1f)); sky.SetColor("_CloudShade", new Color(0.36f, 0.25f, 0.62f)); sky.SetColor("_CloudInk", new Color(0.06f, 0.03f, 0.12f));
                 sky.SetFloat("_CloudCover", 0.36f); sky.SetFloat("_Stars", 1f); sky.SetFloat("_Halftone", 0.3f); sky.SetFloat("_Bands", 5f);
                 var cam = Camera.main;
                 if (cam && cam.clearFlags != CameraClearFlags.Skybox) { cam.clearFlags = CameraClearFlags.Skybox; EditorUtility.SetDirty(cam); }
@@ -293,15 +329,26 @@ namespace MamasComing.Style.Editor
             else
             {
                 sky.SetFloat("_FollowSun", 1);
-                sky.SetColor("_Top", new Color(0.26f, 0.38f, 0.82f)); sky.SetColor("_Mid", new Color(0.56f, 0.62f, 0.95f));
-                sky.SetColor("_Horizon", new Color(1f, 0.72f, 0.5f)); sky.SetColor("_Ground", new Color(0.42f, 0.33f, 0.5f));
-                sky.SetColor("_SunColor", new Color(2.2f, 1.8f, 1.2f)); sky.SetColor("_SunGlow", new Color(1f, 0.6f, 0.36f));
+                sky.SetColor("_Top", new Color(0.15f, 0.45f, 0.95f)); sky.SetColor("_Mid", new Color(0.4f, 0.72f, 1f));
+                sky.SetColor("_Horizon", new Color(1f, 0.85f, 0.55f)); sky.SetColor("_Ground", new Color(0.5f, 0.42f, 0.6f));
+                sky.SetColor("_SunColor", new Color(2.2f, 1.9f, 1.2f)); sky.SetColor("_SunGlow", new Color(1f, 0.72f, 0.4f));
                 sky.SetFloat("_SunSize", 0.0035f); sky.SetFloat("_MoonPhase", 0f);
-                sky.SetColor("_CloudLit", new Color(1f, 0.94f, 0.9f)); sky.SetColor("_CloudShade", new Color(0.8f, 0.62f, 0.82f)); sky.SetColor("_CloudInk", new Color(0.42f, 0.3f, 0.55f));
+                sky.SetColor("_CloudLit", new Color(1f, 1f, 0.97f)); sky.SetColor("_CloudShade", new Color(0.62f, 0.7f, 0.95f)); sky.SetColor("_CloudInk", new Color(0.08f, 0.06f, 0.15f));
                 sky.SetFloat("_CloudCover", 0.5f); sky.SetFloat("_Stars", 0f); sky.SetFloat("_Halftone", 0.4f); sky.SetFloat("_Bands", 6f);
             }
             EditorUtility.SetDirty(sky);
             RenderSettings.skybox = sky;
+            // ambient/fog follow the grade so no old pink/purple haze fights it
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            if (witch)
+            {
+                RenderSettings.ambientSkyColor = new Color(0.5f, 0.52f, 0.66f); RenderSettings.ambientEquatorColor = new Color(0.46f, 0.4f, 0.38f); RenderSettings.ambientGroundColor = new Color(0.2f, 0.16f, 0.2f);
+            }
+            else
+            {
+                RenderSettings.ambientSkyColor = new Color(0.62f, 0.68f, 0.85f); RenderSettings.ambientEquatorColor = new Color(0.85f, 0.72f, 0.6f); RenderSettings.ambientGroundColor = new Color(0.4f, 0.32f, 0.38f);
+                if (RenderSettings.fog) RenderSettings.fogColor = new Color(0.85f, 0.82f, 0.95f);
+            }
         }
 
         static string ColliderSignature()
@@ -363,7 +410,10 @@ namespace MamasComing.Style.Editor
 
         const int Size = 1024;
 
-        static Texture2D Tex(string name, Func<float, float, float> f, bool srgb)
+        static Texture2D Tex(string name, Func<float, float, float> f, bool srgb, int grimeSeed = -1)
+            => TexRGB(name, (u, v) => { float g = f(u, v) * (grimeSeed >= 0 ? GrimeMul(u, v, grimeSeed) : 1f); return new Color(g, g, g, 1); }, srgb);
+
+        static Texture2D TexRGB(string name, Func<float, float, Color> f, bool srgb)
         {
             string path = TexDir + "/" + name + ".png";
             if (!File.Exists(path))
@@ -371,10 +421,7 @@ namespace MamasComing.Style.Editor
                 var px = new Color32[Size * Size];
                 for (int y = 0; y < Size; y++)
                     for (int x = 0; x < Size; x++)
-                    {
-                        byte b = (byte)Mathf.RoundToInt(Mathf.Clamp01(f((x + 0.5f) / Size, (y + 0.5f) / Size)) * 255f);
-                        px[y * Size + x] = new Color32(b, b, b, 255);
-                    }
+                        px[y * Size + x] = (Color32)f((x + 0.5f) / Size, (y + 0.5f) / Size);
                 var tex = new Texture2D(Size, Size, TextureFormat.RGBA32, false);
                 tex.SetPixels32(px); tex.Apply();
                 File.WriteAllBytes(path, tex.EncodeToPNG());
@@ -522,6 +569,51 @@ namespace MamasComing.Style.Editor
             float d = Fbm(u, v, 8, 40, 3, 121);
             float x = 0.55f * a + 0.25f * s + 0.2f * d;
             return Mathf.Clamp01(0.5f + (Posterize(x, 5, 0.35f) - 0.5f) * 1.6f);
+        }
+
+        // r = brush grain, g = grime mask (blotchy stains + vertical drips), both linear and tileable
+        static Color PaintGrime(float u, float v)
+        {
+            return new Color(PaintGrain(u, v), GrimeMask(u, v, 131), 0, 1);
+        }
+
+        static float GrimeMask(float u, float v, int seed)
+        {
+            float blot = Fbm(u, v, 5, 5, 5, seed);
+            float stain = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.52f, 0.7f, blot));
+            // drips: columns of streaks running down from random heights
+            int cols = 48; int c = Mathf.FloorToInt(u * cols);
+            float cu = u * cols - c;
+            float top = Hash(c, 3, seed), len = 0.08f + 0.35f * Hash(c, 4, seed), on = Hash(c, 5, seed);
+            float dv = Mathf.Repeat(top - v, 1f);
+            float width = 0.18f + 0.25f * Hash(c, 6, seed);
+            float drip = on > 0.55f && dv < len ? (1f - dv / len) * Mathf.Clamp01(1f - Mathf.Abs(cu - 0.5f) / width) : 0f;
+            float speck = Hash(Mathf.FloorToInt(u * 256), Mathf.FloorToInt(v * 256), seed + 9) > 0.985f ? 0.6f : 0f;
+            return Mathf.Clamp01(Posterize(Mathf.Max(stain, drip * 0.8f, speck), 3, 0.25f));
+        }
+
+        static float GrimeMul(float u, float v, int seed)
+        {
+            float g = GrimeMask(u, v, 200 + seed * 7);
+            float scratch = Fbm(u, v, 96, 3, 2, 300 + seed) > 0.78f ? 0.94f : 1f;
+            return Mathf.Lerp(1f, 0.93f, g) * scratch;
+        }
+
+        // chunky hand-drawn bricks with chipped corners and dark mortar
+        static float Brick(float u, float v)
+        {
+            const int rows = 12, cols = 4;
+            float y = v * rows; int r = Mathf.FloorToInt(y); float fy = y - r;
+            float x = u * cols + ((r & 1) == 1 ? 0.5f : 0f); int c = Mathf.FloorToInt(x); float fx = x - c;
+            c = ((c % cols) + cols) % cols;
+            float wob = (Fbm(u, v, 32, 32, 2, 141) - 0.5f) * 0.06f;
+            float mx = 0.045f + wob, my = 0.09f + wob;
+            if (fx < mx || fx > 1 - mx || fy < my || fy > 1 - my) return 0.38f + 0.1f * Fbm(u, v, 64, 64, 2, 151);
+            float val = 0.72f + 0.2f * Hash(c, r, 161);
+            val *= 0.92f + 0.12f * Posterize(Fbm(u, v, 24, 24, 3, 171), 3, 0.2f);
+            if (fy > 1 - my - 0.12f) val *= 0.86f;      // painted under-shadow on each brick
+            if (fy < my + 0.1f) val *= 1.06f;
+            return val;
         }
     }
 }

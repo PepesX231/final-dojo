@@ -15,18 +15,18 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 1
-  m_FogColor: {r: 0.9137255, g: 0.6039216, b: 0.6039216, a: 1}
+  m_FogColor: {r: 0.85, g: 0.82, b: 0.95, a: 1}
   m_FogMode: 2
   m_FogDensity: 0.011
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.654902, g: 0.5882353, b: 0.78431374, a: 1}
-  m_AmbientEquatorColor: {r: 0.9490196, g: 0.6431373, b: 0.49411765, a: 1}
-  m_AmbientGroundColor: {r: 0.36862746, g: 0.2627451, b: 0.32156864, a: 1}
+  m_AmbientSkyColor: {r: 0.62, g: 0.68, b: 0.85, a: 1}
+  m_AmbientEquatorColor: {r: 0.85, g: 0.72, b: 0.6, a: 1}
+  m_AmbientGroundColor: {r: 0.4, g: 0.32, b: 0.38, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: b5bec66b3514229428077b582c678075, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 51399c1be0af78141b0be1bdb2789eee, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -33512,7 +33512,7 @@ Transform:
   m_GameObject: {fileID: 157230033}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.0020000003, z: 0}
+  m_LocalPosition: {x: 0, y: -0.011, z: 0}
   m_LocalScale: {x: 4.4, y: 0.012, z: 3.6}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -187921,7 +187921,7 @@ Transform:
   m_GameObject: {fileID: 1199073297}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.81915206, z: -0, w: 0.57357645}
-  m_LocalPosition: {x: -0.2860117, y: 0.20000005, z: 0.09133053}
+  m_LocalPosition: {x: -0.288064, y: 0.20000005, z: 0.0856919}
   m_LocalScale: {x: 0.005, y: 0.12, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -239260,7 +239260,7 @@ Transform:
   m_GameObject: {fileID: 1643439939}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.084999084, y: -0.13999999, z: 0.03999996}
+  m_LocalPosition: {x: 0.081998825, y: -0.13999999, z: 0.03999996}
   m_LocalScale: {x: 0.02, y: 0.07, z: 0.06}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -246714,7 +246714,7 @@ Transform:
   m_GameObject: {fileID: 1674218557}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.5, y: 0.006, z: 8}
+  m_LocalPosition: {x: 9.5, y: 0, z: 8}
   m_LocalScale: {x: 1.2, y: 0.012, z: 0.18}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -258160,7 +258160,7 @@ Transform:
   m_GameObject: {fileID: 1707619212}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.084999084, y: -0.13999999, z: -0.059999943}
+  m_LocalPosition: {x: 0.081998825, y: -0.13999999, z: -0.059999943}
   m_LocalScale: {x: 0.02, y: 0.07, z: 0.06}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -259406,10 +259406,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
   m_IsGlobal: 1
-  priority: 0
+  priority: 1
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: 69c7afb25bab87947bad5480c7b7b086, type: 2}
+  sharedProfile: {fileID: 11400000, guid: 235818c4394ec1742a3adf83ce86c088, type: 2}
 --- !u!4 &1722793201
 Transform:
   m_ObjectHideFlags: 0
@@ -318088,6 +318088,7 @@ MonoBehaviour:
   chr: {fileID: 0}
   pivot: {x: 0, y: 0.12, z: 0}
   blend: 14
+  carryDepth: 1
 --- !u!114 &7866640224286045445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -318102,6 +318103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MamasComing.KidRoughhouse
   shoveRange: 1.35
   shoveForce: 6.5
+  shoveStun: 1.4
   shoveCooldown: 0.75
   bumpSpeed: 4
 --- !u!23 &7921471438451277344

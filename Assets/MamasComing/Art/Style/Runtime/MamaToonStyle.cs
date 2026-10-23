@@ -34,6 +34,8 @@ namespace MamasComing.Style
         public ClampedFloatParameter paintGrain = new ClampedFloatParameter(0f, 0f, 1f);
         [Tooltip("Metres covered by one tile of the paint-grain texture")]
         public MinFloatParameter paintGrainScale = new MinFloatParameter(1.5f, 0.01f);
+        [Tooltip("Olive grime stains and drips from the paint texture green channel")]
+        public ClampedFloatParameter grime = new ClampedFloatParameter(0f, 0f, 1f);
 
         public bool IsActive() => inkStrength.value > 0 || shadowTintAmount.value > 0 || halftoneStrength.value > 0 || paintGrain.value > 0 || rimStrength.value > 0;
     }
