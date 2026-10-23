@@ -395,6 +395,9 @@ namespace MamasComing
             Vector3 desired = frame.InverseTransformPoint(worldTarget) - start;
             float first = Vector3.Distance(restUpper, restLower);
             if (first < .01f || desired.sqrMagnitude < .00001f) return lower.position;
+            // Skinned rigs (glove bones) have shorter arms than the apple's grip contacts expect:
+            // stretch the upper arm, rubber-hose style, rather than stopping short of the contact.
+            if (restForearm.sqrMagnitude > 1e-8f) first = Mathf.Clamp(desired.magnitude - second + .006f, first, first * 2f);
             float distance = Mathf.Clamp(desired.magnitude, Mathf.Abs(first - second) + .003f, first + second - .003f);
             Vector3 direction = desired.normalized;
             Vector3 bend = ToRig(Vector3.down + Vector3.right * side * .65f);

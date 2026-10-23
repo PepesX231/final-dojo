@@ -1,0 +1,32 @@
+FAILED passed=23 (staged input regression, not human playthrough)
+PASS starts at title
+PASS Thai title explains goal and choices
+PASS Enter starts normal wake-up flow
+PASS long checklist hidden by default
+PASS solution hints hidden by default
+PASS party checklist is not forced over gameplay
+PASS disaster telemetry is tucked into notes
+PASS provided Mother Apple has both imported moods
+PASS Mother Apple uses the provided skinned mesh
+PASS mother angry expression swaps visibly
+PASS ten licensed foley clips are available at runtime
+PASS Teddy bear uses the rebuilt mesh
+PASS Teddy bear can be targeted with E
+PASS Teddy bear has a reach phase before lifting
+Teddy bear grip error metres L=0.000 R=0.000
+PASS Teddy bear wrists reach both authored contacts
+Teddy bear body clearance metres=0.178
+PASS Teddy bear held mesh clears the front of the torso
+PASS Hamster uses the rebuilt mesh
+PASS Hamster can be targeted with E
+PASS Hamster has a reach phase before lifting
+Hamster grip error metres L=0.000 R=0.000
+PASS Hamster wrists reach both authored contacts
+Hamster body clearance metres=-0.007
+PASS Hamster held mesh clears the front of the torso
+PASS trash bag picked up through E
+PASS hollow trash bin is targetable while carrying a bag
+System.Exception: first E opens the hinged bin lid and keeps the bag held
+  at MamasComing.Editor.MamaUxReview.Assert (System.Boolean condition, System.String message) [0x0002b] in C:\Pepes\final dojo\Assets\MamasComing\Editor\MamaUxReview.cs:79 
+  at MamasComing.Editor.MamaUxReview+<Checks>d__23.MoveNext () [0x00a18] in C:\Pepes\final dojo\Assets\MamasComing\Editor\MamaUxReview.cs:145 
+  at MamasComing.Editor.MamaUxReview.Tick () [0x0002d] in C:\Pepes\final dojo\Assets\MamasComing\Editor\MamaUxReview.cs:69 
