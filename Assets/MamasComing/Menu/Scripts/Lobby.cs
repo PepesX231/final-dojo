@@ -12,7 +12,7 @@ namespace MamasComing.Menu
     public class Lobby : MonoBehaviour
     {
         public GameObject[] fruitPrefabs;
-        public Material baseMaterial;
+        public Material baseMaterial, inkMaterial;
         public Camera cam;
         public LobbyNet net;
 
@@ -53,7 +53,7 @@ namespace MamasComing.Menu
         void Start()
         {
             Loc.Load();
-            AvatarLook.SetBaseMaterial(baseMaterial);
+            AvatarLook.SetBaseMaterial(baseMaterial); AvatarLook.InkMaterial = inkMaterial;
             if (!cam) cam = Camera.main;
             if (!net) net = gameObject.AddComponent<LobbyNet>();
             net.lobby = this;
@@ -69,7 +69,7 @@ namespace MamasComing.Menu
         void BuildWorld()
         {
             var root = new GameObject("Lobby World").transform;
-            Color cream = new Color(1f, .93f, .82f), peach = new Color(1f, .78f, .66f), mint = new Color(.62f, .9f, .8f), lilac = new Color(.78f, .7f, 1f);
+            Color cream = new Color(1f, .95f, .82f), peach = new Color(1f, .62f, .5f), lilac = new Color(.62f, .9f, .4f);   // bright toy-mat colours for kids
 
             // island floor: big round toy-mat with a scalloped rim
             var floor = Solid(PrimitiveType.Cylinder, root, new Vector3(0, -.25f, 0), new Vector3(WorldR * 2, .25f, WorldR * 2), cream);
@@ -198,7 +198,7 @@ namespace MamasComing.Menu
         GameObject Solid(PrimitiveType t, Transform p, Vector3 pos, Vector3 scale, Color c) => AvatarLook.Prim(t, p, pos, scale, c, true);
         GameObject Deco(PrimitiveType t, Transform p, Vector3 pos, Vector3 scale, Color c)
         {
-            var g = AvatarLook.Prim(t, p, pos, scale, c);
+            var g = AvatarLook.Prim(t, p, pos, scale, c, false, true);
             g.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             return g;
         }

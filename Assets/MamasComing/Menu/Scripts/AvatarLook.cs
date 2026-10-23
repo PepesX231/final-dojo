@@ -124,7 +124,7 @@ namespace MamasComing.Menu
             {
                 case 1: // party cone with a pompom
                     var cn = new GameObject("Cone", typeof(MeshFilter), typeof(MeshRenderer)); cn.transform.SetParent(root, false);
-                    cn.GetComponent<MeshFilter>().sharedMesh = Cone(); cn.GetComponent<MeshRenderer>().sharedMaterial = Mat(c);
+                    cn.GetComponent<MeshFilter>().sharedMesh = Cone(); cn.GetComponent<MeshRenderer>().sharedMaterials = InkMaterial ? new[] { Mat(c), InkMaterial } : new[] { Mat(c) };
                     cn.transform.localScale = new Vector3(.32f, .42f, .32f); cn.transform.localRotation = Quaternion.Euler(0, 0, -8f);
                     Prim(PrimitiveType.Sphere, root, new Vector3(-.06f, .42f, 0), Vector3.one * .1f, light);
                     Prim(PrimitiveType.Cylinder, root, new Vector3(0, .01f, 0), new Vector3(.3f, .012f, .3f), light);
@@ -192,12 +192,16 @@ namespace MamasComing.Menu
             return root;
         }
 
-        public static GameObject Prim(PrimitiveType t, Transform parent, Vector3 pos, Vector3 scale, Color c, bool keepCollider = false)
+        public static Material InkMaterial;
+
+        /// Primitive in a toon colour; with an ink material set it also gets an inverted-hull comic outline.
+        public static GameObject Prim(PrimitiveType t, Transform parent, Vector3 pos, Vector3 scale, Color c, bool keepCollider = false, bool noInk = false)
         {
             var g = GameObject.CreatePrimitive(t); g.transform.SetParent(parent, false);
             g.transform.localPosition = pos; g.transform.localScale = scale;
             var col = g.GetComponent<Collider>(); if (col && !keepCollider) Destroy(col);
-            g.GetComponent<Renderer>().sharedMaterial = Mat(c);
+            var r = g.GetComponent<Renderer>();
+            r.sharedMaterials = InkMaterial && !noInk ? new[] { Mat(c), InkMaterial } : new[] { Mat(c) };
             return g;
         }
 
@@ -206,7 +210,7 @@ namespace MamasComing.Menu
             if (mats.TryGetValue(c, out var m) && m) return m;
             m = baseMat ? new Material(baseMat) : new Material(Shader.Find("Universal Render Pipeline/Lit"));
             if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c); else m.color = c;
-            if (m.HasProperty("_Smoothness")) m.SetFloat("_Smoothness", .35f);
+            if (m.HasProperty("_Smoothness")) m.SetFloat("_Smoothness", .2f);
             mats[c] = m; return m;
         }
         public static void SetBaseMaterial(Material m) { if (m) baseMat = m; }
