@@ -1,0 +1,21 @@
+{
+  "units": "metres",
+  "models": [
+    {
+      "name": "ENV_CraftedEdge",
+      "triangles": 300
+    },
+    {
+      "name": "ENV_SoftCushion",
+      "triangles": 300
+    },
+    {
+      "name": "PROP_CraftedPotBody",
+      "triangles": 1920
+    },
+    {
+      "name": "PROP_CraftedLid",
+      "triangles": 1664
+    }
+  ]
+}

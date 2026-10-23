@@ -60,3 +60,15 @@ Verdict: APPROVED for P0. Later: optional ink outline pass, mouth shapes per sta
 ### Art Review: Palace detailed stylized pass (2026-10-20)
 Purpose: supported wayfinding/fixtures and coherent inhabited interiors. Evidence: docs/PALACE_STYLE_REVIEW.md and current-m20-polish rendered captures. Verdict: REVISE — material/detail foundation implemented; furniture silhouettes, empty-room/plaza composition, facade repaint, palette and motion checks remain. No final art approval claimed.
 
+
+### Art Review: MAMA'S COMING! presentation pass (2026-10-23)
+Purpose: identify household problems/tools while preserving player choice and a readable cooperative cleanup scene. Current Mama brief is described in docs/MAMA_UX_ART_RESEARCH.md, separate from the DreamRush campaign palette.
+Evidence: docs/MAMA_VISUAL_POLISH.md and docs/evidence/mama-visual-polish/ (in-engine before/after, nine-room contact sheet, staged 42-check review).
+Delivered: crafted cookware/lid, 73 rounded furniture surfaces, quieter material palette/textures, bounded fire/smoke and thin-film water, compact contextual UI and shape-coded friend identities. Imported pot/lid bounds checked; original source .blend/script retained; collider signature unchanged.
+Verdict: REVISE for final release approval — secondary prop silhouettes and the inked character/environment relationship still need bespoke art direction. No human fun, online-session or performance approval inferred from compilation or automated tests.
+
+### Art Review: Mama Recast — saturated household props (2026-10-23)
+
+Updated user brief supersedes the muted palette above. Direction/research: `docs/MAMA_ART_RECAST_RESEARCH.md`. Twenty original prop FBXs total 46,912 triangles across the unique library, with shared palette UVs and editable/reproducible Blender source under `ArtSource/Blender/MamaRecast/`. User-supplied Mother Apple Kind/Angry is the mother; derived Banana export is retained for conversion work and does not yet replace the player. Added actual hollow/hinged disposal bins, carry-contact profiles, material foley, a revised procedural music arrangement and warm fire gradients. Scene integration and review limits are in `docs/MAMA_RECAST_IMPLEMENTATION.md`.
+
+Verdict: REVISE for final release approval. Generated studio renders are asset evidence, not proof of gameplay composition. Full unique painted textures, finished character rig transitions, the Banana playable rig, human multiplayer testing and performance approval remain open.

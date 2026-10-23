@@ -415,7 +415,8 @@ namespace MamasComing
             if (Held != null) Drop(false);
             Held = p;
             p.OnPickedUp(this);
-            MamaAudio.Play("pop", transform.position, 0.5f, p.dragOnFloor ? 0.7f : 1.1f);
+            string pickupSound=p is Hamster?"hamster_pick":p.displayName=="Teddy bear"?"plush_pick":p.displayName=="Trash bag"?"bag_drop":"pop";
+            MamaAudio.Play(pickupSound, transform.position, 0.5f, p.dragOnFloor ? 0.7f : 1.1f);
             if (!p.FollowsOnItsOwn)
             {
                 Transform anchor = p.dragOnFloor ? dragPoint : holdPoint;

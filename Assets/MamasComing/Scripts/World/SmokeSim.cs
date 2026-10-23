@@ -159,7 +159,8 @@ namespace MamasComing
         void EmitFx(float dt)
         {
             if (!smokeFx) return;
-            int budget = 160 - smokeFx.particleCount / 8;
+            // Keep a visible ceiling layer without stacking hundreds of opaque cards over tools.
+            int budget = Mathf.Min(48, 480 - smokeFx.particleCount);
             if (budget <= 0) return;
             for (int i = 0; i < c.Length && budget > 0; i++)
             {
@@ -172,7 +173,7 @@ namespace MamasComing
                     float x = origin.x + (i % width + Random.value) * cell, z = origin.y + (i / width + Random.value) * cell;
                     float bank = Mathf.Lerp(ceiling - 0.4f, 0.7f, Mathf.Clamp01(v / 2.2f)); // thick smoke banks down
                     float y = Random.Range(bank, ceiling);
-                    float a = Mathf.Clamp(0.06f + v * 0.16f, 0.06f, 0.55f);
+                    float a = Mathf.Clamp(0.035f + v * 0.065f, 0.035f, 0.22f);
                     Vector3 vel = new Vector3(Random.Range(-0.15f, 0.15f), Random.Range(-0.02f, 0.08f), Random.Range(-0.15f, 0.15f));
                     // smoke visibly drifts toward any open window / door nearby
                     foreach (var vent in vents)
@@ -186,8 +187,8 @@ namespace MamasComing
                     {
                         position = new Vector3(x, y, z),
                         velocity = vel,
-                        startSize = Random.Range(1.3f, 2.4f),
-                        startLifetime = Random.Range(2.2f, 3.6f),
+                        startSize = Random.Range(0.7f, 1.25f),
+                        startLifetime = Random.Range(1.8f, 2.8f),
                         startColor = new Color(0.32f, 0.3f, 0.29f, a),
                         rotation = Random.Range(0f, 360f)
                     };

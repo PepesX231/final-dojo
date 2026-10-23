@@ -58,7 +58,7 @@ namespace MamasComing
         {
             if (ownFire && ownFire.burning) ownFire.transform.position = transform.position;
             if (scorched && cloth != null)
-                foreach (var r in cloth) if (r) { mpb.SetColor("_BaseColor", new Color(0.18f, 0.15f, 0.13f)); r.SetPropertyBlock(mpb); }
+                foreach (var r in cloth) if (r && !(r is ParticleSystemRenderer)) { mpb.SetColor("_BaseColor", new Color(0.18f, 0.15f, 0.13f)); r.SetPropertyBlock(mpb); }
         }
 
         public override bool IsProblem => (Soaked > 0.5f || scorched) && !IsHeld && !HideZone.IsHidden(transform.position) || base.IsProblem;

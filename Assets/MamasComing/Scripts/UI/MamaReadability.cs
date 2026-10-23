@@ -10,6 +10,8 @@ namespace MamasComing
     {
         GameManager gm;
         bool overview;
+        bool hintVisible;
+        public bool NotesVisible => overview && !hintVisible;
         MessyProp ghostItem;
         GameObject homeGhost;
         Material ghostMaterial;
@@ -57,6 +59,7 @@ namespace MamasComing
             if (!MamaSettings.Open && ((k != null && k.tabKey.wasPressedThisFrame) || (pad != null && pad.selectButton.wasPressedThisFrame))) overview = !overview;
             bool mini = MiniGame.I && MiniGame.I.Active;
             if (mini) help = false;
+            hintVisible = help;
             for (int i = 0; i < 6; i++) gm.ui.SetGuide(i, false, Vector3.zero, null, null, Color.white);
 
             var p = gm.player;
@@ -87,6 +90,7 @@ namespace MamasComing
             gm.ui.SetContext(title, body, keys, Room(p.transform.position));
             Idea(held, p.Target, out string ideaTitle, out string ideaBody);
             gm.ui.SetReadabilityPanels(overview && !MamaSettings.Open && !mini, help, ideaTitle, ideaBody);
+            gm.ui.SetContextVisible(!MamaSettings.Open && !mini && !help && !overview && (held || p.Target || NearOilFire()));
             UpdateHome(held as MessyProp, help);
             UpdateFocus(p.Target, help);
             if (!mini && !held && !p.Target && Time.time >= thoughtAt && Time.timeSinceLevelLoad < 18f)
@@ -171,6 +175,8 @@ namespace MamasComing
             foreach (var source in item.GetComponentsInChildren<MeshFilter>())
             {
                 if (!source.sharedMesh) continue;
+                var visible = source.GetComponent<Renderer>();
+                if (visible && !visible.enabled) continue;
                 var part = new GameObject("Outline"); part.transform.SetParent(homeGhost.transform, false);
                 part.transform.localPosition = item.transform.InverseTransformPoint(source.transform.position);
                 part.transform.localRotation = Quaternion.Inverse(item.transform.rotation) * source.transform.rotation;

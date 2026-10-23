@@ -1,0 +1,68 @@
+PASSED passed=63 (staged input regression, not human playthrough)
+PASS starts at title
+PASS Thai title explains goal and choices
+PASS Enter starts normal wake-up flow
+PASS long checklist hidden by default
+PASS solution hints hidden by default
+PASS party checklist is not forced over gameplay
+PASS disaster telemetry is tucked into notes
+PASS provided Mother Apple has both imported moods
+PASS Mother Apple uses the provided skinned mesh
+PASS mother angry expression swaps visibly
+PASS ten licensed foley clips are available at runtime
+PASS Teddy bear uses the rebuilt mesh
+PASS Teddy bear can be targeted with E
+PASS Teddy bear has a reach phase before lifting
+Teddy bear grip error metres L=0.000 R=0.000
+PASS Teddy bear wrists reach both authored contacts
+Teddy bear body clearance metres=0.179
+PASS Teddy bear held mesh clears the front of the torso
+PASS Hamster uses the rebuilt mesh
+PASS Hamster can be targeted with E
+PASS Hamster has a reach phase before lifting
+Hamster grip error metres L=0.000 R=0.000
+PASS Hamster wrists reach both authored contacts
+Hamster body clearance metres=0.027
+PASS Hamster held mesh clears the front of the torso
+PASS trash bag picked up through E
+PASS hollow trash bin is targetable while carrying a bag
+PASS first E opens the hinged bin lid and keeps the bag held
+PASS second E deposits bag and resolves its mess state
+PASS deposited bag is inside the bin destination
+PASS Tab opens party overview and disaster details
+PASS obsolete second overview stays hidden
+PASS held H shows idea without overlapping overview
+PASS optional hint suppresses party board
+PASS releasing H removes hint
+PASS teddy can be targeted with normal interaction
+PASS E picks up teddy
+PASS held teddy tells player the destination room
+PASS precise destination is not forced across the house
+PASS optional H reveals teddy destination
+PASS destination retains a label off-screen
+PASS nearby home has matching 3D teddy silhouette
+PASS home communicates the place button
+PASS Q returns teddy to its correct home
+PASS returned teddy stays tidy after physics settles
+PASS near stove has visible oil/water warning
+PASS fire hint explains air and multiple approaches
+PASS fire offers lid and extinguisher as options
+PASS lid is discoverable and targetable
+PASS E picks up lid
+PASS held lid makes burning pot actionable
+PASS normal E smothers small oil fire without automatic puzzle completion
+PASS resolved fire replaces the stale emergency banner
+PASS fire-out has local steam feedback
+PASS routine messages do not stack beneath an emergency
+PASS new title copy switches to English
+PASS context switches with language
+PASS new title copy switches back to Thai
+PASS context body fits its card at current Game View size
+PASS remote spawn regression starts with the source eyes shut
+PASS three-avatar presentation check runs without starting networking
+PASS remote clone retains open-eye materials when the source was blinking
+PASS remote eye material keeps its original colour instead of turning black
+PASS P2 has a teal clothing accent per material slot
+PASS friends have different shape and text identity cues
+PASS burnt-cloth and wet-cloth tints do not blacken the flame renderer
+PASS no gameplay exceptions during focused review

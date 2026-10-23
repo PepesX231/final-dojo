@@ -292,6 +292,7 @@ namespace MamasComing
             found.Add(key);
             foundLines.Add(line);
             suspicion += severity;
+            if(mom && mom.TryGetComponent<MotherApplePresentation>(out var expression)) expression.IsAngry=true;
             if (isMajor) major = true;
             MomSay(line);
         }

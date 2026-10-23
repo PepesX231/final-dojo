@@ -1,0 +1,4 @@
+Peak=0.2644298
+RMS=0.0590984204245433
+Seconds=17.777
+Measured signal only; not a human listening review.

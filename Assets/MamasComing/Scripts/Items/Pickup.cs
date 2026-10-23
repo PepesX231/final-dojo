@@ -66,7 +66,8 @@ namespace MamasComing
         {
             if (FollowsOnItsOwn || grabT >= 1f || !transform.parent) return;
             grabT = Mathf.Min(1f, grabT + dt / Mathf.Max(0.05f, grabTime));
-            float e = grabT * grabT * (3f - 2f * grabT);
+            float lift = GetComponent<CarryGrip>() ? Mathf.InverseLerp(.34f, 1f, grabT) : grabT;
+            float e = lift * lift * (3f - 2f * lift);
             Vector3 startLocal = transform.parent.InverseTransformPoint(grabStartPos);
             Quaternion startLocalRot = Quaternion.Inverse(transform.parent.rotation) * grabStartRot;
             // small arc: lift up while travelling to the hands
@@ -75,6 +76,7 @@ namespace MamasComing
         }
 
         public bool Grabbing => IsHeld && grabT < 1f;
+        public float GrabProgress => grabT;
 
         public virtual void OnDropped(PlayerController p, Vector3 velocity)
         {

@@ -96,7 +96,7 @@ namespace MamasComing
             HideOccluders(transform.position, look);
 
             float s = SmokeSim.I ? SmokeSim.I.At(target.position) : 0f;
-            RenderSettings.fogDensity = Mathf.Lerp(RenderSettings.fogDensity, baseFog + Mathf.Clamp01(s / 2f) * 0.09f, dt * 2f);
+            RenderSettings.fogDensity = Mathf.Lerp(RenderSettings.fogDensity, baseFog + Mathf.Clamp01(s / 2f) * 0.045f, dt * 2f);
         }
     }
 }

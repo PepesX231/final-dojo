@@ -20,6 +20,14 @@ namespace DreamRush.Player
         public bool EyesClosed => _isClosed;
         public bool HasFace => _closed != null;
 
+        /// <summary>Restore the neutral material set before cloning a live avatar during a blink.</summary>
+        public void RestoreOpenEyes()
+        {
+            if (_body == null || _open == null) return;
+            _body.sharedMaterials = _open;
+            _isClosed = false;
+        }
+
         void Awake()
         {
             if (animator == null) animator = GetComponent<AppleProceduralAnimator>();

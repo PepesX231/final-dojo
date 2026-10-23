@@ -191,8 +191,11 @@ namespace MamasComing
         {
             if (!gm || board == null) return;
             bool play = gm.state == GameManager.State.Playing || gm.state == GameManager.State.MomHome;
-            board.gameObject.SetActive(play && !MamaSettings.Open);
-            neighFill.transform.parent.gameObject.SetActive(play && gm.state == GameManager.State.Playing && !MamaSettings.Open);
+            var readability = gm.GetComponent<MamaReadability>();
+            bool notes = readability && readability.NotesVisible;
+            bool mini = MiniGame.I && MiniGame.I.Active;
+            board.gameObject.SetActive(play && notes && !mini && !MamaSettings.Open);
+            neighFill.transform.parent.gameObject.SetActive(play && (Neighbor > 35f || notes) && gm.state == GameManager.State.Playing && !MamaSettings.Open && !mini);
             if (!play) return;
 
             hudT -= Time.unscaledDeltaTime;
@@ -221,7 +224,7 @@ namespace MamasComing
 
             // room warning icons (slots 0,1): the two most urgent rooms you are NOT in
             int me = GameManager.RoomOf(gm.player.transform.position); int slot = 0; var used = new HashSet<int>();
-            if (gm.state == GameManager.State.Playing && !(MiniGame.I && MiniGame.I.Active))
+            if (notes && !MamaSettings.Open && gm.state == GameManager.State.Playing && !mini)
                 foreach (var e in list)
                 {
                     if (slot >= 2) break;

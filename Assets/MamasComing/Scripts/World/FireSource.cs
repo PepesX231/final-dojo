@@ -137,7 +137,7 @@ namespace MamasComing
             }
             if (scorch) scorch.SetActive(everBurned);
             if (charRenderers != null && everBurned)
-                foreach (var r in charRenderers) if (r) { mpb.SetColor("_BaseColor", new Color(0.12f, 0.1f, 0.09f)); r.SetPropertyBlock(mpb); }
+                foreach (var r in charRenderers) if (r && !(r is ParticleSystemRenderer)) { mpb.SetColor("_BaseColor", new Color(0.12f, 0.1f, 0.09f)); r.SetPropertyBlock(mpb); }
         }
 
         public float SpreadIn => burning && intensity >= spreadThreshold && spreadT >= 0f && HasUnburnt ? Mathf.Max(0f, spreadDelay - spreadT) : -1f;

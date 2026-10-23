@@ -55,6 +55,8 @@ namespace MamasComing
         Clip oneShot = Clip.None; float oneT, oneDur;
         Clip holdClip = Clip.None; int holdFrame = -10; float holdT;
         Vector3 defaultHold;
+        public Vector3 LeftGripWorld { get; private set; }
+        public Vector3 RightGripWorld { get; private set; }
 
         public bool Busy => oneShot != Clip.None && oneT < oneDur * 0.6f;
         public Clip Current => oneShot != Clip.None ? oneShot : holdClip;
@@ -292,6 +294,8 @@ namespace MamasComing
             if (!holding) holdClip = Clip.None; else holdT += dt;
 
             Pose target = CarryPose(t);
+            if (player.Held && player.Held.Grabbing && player.Held.GetComponent<CarryGrip>())
+                target = ClipPose(player.Held.transform.position.y - transform.position.y < .45f ? Clip.PickLow : Clip.PickHigh, player.Held.GrabProgress, t);
             if (holdClip != Clip.None) target = Pose.Lerp(target, ClipPose(holdClip, Mathf.Clamp01(holdT * 2f), t), 1f);
             if (oneShot != Clip.None)
             {
@@ -326,6 +330,14 @@ namespace MamasComing
             // 3) hold anchor follows the hands
             if (player.holdPoint)
             {
+                var contacts = player.Held ? player.Held.GetComponent<CarryGrip>() : null;
+                if (contacts)
+                {
+                    player.holdPoint.localPosition = Vector3.Lerp(player.holdPoint.localPosition, contacts.carryAnchor, 1f - Mathf.Exp(-25f * Time.deltaTime));
+                    LeftGripWorld = ReachArm(armL, armLLo, armLRP, armLLoRP, armLRR, armLLoRR, contacts.LeftWorld, -1f);
+                    RightGripWorld = ReachArm(armR, armRLo, armRRP, armRLoRP, armRRR, armRLoRR, contacts.RightWorld, 1f);
+                    return;
+                }
                 Vector3 baseLocal = p.holdLocal;
                 if (p.handFollow > 0.01f && armLLo && armRLo)
                 {
@@ -345,6 +357,34 @@ namespace MamasComing
             Vector3 dir = (lower.position - upper.position);
             if (dir.sqrMagnitude < 1e-6f) dir = -lower.up;
             return elbow + dir.normalized * 0.16f;
+        }
+
+        Vector3 ReachArm(Transform upper, Transform lower, Vector3 restUpper, Vector3 restLower, Quaternion upperRestRotation, Quaternion lowerRestRotation, Vector3 worldTarget, float side)
+        {
+            if (!upper || !lower) return worldTarget;
+            var frame = upper.parent;
+            // Apple torso has depth: roll the shoulders forward for a cradle rather than
+            // pulling the object through the face just to keep it inside the arm span.
+            float cradle = player.Held && player.Held.Grabbing ? Mathf.SmoothStep(0, 1, player.Held.GrabProgress / .34f) : 1f;
+            var grip=player.Held?player.Held.GetComponent<CarryGrip>():null;
+            upper.localPosition += frame.InverseTransformVector((transform.forward * (grip?grip.shoulderForward:.45f) - transform.right * side * (grip?grip.shoulderInward:.17f)) * cradle);
+            Vector3 start = upper.localPosition;
+            Vector3 desired = frame.InverseTransformPoint(worldTarget) - start;
+            float first = Vector3.Distance(restUpper, restLower), second = .16f;
+            if (first < .01f || desired.sqrMagnitude < .00001f) return lower.position;
+            float distance = Mathf.Clamp(desired.magnitude, Mathf.Abs(first - second) + .003f, first + second - .003f);
+            Vector3 direction = desired.normalized;
+            Vector3 bend = Vector3.down + Vector3.right * side * .65f;
+            bend = Vector3.ProjectOnPlane(bend, direction).normalized;
+            if (bend.sqrMagnitude < .01f) bend = Vector3.back;
+            float along = (first * first - second * second + distance * distance) / (2f * distance);
+            Vector3 elbow = start + direction * along + bend * Mathf.Sqrt(Mathf.Max(0, first * first - along * along));
+            Vector3 wrist = start + direction * distance;
+            Vector3 restDirection = restLower - restUpper;
+            upper.localRotation = Quaternion.FromToRotation(restDirection, elbow - start) * upperRestRotation;
+            lower.localPosition = elbow;
+            lower.localRotation = Quaternion.FromToRotation(restDirection, wrist - elbow) * lowerRestRotation;
+            return frame.TransformPoint(wrist);
         }
 
         void TransformAround(Transform tr, Quaternion extra, Vector3 off)

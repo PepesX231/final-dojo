@@ -1,0 +1,1 @@
+PASS: two identity tags have ink backings; offline visual smoke check.

@@ -74,14 +74,13 @@ namespace MamasComing
                 var m = surface.material;
                 m.SetTexture("_BaseMap", tex);
                 m.SetColor("_BaseColor", Color.white);
-                m.SetFloat("_Smoothness", 0.93f);
+                m.SetFloat("_Smoothness", 0.62f);
                 m.SetFloat("_EnvironmentReflections", 1f); m.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
                 ripple = MakeRipple(128);
-                m.SetTexture("_BumpMap", ripple); m.SetFloat("_BumpScale", 0.9f); m.EnableKeyword("_NORMALMAP");
+                m.SetTexture("_BumpMap", ripple); m.SetFloat("_BumpScale", 0.22f); m.EnableKeyword("_NORMALMAP");
                 m.SetTextureScale("_BumpMap", new Vector2(width * cell / 1.6f, height * cell / 1.6f));
-                var caus = MakeCaustics(128);
-                m.SetTexture("_DetailAlbedoMap", caus); m.SetFloat("_DetailAlbedoMapScale", 1f); m.EnableKeyword("_DETAIL_MULX2");
-                m.SetTextureScale("_DetailAlbedoMap", new Vector2(width * cell / 2.2f, height * cell / 2.2f));
+                // A puddle is a thin film, not a swimming pool. Keep the floor readable.
+                m.SetTexture("_DetailAlbedoMap", null); m.DisableKeyword("_DETAIL_MULX2");
                 mat = m;
             }
         }

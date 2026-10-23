@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MamasComing
 {
-    /// Fully procedural sound: relaxing music loop, world loops (water, fire, hiss) and one-shots.
+    /// Procedural music/ambience with licensed material foley overrides from Resources/MamaFoley.
     public class MamaAudio : MonoBehaviour
     {
         public static MamaAudio I;
@@ -28,6 +28,7 @@ namespace MamasComing
             I = this;
             if (FindFirstObjectByType<AudioListener>() == null && Camera.main != null) Camera.main.gameObject.AddComponent<AudioListener>();
             BuildClips();
+            foreach(var clip in Resources.LoadAll<AudioClip>("MamaFoley")) clips[clip.name]=clip;
             music = MakeSrc("Music", false); music.clip = clips["music"]; music.loop = true; music.volume = musicVolume; music.Play();
             waterLoop = MakeLoop("Water", "water");
             fireLoop = MakeLoop("Fire", "fire");
@@ -99,7 +100,9 @@ namespace MamasComing
             hissT -= Time.deltaTime; drainT -= Time.deltaTime;
             hissLoop.volume = Mathf.MoveTowards(hissLoop.volume, hissT > 0 ? 0.35f * MamaSettings.SfxVol : 0f, Time.deltaTime * 6f);
             drainLoop.volume = Mathf.MoveTowards(drainLoop.volume, drainT > 0 ? 0.4f * MamaSettings.SfxVol : 0f, Time.deltaTime * 2f);
-            music.volume = musicVolume * MamaSettings.MusicVol * 1.25f;
+            bool focus=GameManager.I && GameManager.I.ui && GameManager.I.ui.ImportantMessage;
+            float targetMusic=musicVolume*MamaSettings.MusicVol*(focus?.48f:.85f);
+            music.volume=Mathf.Lerp(music.volume,targetMusic,Time.unscaledDeltaTime*(focus?12f:2f));
         }
 
         // ================================================================== synthesis
@@ -156,13 +159,13 @@ namespace MamasComing
             clips["hum"] = Make("hum", Hum());
         }
 
-        // 72 bpm lo-fi: soft maj7 pads, gentle pluck melody, light shaker.
+        // Original 108 bpm sneak/comedy loop: sparse plucks, short bass, quiet brushed pulse.
         void BuildMusic()
         {
-            float beat = 60f / 72f; int bars = 8; float len = bars * 4 * beat;
+            float beat = 60f / 108f; int bars = 8; float len = bars * 4 * beat;
             int n = (int)(len * SR); var d = new float[n];
-            int[][] chords = { new[] { 48, 55, 59, 64 }, new[] { 45, 52, 55, 60 }, new[] { 41, 48, 52, 57 }, new[] { 43, 50, 53, 59 } };
-            int[] mel = { 76, 74, 72, 74, 76, 79, 76, -1, 72, 71, 69, 71, 72, -1, 74, 72, 69, 72, 74, 76, 77, 76, 74, -1, 71, 72, 74, 79, 77, 74, 71, -1 };
+            int[][] chords = { new[] { 50, 57, 60, 65 }, new[] { 48, 55, 58, 64 }, new[] { 46, 53, 57, 62 }, new[] { 45, 52, 55, 61 } };
+            int[] mel = { 74, -1, 77, -1, 76, 74, -1, 69, 72, -1, 76, -1, 74, -1, 67, -1, 74, -1, 77, 76, -1, 74, -1, 69, 73, -1, 76, -1, 79, 76, -1, -1 };
             float F(int m) => 440f * Mathf.Pow(2f, (m - 69) / 12f);
             for (int b = 0; b < bars; b++)
             {
@@ -174,16 +177,25 @@ namespace MamasComing
                     {
                         float t = (s - s0) / (float)SR; float env = Mathf.Min(1f, t / 0.8f) * Mathf.Min(1f, (s1 - s) / (0.8f * SR));
                         float ph = 2 * Mathf.PI * f * t;
-                        d[s % n] += (Mathf.Sin(ph) + 0.25f * Mathf.Sin(ph * 2.003f) + 0.1f * Mathf.Sin(ph * 0.5f)) * env * 0.045f;
+                        d[s % n] += (Mathf.Sin(ph) + 0.25f * Mathf.Sin(ph * 2.003f) + 0.1f * Mathf.Sin(ph * 0.5f)) * env * 0.022f;
                     }
                 }
                 // bass on beats 1 and 3
-                for (int k = 0; k < 2; k++) Pluck(d, (t0 + k * 2 * beat), F(ch[0] - 12), 1.6f, 0.16f, 0.9f);
+                for (int k = 0; k < 4; k++) Pluck(d, t0 + (k + (k%2==1?.08f:0))*beat, F(ch[0] - 12 + (k==3?7:0)), .6f, .12f, .3f);
                 // melody (half-beat notes, 8 per bar, sparse)
                 for (int k = 0; k < 8; k++)
                 {
-                    int m = mel[(b * 8 + k) % mel.Length]; if (m < 0 || ((b * 8 + k) % 3 == 2)) continue;
-                    Pluck(d, t0 + k * beat * 0.5f + beat * 0.02f, F(m), 1.1f, 0.11f, 0.35f);
+                    int m = mel[(b * 8 + k) % mel.Length]; if (m < 0) continue;
+                    Pluck(d, t0 + k * beat * 0.5f + (k%2==1?beat*.08f:0), F(m), .45f, .075f, .5f);
+                }
+                for(int k=0;k<4;k++)
+                {
+                    int s0=(int)((t0+k*beat)*SR);
+                    for(int s=0;s<(int)(.12f*SR)&&s0+s<n;s++)
+                    {
+                        float t=s/(float)SR;
+                        d[s0+s] += k%2==0 ? Mathf.Sin(2*Mathf.PI*(65*t-18*t*t))*Mathf.Exp(-t*35)*.065f : R()*Mathf.Exp(-t*65)*.018f;
+                    }
                 }
                 // soft shaker on off-beats
                 for (int k = 0; k < 8; k++)

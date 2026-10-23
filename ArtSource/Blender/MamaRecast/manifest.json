@@ -1,0 +1,226 @@
+{
+  "units": "metres",
+  "front": "-Y",
+  "models": [
+    {
+      "name": "PROP_PlushTeddy",
+      "triangles": 8192,
+      "vertices": 4180,
+      "dimensions_blender": [
+        0.4500000476837158,
+        0.2970000207424164,
+        0.5820000171661377
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PET_Hamster",
+      "triangles": 6556,
+      "vertices": 3352,
+      "dimensions_blender": [
+        0.380434513092041,
+        0.468999981880188,
+        0.32499998807907104
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PET_Goldfish",
+      "triangles": 3520,
+      "vertices": 1794,
+      "dimensions_blender": [
+        0.2199999988079071,
+        0.37700003385543823,
+        0.1979999989271164
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_TrashBag",
+      "triangles": 864,
+      "vertices": 476,
+      "dimensions_blender": [
+        0.5837732553482056,
+        0.5899143218994141,
+        0.7655736804008484
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_OpenBin",
+      "triangles": 1812,
+      "vertices": 964,
+      "dimensions_blender": [
+        0.6600000262260437,
+        0.690000057220459,
+        0.7949999570846558
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_BinLid",
+      "triangles": 224,
+      "vertices": 120,
+      "dimensions_blender": [
+        0.6899999976158142,
+        0.6599999666213989,
+        0.109520822763443
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_SeatCushion",
+      "triangles": 1628,
+      "vertices": 830,
+      "dimensions_blender": [
+        0.6399999856948853,
+        0.5799999833106995,
+        0.1297418475151062
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_CakeSlice",
+      "triangles": 1484,
+      "vertices": 762,
+      "dimensions_blender": [
+        0.32999998331069946,
+        0.22499999403953552,
+        0.21278545260429382
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_PizzaBox",
+      "triangles": 2868,
+      "vertices": 1464,
+      "dimensions_blender": [
+        0.4399999976158142,
+        0.4399999976158142,
+        0.10199999809265137
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_Bicycle",
+      "triangles": 4276,
+      "vertices": 2370,
+      "dimensions_blender": [
+        1.8040000200271606,
+        0.47999998927116394,
+        1.0653825998306274
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_WaterPump",
+      "triangles": 4568,
+      "vertices": 2304,
+      "dimensions_blender": [
+        0.41999998688697815,
+        0.625,
+        0.5199999809265137
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_PipeElbow",
+      "triangles": 568,
+      "vertices": 294,
+      "dimensions_blender": [
+        0.10400000214576721,
+        0.45399999618530273,
+        0.4739999771118164
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_PipeStraight",
+      "triangles": 460,
+      "vertices": 240,
+      "dimensions_blender": [
+        0.10400000214576721,
+        0.10400000214576721,
+        0.7539999485015869
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_Router",
+      "triangles": 1824,
+      "vertices": 944,
+      "dimensions_blender": [
+        0.3199999928474426,
+        0.2070000022649765,
+        0.3209667503833771
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_BreakerPanel",
+      "triangles": 2820,
+      "vertices": 1440,
+      "dimensions_blender": [
+        0.4699999988079071,
+        0.18450000882148743,
+        0.5799999833106995
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_CeramicVase",
+      "triangles": 768,
+      "vertices": 416,
+      "dimensions_blender": [
+        0.20999999344348907,
+        0.20999999344348907,
+        0.33000001311302185
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_Toolbox",
+      "triangles": 788,
+      "vertices": 408,
+      "dimensions_blender": [
+        0.4699999988079071,
+        0.30250000953674316,
+        0.42272788286209106
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_Bucket",
+      "triangles": 1248,
+      "vertices": 662,
+      "dimensions_blender": [
+        0.3240000009536743,
+        0.3240000009536743,
+        0.45692819356918335
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_Extinguisher",
+      "triangles": 988,
+      "vertices": 536,
+      "dimensions_blender": [
+        0.24011920392513275,
+        0.1899999976158142,
+        0.4975000023841858
+      ],
+      "material_slots": 1
+    },
+    {
+      "name": "PROP_FoldedTowel",
+      "triangles": 1456,
+      "vertices": 742,
+      "dimensions_blender": [
+        0.5525645613670349,
+        0.699999988079071,
+        0.05587760731577873
+      ],
+      "material_slots": 1
+    }
+  ]
+}

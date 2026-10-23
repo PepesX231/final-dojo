@@ -64,7 +64,7 @@ namespace MamasComing
             float w = Wetness01;
             for (int i = 0; i < tintRenderers.Length; i++)
             {
-                if (!tintRenderers[i]) continue;
+                if (!tintRenderers[i] || tintRenderers[i] is ParticleSystemRenderer) continue;
                 mpb.SetColor("_BaseColor", Color.Lerp(baseColors[i], baseColors[i] * 0.55f, w));
                 mpb.SetFloat("_Smoothness", Mathf.Lerp(0.15f, 0.55f, w));
                 tintRenderers[i].SetPropertyBlock(mpb);

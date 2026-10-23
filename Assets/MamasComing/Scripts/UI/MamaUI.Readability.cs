@@ -89,6 +89,7 @@ namespace MamasComing
             controls.text = MamaReadability.Text("WORK TOGETHER: every room has a problem, and ignored problems cause NEW ones.\nStop the disasters first, then clean up or hide the evidence.\n\nWASD move  •  E use / pick up  •  Q put down  •  RMB throw\nHold H for an idea  •  TAB house notes  •  ESC settings / co-op", "ช่วยกันนะ: ทุกห้องมีปัญหา และปัญหาที่ปล่อยไว้จะลามเป็นปัญหาใหม่\nหยุดหายนะก่อน แล้วค่อยเก็บกวาดหรือซ่อนหลักฐาน\n\nWASD เดิน  •  E ใช้ / หยิบ  •  Q วาง  •  คลิกขวา ขว้าง\nกด H ค้าง คำใบ้  •  TAB ภาพรวม  •  ESC ตั้งค่า / เล่นกับเพื่อน");
             controls.fontSize = 30; controls.color = ReadableInk;
             RefreshReadabilityCopy();
+            BuildPolishedLayout(h);
         }
 
         void RefreshReadabilityCopy()
@@ -122,11 +123,18 @@ namespace MamasComing
         public void SetReadabilityPanels(bool overview, bool help, string title, string body)
         {
             if (!overviewGO) return;
-            overviewGO.SetActive(overview && !help);
+            overviewGO.SetActive(overview && !help && !QuestDirector.I);
+            var problemPanel = hud.transform.Find("Problems");
+            if (problemPanel) problemPanel.gameObject.SetActive(overview && !help);
             helpGO.SetActive(help);
             helpTitle.text = title; helpBody.text = body;
             bool mini = MiniGame.I && MiniGame.I.Active;
             contextGO.SetActive(!mini && !help);
+        }
+
+        public void SetContextVisible(bool visible)
+        {
+            if (contextGO) contextGO.SetActive(visible);
         }
     }
 }

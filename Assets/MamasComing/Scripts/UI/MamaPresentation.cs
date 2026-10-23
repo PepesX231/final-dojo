@@ -17,6 +17,7 @@ namespace MamasComing
         void Start()
         {
             gm = GetComponent<GameManager>();
+            if (!GetComponent<MamaActionVfx>()) gameObject.AddComponent<MamaActionVfx>();
             volume = FindFirstObjectByType<Volume>();
             if (volume && volume.sharedProfile)
             {
@@ -29,13 +30,15 @@ namespace MamasComing
                 if (runtimeProfile.TryGet<Bloom>(out var bloom)) bloom.intensity.Override(0.18f);
                 if (runtimeProfile.TryGet<ColorAdjustments>(out var colors))
                 {
-                    colors.saturation.Override(6f); colors.contrast.Override(10f); colors.postExposure.Override(0.02f);
+                    colors.saturation.Override(10f); colors.contrast.Override(12f); colors.postExposure.Override(-.08f);
                 }
+                if(runtimeProfile.TryGet<Tonemapping>(out var tone))tone.mode.Override(TonemappingMode.Neutral);
+                if(runtimeProfile.TryGet<Vignette>(out var vignette))vignette.intensity.Override(.12f);
             }
             if (!gm.stove) return;
             oilLabel = new GameObject("Oil warning", typeof(RectTransform), typeof(Canvas));
             var canvas = oilLabel.GetComponent<Canvas>(); canvas.renderMode = RenderMode.WorldSpace;
-            var rect = (RectTransform)oilLabel.transform; rect.sizeDelta = new Vector2(420, 105); rect.localScale = Vector3.one * 0.003f;
+            var rect = (RectTransform)oilLabel.transform; rect.sizeDelta = new Vector2(420, 105); rect.localScale = Vector3.one * 0.0021f;
             var backing = oilLabel.AddComponent<Image>(); backing.color = new Color(1f, 0.83f, 0.39f, 0.97f); backing.raycastTarget = false;
             var textGO = new GameObject("Label", typeof(RectTransform), typeof(Text)); textGO.transform.SetParent(rect, false);
             var tr = (RectTransform)textGO.transform; tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one; tr.offsetMin = new Vector2(10, 6); tr.offsetMax = new Vector2(-10, -6);
@@ -51,8 +54,8 @@ namespace MamasComing
             if (!oilLabel || !gm || !gm.player || !Camera.main) return;
             bool gameplay = gm.state == GameManager.State.Playing || gm.state == GameManager.State.MomHome;
             bool relevant = gm.stove.on || (gm.pot && gm.pot.Fire && gm.pot.Fire.burning);
-            bool nearby = Vector3.Distance(gm.player.transform.position, gm.stove.transform.position) < 5f;
-            oilLabel.SetActive(gameplay && relevant && nearby);
+            bool nearby = Vector3.Distance(gm.player.transform.position, gm.stove.transform.position) < 2.8f;
+            oilLabel.SetActive(gameplay && relevant && nearby && !MamaSettings.Open && !(MiniGame.I && MiniGame.I.Active));
             oilText.text = MamaReadability.Text("OIL FIRE\nNO WATER", "ไฟน้ำมัน\nห้ามสาดน้ำ");
             oilLabel.transform.rotation = Camera.main.transform.rotation;
         }

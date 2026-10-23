@@ -32,6 +32,7 @@ namespace MamasComing
         readonly Queue<string> toastQ = new Queue<string>();
         readonly Queue<string> momQ = new Queue<string>();
         float toastT, momT, callT;
+        public bool ImportantMessage => callT>0f || momT>0f;
 
         static readonly Vector2 TL = new Vector2(0, 1), TR = new Vector2(1, 1), BL = new Vector2(0, 0), BR = new Vector2(1, 0), TC = new Vector2(0.5f, 1), BC = new Vector2(0.5f, 0), CC = new Vector2(0.5f, 0.5f);
 
@@ -499,12 +500,12 @@ namespace MamasComing
         {
             if (momHome)
             {
-                timerSub.text = "MOM IS"; timerText.text = "HOME"; timerText.fontSize = 42;
+                timerSub.text = "MOM IS"; timerText.text = "HOME"; timerText.fontSize = 32;
                 timerDisc.color = Color.Lerp(Paper, Red, 0.5f + 0.5f * Mathf.Sin(Time.time * 8f));
                 return;
             }
             int s = Mathf.CeilToInt(Mathf.Max(0f, secondsLeft));
-            timerText.fontSize = 54;
+            timerText.fontSize = 40;
             timerText.text = (s / 60) + ":" + (s % 60).ToString("00");
             timerSub.text = "MOM IN";
             if (secondsLeft < 60f) timerDisc.color = Color.Lerp(Paper, Red, 0.5f + 0.5f * Mathf.Sin(Time.time * 6f));
@@ -536,7 +537,7 @@ namespace MamasComing
 
         public void SetAlarm(bool beeping)
         {
-            float a = beeping ? (Mathf.Repeat(Time.time, 0.5f) < 0.25f ? 0.16f : 0.02f) : 0f;
+            float a = beeping ? 0.018f + 0.012f * Mathf.Sin(Time.time * 3f) : 0f;
             alarmFlash.color = new Color(1f, 0.1f, 0.1f, a);
         }
 
@@ -573,9 +574,10 @@ namespace MamasComing
         void Update()
         {
             RefreshReadabilityCopy();
+            RefreshPolishedCopy();
             if (toastGO == null) return;
             float dt = Time.deltaTime;
-            if (toastT > 0f) toastT -= dt;
+            if (toastT > 0f && callT <= 0f && momT <= 0f) toastT -= dt;
             if (toastT <= 0f)
             {
                 if (toastQ.Count > 0) { toastText.text = toastQ.Dequeue(); toastGO.SetActive(true); toastT = 2.6f; }
@@ -583,8 +585,8 @@ namespace MamasComing
             }
             if (callT > 0f)
             {
-                callT -= dt;
-                callGO.transform.localScale = Vector3.one * (1f + Mathf.Max(0f, callT - 4.2f) * 0.6f);
+                if (momT <= 0f) callT -= dt;
+                callGO.transform.localScale = Vector3.one;
                 if (callT <= 0f) callGO.SetActive(false);
             }
             if (momT > 0f) momT -= dt;
@@ -593,6 +595,10 @@ namespace MamasComing
                 if (momQ.Count > 0) { momText.text = momQ.Dequeue(); momGO.SetActive(true); momT = 2.6f; }
                 else if (momGO.activeSelf) momGO.SetActive(false);
             }
+            // One notification lane: speech > emergency > routine confirmation.
+            bool speaking = momT > 0f && momGO.activeSelf;
+            callGO.SetActive(callT > 0f && !speaking);
+            toastGO.SetActive(toastT > 0f && callT <= 0f && !speaking);
         }
 
         // ------------------------------------------------------------------ helpers

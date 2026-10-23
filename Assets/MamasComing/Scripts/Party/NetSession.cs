@@ -43,7 +43,7 @@ namespace MamasComing
         List<Component> synced = new List<Component>();
         static readonly Dictionary<Type, FieldInfo[]> fieldCache = new Dictionary<Type, FieldInfo[]>();
         static readonly Type[] SyncTypes = { typeof(WaterTap), typeof(MainValve), typeof(Stove), typeof(Window), typeof(Fan), typeof(Drain), typeof(SmokeAlarm),
-            typeof(Cabinet), typeof(CookPot), typeof(Bucket), typeof(Towel), typeof(Extinguisher), typeof(FireSource), typeof(CoverObject), typeof(Fish), typeof(MessyProp), typeof(HeaterValve), typeof(Door) };
+            typeof(Cabinet), typeof(CookPot), typeof(Bucket), typeof(Towel), typeof(Extinguisher), typeof(FireSource), typeof(CoverObject), typeof(Fish), typeof(MessyProp), typeof(HeaterValve), typeof(Door), typeof(MotherApplePresentation) };
 
         float sendT, worldT, fieldT;
         readonly List<(string n, Vector3 p, float v, float pi)> sounds = new List<(string, Vector3, float, float)>();
@@ -136,13 +136,33 @@ namespace MamasComing
         {
             if (avatars.TryGetValue(slot, out var ex) && ex) return ex;
             if (!localKid) return null;
+            // Awake on the clone must cache open-eye materials, even if the live source
+            // is currently blinking or squeezing its eyes shut.
+            localKid.GetComponentInChildren<DreamRush.Player.AppleFace>(true)?.RestoreOpenEyes();
             var go = Instantiate(localKid.gameObject, Spawns[slot % Spawns.Length], Quaternion.identity);
             go.name = "Kid P" + (slot + 1) + " (remote)";
             var pc = go.GetComponent<PlayerController>();
             pc.isLocal = false; pc.controlsEnabled = false;
             if (pc.Motor) pc.Motor.enabled = false;
             var cc = go.GetComponent<CharacterController>(); if (cc) cc.enabled = false;
-            foreach (var r in go.GetComponentsInChildren<Renderer>()) { var b = new MaterialPropertyBlock(); r.GetPropertyBlock(b); b.SetColor("_BaseColor", r.sharedMaterial ? r.sharedMaterial.color * Tints[slot % Tints.Length] : Tints[slot % Tints.Length]); r.SetPropertyBlock(b); }
+            // DreamToon exposes _BaseColor without the MainColor attribute. Material.color
+            // can therefore return black, and a renderer-wide tint also destroys eye/glove colours.
+            // Keep the apple/face intact; identify friends by clothing and shape-coded name tags.
+            foreach (var r in go.GetComponentsInChildren<Renderer>())
+            {
+                if (r is ParticleSystemRenderer) continue;
+                var mats = r.sharedMaterials;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    var material = mats[i];
+                    if (!material || !material.HasProperty("_BaseColor")) continue;
+                    Color color = material.GetColor("_BaseColor");
+                    bool clothing = material.name.Contains("Sleeve") || material.name.Contains("Pack") && !material.name.Contains("Trim") || material.name.Contains("Shoe");
+                    if (clothing) color = slot % 3 == 1 ? new Color(.24f,.72f,.67f) : new Color(.94f,.67f,.25f);
+                    var block = new MaterialPropertyBlock(); r.GetPropertyBlock(block, i);
+                    block.SetColor("_BaseColor", color); r.SetPropertyBlock(block, i);
+                }
+            }
             pc.WakeUp();
             if (localKid.Motor) typeof(DreamRush.Player.PlayerMotor3D).GetProperty("Instance").SetValue(null, localKid.Motor);
             avatars[slot] = pc;
