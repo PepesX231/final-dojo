@@ -41,6 +41,9 @@ namespace MamasComing.Editor
         static readonly List<string> errors = new List<string>();
         static readonly List<string> lines = new List<string>();
 
+        // Half-width of an axis-aligned box along a direction.
+        static float Support(Bounds b, Vector3 d) => Mathf.Abs(d.x) * b.extents.x + Mathf.Abs(d.y) * b.extents.y + Mathf.Abs(d.z) * b.extents.z;
+
         public static void Run()
         {
             if (!EditorApplication.isPlaying || !GameManager.I) throw new InvalidOperationException("Open MamasKitchen in Play mode first.");
@@ -116,6 +119,8 @@ namespace MamasComing.Editor
             {
                 var item = UnityEngine.Object.FindObjectsByType<Pickup>(FindObjectsSortMode.None).First(x => x.displayName == propName);
                 var grip = item.GetComponent<CarryGrip>();
+                // The live hamster flees from a nearby kid; hold it still so staging and grip checks are repeatable.
+                if (item is Hamster) typeof(Hamster).GetField("pauseT", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(item, 5f);
                 Assert(grip && item.GetComponentsInChildren<MeshRenderer>().Any(r => r.enabled && r.transform.IsChildOf(item.transform.Find("Art_Recast"))), propName + " uses the rebuilt mesh");
                 StandNear(item, .6f); yield return .2f;
                 Assert(gm.player.Target == item, propName + " can be targeted with E");
@@ -128,8 +133,11 @@ namespace MamasComing.Editor
                 Assert(left < .055f && right < .055f, propName + " wrists reach both authored contacts");
                 var torso=gm.player.GetComponentsInChildren<Renderer>().First(r=>r.name=="Body");
                 var heldBounds=item.transform.Find("Art_Recast").GetComponentInChildren<Renderer>().bounds;
-                lines.Add(propName+" body clearance metres="+(heldBounds.min.z-torso.bounds.max.z).ToString("F3"));
-                Assert(heldBounds.min.z>=torso.bounds.max.z-.03f,propName+" held mesh clears the front of the torso");
+                // Measure along the kid's facing, not world Z: the review stands wherever the prop happens to be.
+                Vector3 fwd=gm.player.transform.forward;
+                float clearance=(Vector3.Dot(heldBounds.center,fwd)-Support(heldBounds,fwd))-(Vector3.Dot(torso.bounds.center,fwd)+Support(torso.bounds,fwd));
+                lines.Add(propName+" body clearance metres="+clearance.ToString("F3"));
+                Assert(clearance>=-.03f,propName+" held mesh clears the front of the torso");
                 Shot("recast-hold-" + propName.Replace(" ", "-")); yield return .2f;
                 MamaRecastEvidence.HeldCloseup();
                 Press(Key.Q); yield return .15f; Press(); yield return .3f;
@@ -141,10 +149,10 @@ namespace MamasComing.Editor
             var bin = UnityEngine.Object.FindFirstObjectByType<TrashBin>();
             StandNear(bin, .8f); yield return .2f;
             Assert(gm.player.Target == bin, "hollow trash bin is targetable while carrying a bag");
-            Press(Key.E); yield return .15f; Press(); yield return .3f;
-            Assert(bin.IsOpen && gm.player.Held == bag && Quaternion.Angle(bin.doorPivot.localRotation, Quaternion.identity)>60f, "first E opens the hinged bin lid and keeps the bag held");
+            // One E with trash in hand pops the lid, drops the bag in and closes the lid again.
+            int storedBefore = bin.stored;
             Press(Key.E); yield return .15f; Press(); yield return .4f;
-            Assert(gm.player.Held == null && bin.stored == 1 && bag.Settled && !bag.IsProblem, "second E deposits bag and resolves its mess state");
+            Assert(gm.player.Held == null && bin.stored == storedBefore + 1 && bag.Settled && !bag.IsProblem, "one E deposits the bag and resolves its mess state");
             Assert(Vector3.Distance(bag.transform.position, bin.stashPoint.position)<.05f, "deposited bag is inside the bin destination");
             Shot("recast-bin-disposal"); yield return .2f;
             MamaRecastEvidence.MotherPreview();
