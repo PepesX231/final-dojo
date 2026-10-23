@@ -76,6 +76,8 @@ namespace MamasComing
         public static bool RestartDown => Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame;
         public static bool EscDown => Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
         /// <summary>Dev shortcut: F5 makes Mom arrive almost immediately.</summary>
+        /// <summary>Dev shortcut: F6 switches your kid to the next fruit (until the lobby picker sets it).</summary>
+        public static bool DevNextKid => Keyboard.current != null && Keyboard.current.f6Key.wasPressedThisFrame;
         public static bool DevSkip => Keyboard.current != null && Keyboard.current.f5Key.wasPressedThisFrame;
     }
 }

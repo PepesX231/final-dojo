@@ -33,6 +33,11 @@ namespace MamasComing
         public float WaterDepth { get; private set; }
         public bool OnWet => WaterDepth > 0.0009f;
         public bool Stunned => stun > 0f;
+        /// Flat on the floor as a plain fruit (slip / punch / knock-back). The last RecoverTime of the
+        /// stun is the limbs-pop-out-and-hop-up beat played by KidBody.
+        public bool KnockedDown => knocked && stun > RecoverTime;
+        public const float RecoverTime = 0.5f;
+        public KidBody Body { get; private set; }
         public int Falls { get; private set; }
         public float HoldProgress { get; private set; }
         public float PlanarSpeed => Motor ? Motor.PlanarVelocity.magnitude : 0f;
@@ -42,6 +47,7 @@ namespace MamasComing
         public bool PlaceAtHome { get; private set; }
 
         float stun, fallAnim, splashCd, crashCd, turnCheck, actionLock, throwT = -1f;
+        bool knocked;
         Interactable holdTarget;
         Vector3 lastVel, faceDir;
         float faceT;
@@ -63,11 +69,22 @@ namespace MamasComing
             if (!anim) anim = GetComponentInChildren<AppleProceduralAnimator>();
             if (!actions) actions = GetComponent<KidActionAnimator>();
             mpb = new MaterialPropertyBlock();
+            if (!GetComponent<KidRoughhouse>()) gameObject.AddComponent<KidRoughhouse>();
+            Body = GetComponent<KidBody>(); if (!Body && fallPivot) Body = gameObject.AddComponent<KidBody>();
+            if (isLocal) KidLook.RememberApple(this);
+        }
+
+        void KnockDown(float time)
+        {
+            stun = Mathf.Max(stun, time);
+            knocked = true;
         }
 
         void Start()
         {
             if (Camera.main) Motor.CameraTransform = Camera.main.transform;
+            // wear the fruit picked in the menu / lobby (remote avatars get theirs from the network)
+            if (isLocal && GameManager.I && GameManager.I.player == this && KidLook.Of(this) != KidLook.Selected) KidLook.Apply(this, KidLook.Selected);
             if (ghostMaterial)
             {
                 var g = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -91,8 +108,12 @@ namespace MamasComing
         public void WakeUp() { if (anim) anim.sleeping = false; }
 
         /// Remote player's avatar (online co-op): pose comes from the network; just keep the held item in the hands.
-        public void RemoteTick(float speed, bool sprint, bool stunned)
+        public void RemoteTick(float speed, bool sprint, bool stunned) => RemoteTick(speed, sprint, stunned, false);
+        public void RemoteTick(float speed, bool sprint, bool stunned, bool knockedDown)
         {
+            // the owner decides when it is down; KidBody plays the curl / pop-up from this flag
+            if (knockedDown) { knocked = true; stun = Mathf.Max(stun, RecoverTime + 0.15f); }
+            else if (knocked && stun > RecoverTime) stun = RecoverTime;
             remoteSpeed = speed;
             // feed the procedural animator: velocity from the network pose
             float dt0 = Mathf.Max(0.0001f, Time.deltaTime);
@@ -113,12 +134,13 @@ namespace MamasComing
 
         void Update()
         {
-            if (!isLocal) { if (stun > 0f) stun -= Time.deltaTime; return; }
+            if (!isLocal) { if (stun > 0f) stun -= Time.deltaTime; if (stun <= 0f) knocked = false; return; }
             float dt = Time.deltaTime;
             scrubbedLastFrame = Scrubbing;
             Scrubbing = false;
             WaterDepth = FloodSim.I ? FloodSim.I.DepthAt(transform.position) : 0f;
             if (stun > 0f) stun -= dt;
+            if (stun <= 0f) knocked = false;
             if (crashCd > 0f) crashCd -= dt;
             if (splashCd > 0f) splashCd -= dt;
             if (actionLock > 0f) actionLock -= dt;
@@ -358,7 +380,7 @@ namespace MamasComing
         public void Slip(string reason)
         {
             if (Stunned) return;
-            stun = 1.8f;
+            KnockDown(1.8f);
             fallAnim = 1f;
             Falls++;
             HoldProgress = 0f;
@@ -388,7 +410,7 @@ namespace MamasComing
         {
             dir.y = 0f; if (dir.sqrMagnitude < 1e-4f) dir = -transform.forward; dir.Normalize();
             stun = Mathf.Max(stun, stunTime);
-            if (stunTime > 0.5f) fallAnim = Mathf.Max(fallAnim, 0.6f);
+            if (stunTime > RecoverTime) { KnockDown(stunTime); fallAnim = Mathf.Max(fallAnim, 0.6f); }
             HoldProgress = 0f;
             Motor.Launch(dir * force + Vector3.up * (1.2f + force * 0.25f));
             if (dropHeld && Held != null) { var h = ReleaseHeld(); h.OnDropped(this, dir * 2f + Vector3.up * 2.2f); if (h is Bucket b) b.Spill(0.6f); }
@@ -399,7 +421,7 @@ namespace MamasComing
         public void KnockBack(Vector3 from, float force)
         {
             Vector3 d = transform.position - from; d.y = 0f;
-            stun = Mathf.Max(stun, 1.2f);
+            KnockDown(1.2f);
             Motor.Launch(d.normalized * force + Vector3.up * 2f);
             if (Held != null) { var h = ReleaseHeld(); h.OnDropped(this, Vector3.up); }
         }
@@ -500,7 +522,7 @@ namespace MamasComing
 
         void AnimateFall(float dt)
         {
-            if (!fallPivot) return;
+            if (!fallPivot || (Body && Body.enabled)) return;   // KidBody owns the pivot (curl into a fruit / pop up)
             float target = Stunned ? 1f : 0f;
             fallAnim = Mathf.MoveTowards(fallAnim, target, dt * (Stunned ? 8f : 2.2f));
             float k = fallAnim;

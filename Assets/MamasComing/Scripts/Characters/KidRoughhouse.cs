@@ -2,16 +2,18 @@ using UnityEngine;
 
 namespace MamasComing
 {
-    /// Chaotic co-op slapstick: G / RB = shove the kid in front of you (they drop what they carry),
-    /// and two kids sprinting into each other bounce apart.
+    /// Chaotic co-op slapstick: left click (empty hands) / G / RB = punch the kid in front of you: they fly back,
+    /// curl up into a plain fruit and drop what they carry. Two kids sprinting into each other bounce apart.
     /// Online: the swing animation, the comic word and the sounds play on EVERY screen; the knock-back is applied
     /// by the victim's own machine (which also decides whether they had already dodged).
     [RequireComponent(typeof(PlayerController))]
     public class KidRoughhouse : MonoBehaviour
     {
-        public float shoveRange = 1.35f;
-        public float shoveForce = 6.5f;
-        public float shoveCooldown = 0.75f;
+        public float shoveRange = 1.5f;
+        public float shoveForce = 7.5f;
+        public float shoveStun = 1.4f;
+        public float shoveCooldown = 0.6f;
+        const float HitDelay = 0.12f;   // the fist lands mid-swing, not on the click
         public float bumpSpeed = 4.0f;
 
         PlayerController me;
@@ -28,29 +30,55 @@ namespace MamasComing
         {
             if (!me || !me.isLocal) return;
             shoveCd -= Time.deltaTime; bumpCd -= Time.deltaTime;
+            if (swingT > 0f) { swingT -= Time.deltaTime; if (swingT <= 0f) Land(); }
+            if (Debug.isDebugBuild && MamaInput.DevNextKid && GameManager.I && GameManager.I.player == me)
+            {
+                KidLook.Selected = (KidLook.Selected + 1) % KidLook.Count;
+                KidLook.Apply(me, KidLook.Selected);
+                if (GameManager.I.ui) GameManager.I.Toast(Loc.Thai ? KidLook.NamesTh[KidLook.Selected] : KidLook.Names[KidLook.Selected]);
+            }
             if (!me.controlsEnabled || me.Stunned || (MiniGame.I && MiniGame.I.Active) || MamaSettings.Open) return;
 
-            if (MamaInput.ShoveDown && shoveCd <= 0f) Shove();
+            bool punch = MamaInput.ShoveDown || MamaInput.ClickDown && me.Held == null && me.HoldProgress <= 0f;
+            if (punch && shoveCd <= 0f) Shove();
             if (bumpCd <= 0f && me.PlanarSpeed > bumpSpeed) Bump();
         }
 
-        void Shove()
+        float swingT;
+
+        PlayerController Victim(float range, float minDot)
         {
-            shoveCd = shoveCooldown;
-            if (me.actions) me.actions.Play(KidActionAnimator.Clip.Throw, 0.32f);   // relayed to every screen
             PlayerController best = null; float bestD = float.MaxValue;
             foreach (var o in PlayerController.AllPlayers)
             {
                 if (!o || o == me || !o.isActiveAndEnabled) continue;
                 Vector3 d = o.transform.position - transform.position; d.y = 0f;
-                float dist = d.magnitude; if (dist > shoveRange) continue;
+                float dist = d.magnitude; if (dist > range) continue;
                 float dot = dist > 0.01f ? Vector3.Dot(transform.forward, d / dist) : 1f;
-                if (dot < 0.35f) continue;
+                if (dot < minDot) continue;
                 if (dist < bestD) { bestD = dist; best = o; }
             }
+            return best;
+        }
+
+        void Shove()
+        {
+            shoveCd = shoveCooldown;
+            // a little aim help: turn to face a friend who is roughly in front
+            var aim = Victim(shoveRange + 0.4f, -0.1f);
+            if (aim) { Vector3 d = aim.transform.position - transform.position; d.y = 0f; if (d.sqrMagnitude > 0.01f) transform.rotation = Quaternion.LookRotation(d); }
+            if (me.actions) me.actions.Play(KidActionAnimator.Clip.Punch, 0.36f);   // relayed to every screen
+            swingT = HitDelay;
+        }
+
+        void Land()
+        {
+            if (!me.controlsEnabled || me.Stunned) return;
+            var best = Victim(shoveRange, 0.3f);
             if (!best) { NetGame.Pop(transform.position + transform.forward * 0.6f + Vector3.up * 1.0f, null, null, Color.white, "whoosh", 0.45f, 1.6f); return; }
             Vector3 dir = best.transform.position - transform.position;
-            NetGame.Hit(best, dir, shoveForce, 0.9f, true, transform.position);
+            NetGame.Hit(best, dir, shoveForce, shoveStun, true, transform.position);
+            if (GameManager.I && GameManager.I.cam) GameManager.I.cam.Shake(0.15f);
             int i = Random.Range(0, PowEn.Length);
             NetGame.Pop(best.transform.position + Vector3.up * 1.3f, PowEn[i], PowTh[i], new Color(1f, 0.85f, 0.2f), "slap", 0.9f, Random.Range(0.85f, 1.15f));
             if (Random.value < 0.35f && GameManager.I && GameManager.I.ui) { int l = Random.Range(0, Lines.Length); GameManager.I.ui.KidSay(Loc.Thai ? LinesTh[l] : Lines[l]); }

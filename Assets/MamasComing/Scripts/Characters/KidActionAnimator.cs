@@ -15,7 +15,7 @@ namespace MamasComing
         public enum Clip
         {
             None, PickLow, PickHigh, PlaceDown, Throw, Twist, TwistLow, PushUp, Crank, Dig, PokeUp,
-            Slam, Wring, Pour, ReachIn, Pull, Press, Scoop
+            Slam, Wring, Pour, ReachIn, Pull, Press, Scoop, Punch
         }
 
         public PlayerController player;
@@ -70,6 +70,14 @@ namespace MamasComing
             Rest(armL, out armLRP, out armLRR); Rest(armR, out armRRP, out armRRR);
             Rest(armLLo, out armLLoRP, out armLLoRR); Rest(armRLo, out armRLoRP, out armRLoRR);
             if (player && player.holdPoint) defaultHold = player.holdPoint.localPosition;
+        }
+
+        /// The kid changed fruit (KidLook): drive the new model's limbs from now on.
+        public void Rebind(Transform newChr, Vector3 newPivot)
+        {
+            chr = newChr; pivot = newPivot; cur = default;
+            if (chr) Awake();
+            else body = null;
         }
 
         Transform Find(string n) { foreach (var t in chr.GetComponentsInChildren<Transform>(true)) if (t.name == n) return t; return null; }
@@ -277,6 +285,14 @@ namespace MamasComing
                         p.bp = 10f * grab - 14f * back;
                         p.r = new Vector3(-85f * grab + 30f * back, -20f * back, -10f); p.re = 10f + 50f * back;
                         p.l = new Vector3(-20f * back, 0f, 15f); p.le = 20f; break;
+                    }
+                case Clip.Punch: // cartoon haymaker: wind the right fist back, twist and jab forward
+                    {
+                        float wind = u < 0.3f ? u / 0.3f : 0f;
+                        float jab = u < 0.3f ? 0f : Mathf.Sin(Mathf.Clamp01((u - 0.3f) / 0.45f) * Mathf.PI * 0.5f) * (1f - Mathf.Clamp01((u - 0.75f) / 0.25f));
+                        p.by = 28f * wind - 22f * jab; p.bp = -6f * wind + 14f * jab; p.fwd = 0.08f * jab; p.br = -6f * wind;
+                        p.r = new Vector3(-40f * wind - 95f * jab, 0f, 10f * wind - 6f * jab); p.re = 85f * wind + 5f * jab;
+                        p.l = new Vector3(-60f, 0f, -10f - 15f * jab); p.le = 70f; break;
                     }
                 case Clip.Press:
                     p.bp = 8f * up; p.r = new Vector3(-90f * up, 0f, -6f); p.re = 5f; p.l = new Vector3(0f, 0f, 10f); p.le = 15f; break;

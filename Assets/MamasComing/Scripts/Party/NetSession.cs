@@ -35,7 +35,7 @@ namespace MamasComing
         int mySlot;
         PlayerController localKid;
 
-        class RemoteState { public Vector3 pos; public float yaw, speed; public bool use, sprint, stunned; public int holdTarget = -1; public float t; }
+        class RemoteState { public Vector3 pos; public float yaw, speed; public bool use, sprint, stunned, down; public int holdTarget = -1; public int kid = -1, shownKid = -1; public float t; }
 
         // registry (built when the scene loads, identical on every machine)
         List<Interactable> reg = new List<Interactable>();
@@ -382,7 +382,8 @@ namespace MamasComing
                 var pc = kv.Value;
                 pc.transform.position = Vector3.Lerp(pc.transform.position, rs.pos, 1f - Mathf.Exp(-14f * dt));
                 pc.transform.rotation = Quaternion.Slerp(pc.transform.rotation, Quaternion.Euler(0, rs.yaw, 0), 1f - Mathf.Exp(-14f * dt));
-                pc.RemoteTick(rs.speed, rs.sprint, rs.stunned);
+                if (rs.kid >= 0 && rs.kid != rs.shownKid) { rs.shownKid = rs.kid; KidLook.Apply(pc, rs.kid); }   // wear the fruit they picked
+                pc.RemoteTick(rs.speed, rs.sprint, rs.stunned, rs.down);
                 // their hold-actions (cranking a valve, lifting the sofa...) look the same on every screen
                 if (pc.actions && rs.holdTarget >= 0 && rs.holdTarget < reg.Count && reg[rs.holdTarget]) pc.actions.Hold(pc.HoldClipFor(reg[rs.holdTarget]));
                 if (State == Mode.Host)
@@ -413,9 +414,10 @@ namespace MamasComing
             w.Write((byte)mySlot);
             var p = localKid.transform.position; w.Write(p.x); w.Write(p.y); w.Write(p.z);
             w.Write(localKid.transform.eulerAngles.y); w.Write(localKid.PlanarSpeed);
-            byte f = 0; if (MamaInput.UseHeld && localKid.Held && localKid.controlsEnabled) f |= 1; if (localKid.Sprinting) f |= 2; if (localKid.Stunned) f |= 4;
+            byte f = 0; if (MamaInput.UseHeld && localKid.Held && localKid.controlsEnabled) f |= 1; if (localKid.Sprinting) f |= 2; if (localKid.Stunned) f |= 4; if (localKid.KnockedDown) f |= 8;
             w.Write(f);
             w.Write((short)(localKid.HoldProgress > 0f && localKid.Target ? reg.IndexOf(localKid.Target) : -1));
+            w.Write((byte)KidLook.Of(localKid));
             if (State == Mode.Host) SendAll("mc/state", w, NetworkDelivery.UnreliableSequenced);
             else SendHost("mc/state", w, NetworkDelivery.UnreliableSequenced);
         }
@@ -428,12 +430,13 @@ namespace MamasComing
             if (slot == mySlot) return;
             if (!remote.TryGetValue(slot, out var rs)) { rs = new RemoteState(); remote[slot] = rs; }
             rs.pos = new Vector3(r.ReadSingle(), r.ReadSingle(), r.ReadSingle()); rs.yaw = r.ReadSingle(); rs.speed = r.ReadSingle();
-            byte f = r.ReadByte(); rs.use = (f & 1) != 0; rs.sprint = (f & 2) != 0; rs.stunned = (f & 4) != 0;
+            byte f = r.ReadByte(); rs.use = (f & 1) != 0; rs.sprint = (f & 2) != 0; rs.stunned = (f & 4) != 0; rs.down = (f & 8) != 0;
             rs.holdTarget = r.ReadInt16(); rs.t = Time.time;
+            rs.kid = r.BaseStream.Position < r.BaseStream.Length ? r.ReadByte() : -1;   // older builds don't send the fruit
             if (!avatars.ContainsKey(slot)) SpawnPuppet(slot);
             if (State == Mode.Host)   // relay to the other clients
             {
-                var w = Begin(); w.Write((byte)slot); w.Write(rs.pos.x); w.Write(rs.pos.y); w.Write(rs.pos.z); w.Write(rs.yaw); w.Write(rs.speed); w.Write(f); w.Write((short)rs.holdTarget);
+                var w = Begin(); w.Write((byte)slot); w.Write(rs.pos.x); w.Write(rs.pos.y); w.Write(rs.pos.z); w.Write(rs.yaw); w.Write(rs.speed); w.Write(f); w.Write((short)rs.holdTarget); if (rs.kid >= 0) w.Write((byte)rs.kid);
                 foreach (var kv in slotOf) if (kv.Key != sender && kv.Key != nm.LocalClientId) Send("mc/state", kv.Key, w, NetworkDelivery.UnreliableSequenced);
             }
         }
