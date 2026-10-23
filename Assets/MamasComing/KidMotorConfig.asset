@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2153a6d28ced7634891d9cf0b5a50bd5, type: 3}
+  m_Name: KidMotorConfig
+  m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Player.PlayerMotorConfig
+  walkSpeed: 3.2
+  sprintSpeed: 5.6
+  groundAcceleration: 28
+  groundDeceleration: 35
+  turnaroundDeceleration: 55
+  rotationSpeedDegrees: 600
+  airAcceleration: 13
+  airDeceleration: 4
+  airRotationSpeedDegrees: 420
+  jumpHeight: 0.8
+  gravity: 24
+  fallGravityMultiplier: 1.35
+  jumpCutGravityMultiplier: 2.6
+  coyoteTime: 0.12
+  jumpBuffer: 0.14
+  maxFallSpeed: 24
+  groundSnapDistance: 0.2
+  maxWalkableSlope: 45
+  groundStickVelocity: 2
