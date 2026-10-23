@@ -46,7 +46,7 @@ namespace MamasComing.Menu
             nameTag.fontSize = 64; nameTag.characterSize = .045f; nameTag.fontStyle = FontStyle.Bold;
         }
 
-        public void SetTag(string s, Color c) { if (nameTag) { nameTag.text = s; nameTag.color = c; } }
+        public void SetTag(string s, Color c) { if (nameTag) { nameTag.text = s; nameTag.color = Color.Lerp(c, MenuUi.Ink, .3f); } }
 
         public void SetNet(Vector3 p, float yaw, float speed, bool dance, bool air)
         {

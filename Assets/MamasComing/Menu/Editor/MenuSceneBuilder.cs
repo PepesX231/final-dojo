@@ -20,26 +20,26 @@ namespace MamasComing.MenuEditor
         public static void Build()
         {
             Directory.CreateDirectory(Root + "/Scenes"); Directory.CreateDirectory(Root + "/Materials");
-            var toon = Mat("MAT_MenuToon", "MamasComing/ToyToon", "Universal Render Pipeline/Lit", m =>
+            var toon = Mat("MAT_MenuToon", "Universal Render Pipeline/Lit", null, m =>
             {
-                Set(m, "_ToonShadow", new Color(.6f, .58f, .9f)); SetF(m, "_ToonSoft", .06f); SetF(m, "_ToonAmbient", .6f); SetF(m, "_Smoothness", .2f);
+                SetF(m, "_Smoothness", .25f); SetF(m, "_Metallic", 0f);   // ToyToon renders nothing without the toon renderer feature, so plain Lit + ink shells
             });
             var ink = Mat("MAT_MenuInk", "DreamRush/InkOutline", null, m => { Set(m, "_OutlineColor", new Color(.06f, .05f, .06f)); SetF(m, "_OutlineWidth", 3.2f); SetF(m, "_MinDistanceScale", .5f); });
             var profile = Profile();
             var fruits = Fruits();
 
             // ---- main menu
-            var s = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            var s = OpenFresh();
             var cam = MakeCamera("Menu Camera", new Color(.55f, .82f, 1f), 40f);
             MakeLight(new Vector3(42, -30, 0), new Color(1f, .93f, .78f), 1.25f);
             MakeVolume(profile);
             RenderSettings.ambientMode = AmbientMode.Flat; RenderSettings.ambientLight = new Color(.62f, .62f, .66f);
             var menu = new GameObject("Main Menu").AddComponent<MainMenu>();
             menu.fruitPrefabs = fruits; menu.baseMaterial = toon; menu.inkMaterial = ink; menu.cam = cam;
-            EditorSceneManager.SaveScene(s, MenuPath);
+            Close(s, MenuPath);
 
             // ---- lobby
-            s = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            s = OpenFresh();
             cam = MakeCamera("Lobby Camera", new Color(.55f, .82f, 1f), 50f);
             MakeLight(new Vector3(50, -35, 0), new Color(1f, .95f, .8f), 1.3f);
             MakeVolume(profile);
@@ -49,11 +49,27 @@ namespace MamasComing.MenuEditor
             var go = new GameObject("Lobby");
             var lobby = go.AddComponent<Lobby>(); var net = go.AddComponent<LobbyNet>();
             lobby.fruitPrefabs = fruits; lobby.baseMaterial = toon; lobby.inkMaterial = ink; lobby.cam = cam; lobby.net = net; net.lobby = lobby;
-            EditorSceneManager.SaveScene(s, LobbyPath);
+            Close(s, LobbyPath);
 
             AddToBuild();
             AssetDatabase.SaveAssets();
             Debug.Log("[Menu] built " + MenuPath + " and " + LobbyPath + " (fruits=" + fruits.Length + ", toon=" + toon.shader.name + ")");
+        }
+
+        // Built additively so whatever scene another tool has open (maybe unsaved) is left untouched.
+        static UnityEngine.SceneManagement.Scene previous;
+        static UnityEngine.SceneManagement.Scene OpenFresh()
+        {
+            previous = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            var s = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            UnityEngine.SceneManagement.SceneManager.SetActiveScene(s);
+            return s;
+        }
+        static void Close(UnityEngine.SceneManagement.Scene s, string path)
+        {
+            EditorSceneManager.SaveScene(s, path);
+            if (previous.IsValid() && previous.isLoaded) UnityEngine.SceneManagement.SceneManager.SetActiveScene(previous);
+            EditorSceneManager.CloseScene(s, true);
         }
 
         static GameObject[] Fruits()

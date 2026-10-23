@@ -493,7 +493,7 @@ namespace MamasComing.Menu
             playersText.rectTransform.offsetMax = new Vector2(-26, -20); playersText.supportRichText = true; playersText.lineSpacing = 1.15f;
 
             // level / start (bottom-right)
-            var lv = MenuUi.Rect("Level card", ui, new Vector2(1, 0), new Vector2(-28, 28), new Vector2(620, 330));
+            var lv = MenuUi.Rect("Level card", ui, new Vector2(1, 0), new Vector2(-28, 28), new Vector2(620, 370));
             MenuUi.Panel(lv, MenuUi.Paper, MenuUi.Ink, 5f);
             var lcap = MenuUi.Rect("cap", lv, new Vector2(.5f, 1), new Vector2(0, -12), new Vector2(560, 36));
             MenuUi.Label(lcap, MenuFlow.Txt("NEXT LEVEL", "ด่านที่จะเล่น"), 24, MenuUi.Pink);
@@ -513,9 +513,9 @@ namespace MamasComing.Menu
 
             // hints + prompt (bottom-left / center)
             var hint = MenuUi.Rect("Hints", ui, new Vector2(0, 0), new Vector2(28, 24), new Vector2(980, 50));
+            MenuUi.Panel(hint, new Color(.07f, .06f, .07f, .7f));
             hintText = MenuUi.Label(hint, MenuFlow.Txt("WASD move · Space jump · Shift run · 1 dance · Right-drag camera · Esc leave",
-                "WASD เดิน · Space กระโดด · Shift วิ่ง · 1 เต้น · คลิกขวาลากหมุนกล้อง · Esc ออก"), 22, Color.white, TextAnchor.MiddleLeft);
-            hintText.gameObject.AddComponent<Shadow>().effectDistance = new Vector2(2, -2);
+                "WASD เดิน · Space กระโดด · Shift วิ่ง · 1 เต้น · คลิกขวาลากหมุนกล้อง · Esc ออก"), 22, Color.white, TextAnchor.MiddleLeft, true, 18);
             var pr = MenuUi.Rect("Prompt", ui, new Vector2(.5f, 0), new Vector2(0, 170), new Vector2(520, 76), new Vector2(.5f, .5f));
             MenuUi.Panel(pr, MenuUi.Pink, MenuUi.Ink, 4f);
             promptText = MenuUi.Punchy(MenuUi.Label(pr, MenuFlow.Txt("[E]  DRESS UP!", "[E]  แต่งตัว!"), 34, Color.white), MenuUi.Ink, 2f);

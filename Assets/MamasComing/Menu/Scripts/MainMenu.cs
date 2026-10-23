@@ -58,14 +58,14 @@ namespace MamasComing.Menu
                 blob.transform.localRotation = Quaternion.Euler(0, 0, (float)rng.NextDouble() * 80f - 40f);
             }
             // round stage the kids dance on
-            AvatarLook.Prim(PrimitiveType.Cylinder, stage, new Vector3(1.4f, .1f, 0), new Vector3(7f, .2f, 4.2f), MenuUi.Lemon);
-            AvatarLook.Prim(PrimitiveType.Cylinder, stage, new Vector3(1.4f, .03f, 0), new Vector3(7.6f, .06f, 4.8f), MenuUi.Ink);
+            AvatarLook.Prim(PrimitiveType.Cylinder, stage, new Vector3(2.6f, .1f, 0), new Vector3(7f, .2f, 4.2f), MenuUi.Lemon);
+            AvatarLook.Prim(PrimitiveType.Cylinder, stage, new Vector3(2.6f, .03f, 0), new Vector3(7.6f, .06f, 4.8f), MenuUi.Ink);
             int n = KidLook.Count;
             for (int i = 0; i < n; i++)
             {
                 var spot = new GameObject("Dancer " + i).transform; spot.SetParent(stage, false);
                 float t = n == 1 ? .5f : i / (float)(n - 1);
-                spot.localPosition = new Vector3(Mathf.Lerp(-1.2f, 4.0f, t), .2f, Mathf.Sin(t * Mathf.PI) * -.8f + .2f);
+                spot.localPosition = new Vector3(Mathf.Lerp(.4f, 5.0f, t), .2f, Mathf.Sin(t * Mathf.PI) * -.8f + .2f);
                 spot.localRotation = Quaternion.Euler(0, 180f + Mathf.Lerp(18f, -18f, t), 0);
                 var look = AvatarLook.Create(spot, fruitPrefabs, baseMaterial, new Cosmetic { fruit = (byte)i, hat = (byte)(i + 1), face = (byte)(i % MenuFlow.FaceEn.Length), color = (byte)(i * 3 % MenuFlow.Colors.Length) });
                 dancers.Add(look);
@@ -109,7 +109,7 @@ namespace MamasComing.Menu
             MenuUi.Panel(band, new Color(.45f, .3f, .9f, .82f));   // bold grape band behind the buttons
 
             BuildTitle();
-            mainPage = MenuUi.Rect("Main", root, new Vector2(0, .5f), new Vector2(110, -150), new Vector2(720, 560), new Vector2(0, .5f));
+            mainPage = MenuUi.Rect("Main", root, new Vector2(0, .5f), new Vector2(110, -215), new Vector2(720, 560), new Vector2(0, .5f));
             MenuUi.Button(mainPage, MenuFlow.Txt("CREATE ROOM", "สร้างห้อง"), new Vector2(0, 1), new Vector2(0, 0), new Vector2(560, 112), MenuUi.Lemon, () => Show(Page.Create), 54, 2.5f).text.color = MenuUi.Ink;
             MenuUi.Button(mainPage, MenuFlow.Txt("JOIN ROOM", "เข้าห้อง"), new Vector2(0, 1), new Vector2(40, -136), new Vector2(520, 104), MenuUi.Teal, () => Show(Page.Join), 50, -2f);
             MenuUi.Button(mainPage, MenuFlow.Txt("SOLO WARM-UP", "ซ้อมคนเดียว"), new Vector2(0, 1), new Vector2(10, -262), new Vector2(440, 84), MenuUi.Pink, () => { MenuFlow.MaxPlayers = MenuFlow.MinPlayers; SceneManager.LoadScene(MenuFlow.LobbyScene); }, 38, 1.5f);

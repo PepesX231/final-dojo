@@ -199,7 +199,10 @@ namespace MamasComing.Menu
         {
             var g = GameObject.CreatePrimitive(t); g.transform.SetParent(parent, false);
             g.transform.localPosition = pos; g.transform.localScale = scale;
-            var col = g.GetComponent<Collider>(); if (col && !keepCollider) Destroy(col);
+            var col = g.GetComponent<Collider>();
+            if (col && !keepCollider) Destroy(col);
+            // a scaled CapsuleCollider is not a disc (a wide flat cylinder becomes a giant ball), so cylinders collide with their mesh
+            else if (col && t == PrimitiveType.Cylinder) { DestroyImmediate(col); g.AddComponent<MeshCollider>().sharedMesh = g.GetComponent<MeshFilter>().sharedMesh; }
             var r = g.GetComponent<Renderer>();
             r.sharedMaterials = InkMaterial && !noInk ? new[] { Mat(c), InkMaterial } : new[] { Mat(c) };
             return g;
