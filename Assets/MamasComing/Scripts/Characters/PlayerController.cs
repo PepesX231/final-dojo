@@ -317,7 +317,9 @@ namespace MamasComing
                 if (!it || !it.isActiveAndEnabled) continue;
                 if (Held != null && ReferenceEquals(it, Held)) continue;
                 if (!it.CanInteract(this)) continue;
-                Vector3 d = it.InteractPoint - pos; d.y = 0f;
+                Vector3 d = it.InteractPoint - pos;
+                if (Mathf.Abs(d.y) > 3f) continue;   // on the other floor
+                d.y = 0f;
                 float dist = d.magnitude;
                 if (dist > it.interactRadius) continue;
                 float dot = dist > 0.01f ? Vector3.Dot(fwd, d / dist) : 1f;

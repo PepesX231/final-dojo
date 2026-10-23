@@ -39,8 +39,10 @@ namespace MamasComing
                 Vector3 c = r.bounds.center, d = c - o;
                 if (Mathf.Abs(Vector3.Dot(d, n)) > decorDepth) continue;
                 if (Mathf.Abs(Vector3.Dot(d, along)) > halfExtent.x + 0.15f) continue;
-                if (c.y < 0.3f || c.y > 3.2f) continue;
-                if (r.bounds.size.y > 3.5f) continue;
+                // heights relative to this wall's own floor (the house has two storeys)
+                float baseY = o.y - halfExtent.y, h = halfExtent.y * 2f;
+                if (c.y < baseY + 0.3f || c.y > baseY + h + 0.4f) continue;
+                if (r.bounds.size.y > h + 0.7f) continue;
                 rends.Add(r);
             }
         }

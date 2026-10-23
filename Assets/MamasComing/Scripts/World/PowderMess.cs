@@ -21,8 +21,8 @@ namespace MamasComing
         public static void Spawn(Vector3 at, Material m)
         {
             if (all.Count > 60) return;
-            at.y = 0.012f;
-            foreach (var x in all) { Vector3 d = x.transform.position - at; d.y = 0f; if (d.magnitude < 0.35f) { x.amount = 1f; return; } }
+            at.y = HouseLayout.FloorYAt(at) + 0.012f;
+            foreach (var x in all) { Vector3 d = x.transform.position - at; if (Mathf.Abs(d.y) > 1f) continue; d.y = 0f; if (d.magnitude < 0.35f) { x.amount = 1f; return; } }
             var g = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             Object.Destroy(g.GetComponent<Collider>());
             g.name = "Powder";

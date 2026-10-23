@@ -25,7 +25,7 @@ namespace MamasComing
         public override void OnDropped(PlayerController p, Vector3 velocity)
         {
             base.OnDropped(p, velocity);
-            if (!Settled) { Body.isKinematic = true; transform.rotation = Quaternion.identity; Vector3 q = transform.position; q.y = 0.02f; transform.position = q; current = Nearest(q); target = -1; pauseT = 1.5f; }
+            if (!Settled) { Body.isKinematic = true; transform.rotation = Quaternion.identity; Vector3 q = transform.position; q.y = HouseLayout.FloorYAt(q) + 0.02f; transform.position = q; current = Nearest(q); target = -1; pauseT = 1.5f; }
         }
 
         void Update()
@@ -50,7 +50,11 @@ namespace MamasComing
             if (step.magnitude > to.magnitude) step = to;
             transform.position += step;
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(to.normalized), dt * 12f);
-            transform.position = new Vector3(transform.position.x, 0.02f + Mathf.Abs(Mathf.Sin(Time.time * 22f)) * 0.02f, transform.position.z);
+            // nodes carry their floor height: on the stairs the height follows the segment
+            Vector3 seg = nodes[target] - nodes[current]; seg.y = 0f;
+            float along = seg.sqrMagnitude > 1e-4f ? Mathf.Clamp01(1f - (to.magnitude - step.magnitude) / seg.magnitude) : 1f;
+            float floorY = Mathf.Lerp(nodes[current].y, nodes[target].y, along);
+            transform.position = new Vector3(transform.position.x, floorY + 0.02f + Mathf.Abs(Mathf.Sin(Time.time * 22f)) * 0.02f, transform.position.z);
         }
 
         int Nearest(Vector3 p) { int b = 0; float bd = 1e9f; for (int i = 0; i < nodes.Length; i++) { float d = (nodes[i] - p).sqrMagnitude; if (d < bd) { bd = d; b = i; } } return b; }

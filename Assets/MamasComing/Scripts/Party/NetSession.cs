@@ -123,7 +123,7 @@ namespace MamasComing
             NetGame.Interact(cup, kid);
             yield return new WaitForSeconds(1.5f);
             Debug.Log("[Bot] holding cup = " + (kid.Held == cup));
-            kid.Motor.Teleport(new Vector3(27.3f, 0.05f, 1.5f), Quaternion.Euler(0, 180, 0));
+            kid.Motor.Teleport(new Vector3(27.3f * HouseLayout.Scale, 0.05f, 1.5f * HouseLayout.Scale), Quaternion.Euler(0, 180, 0));
             yield return new WaitForSeconds(1.5f);
             kid.Drop(false);
             yield return new WaitForSeconds(1.5f);
@@ -183,7 +183,8 @@ namespace MamasComing
             foreach (var s in FindObjectsByType<SplatMess>(FindObjectsSortMode.None)) { var sr = s.GetComponent<Renderer>(); if (sr) SplatMess.RememberMat(s.kind, sr.sharedMaterial); Destroy(s.gameObject); }
         }
 
-        static readonly Vector3[] Spawns = { new Vector3(4.4f, 0.02f, 3f), new Vector3(6.8f, 0.02f, 4.6f), new Vector3(3.0f, 0.02f, 4.8f) };
+        // living room, on the fruit-scale plan
+        static readonly Vector3[] Spawns = { new Vector3(4.4f * HouseLayout.Scale, 0.02f, 3f * HouseLayout.Scale), new Vector3(6.8f * HouseLayout.Scale, 0.02f, 4.6f * HouseLayout.Scale), new Vector3(3.0f * HouseLayout.Scale, 0.02f, 4.8f * HouseLayout.Scale) };
         static readonly Color[] Tints = { new Color(1f, 1f, 1f), new Color(0.55f, 1f, 0.55f), new Color(1f, 0.95f, 0.45f) };
         void PlaceAtSpawn(PlayerController k, int slot) { if (k && k.Motor && k.isLocal) k.Motor.Teleport(Spawns[slot % Spawns.Length], Quaternion.Euler(0, -90, 0)); else if (k) k.transform.position = Spawns[slot % Spawns.Length]; }
 

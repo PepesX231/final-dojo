@@ -47,7 +47,7 @@ namespace MamasComing
             if (Active && !Done && route != null && route.Length > 0)
             {
                 var ip = route[idx];
-                Vector3 tgt = ip.point.position; tgt.y = transform.position.y;
+                Vector3 tgt = ip.point.position;   // route points carry their floor height: stair legs are straight slopes
                 if (!looking)
                 {
                     Vector3 d = tgt - transform.position;
@@ -62,7 +62,8 @@ namespace MamasComing
                     else
                     {
                         transform.position += d / dist * Mathf.Min(dist, walkSpeed * dt);
-                        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(d), dt * 6f);
+                        Vector3 face = new Vector3(d.x, 0f, d.z);
+                        if (face.sqrMagnitude > 1e-4f) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(face), dt * 6f);
                         bobT += dt * 9f;
                         if (GameManager.I) GameManager.I.MomStep(transform.position);
                     }

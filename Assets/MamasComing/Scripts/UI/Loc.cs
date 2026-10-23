@@ -244,6 +244,7 @@ namespace MamasComing
         {
             "Game room", "ห้องเล่นเกม", "Garage", "โรงรถ", "Wrench", "ประแจ", "Plunger", "ที่ปั๊มส้วม", "Trash bag", "ถุงขยะ", "Party cup", "แก้วปาร์ตี้", "Pizza box", "กล่องพิซซ่า", "Glued vase", "แจกันที่ต่อแล้ว", "Goldfish", "ปลาทอง", "Hamster", "หนูแฮมสเตอร์",
             "Living room", "ห้องนั่งเล่น", "Laundry", "ห้องซักผ้า", "Dining room", "ห้องกินข้าว", "Hallway", "ทางเดิน", "Bedroom", "ห้องนอน", "Bathroom", "ห้องน้ำ", "Kitchen", "ห้องครัว",
+            "Staircase", "โถงบันได", "Upstairs hall", "ทางเดินชั้นบน", "Mom's room", "ห้องนอนแม่", "Party loft", "ลอฟต์ปาร์ตี้", "Landing", "ชานพักบันได",
             "Bath towel", "ผ้าเช็ดตัว", "Bathroom sink", "อ่างล้างหน้า", "Bathtub tap", "ก๊อกอ่างอาบน้ำ", "Bathtub", "อ่างอาบน้ำ", "Big towel", "ผ้าผืนใหญ่", "Bucket", "ถังน้ำ",
             "Bath mat", "พรมเช็ดเท้า", "BedroomRug", "พรมห้องนอน", "Desk chair", "เก้าอี้โต๊ะ", "Hallway runner", "พรมทางเดิน", "Living room carpet", "พรมห้องนั่งเล่น",
             "Chair", "เก้าอี้", "Chips bag", "ถุงขนม", "Curry pot", "หม้อแกง", "Burnt pot", "หม้อไหม้", "Drain", "ท่อระบาย", "Fan", "พัดลม", "Fire extinguisher", "ถังดับเพลิง",
