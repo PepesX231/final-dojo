@@ -164,7 +164,8 @@ namespace MamasComing
             bool show = sameRoom || help;
             if (show)
                 gm.ui.SetGuide(5, true, where, "Q", Text("Home spot", "ตำแหน่งเดิม") + " · " + Mathf.CeilToInt(distance) + Text(" m", " ม."), MamaUI.Teal);
-            if (item.NearHome(gm.player)) gm.ui.SetPrompt(Text("[Q] Return ", "[Q] วาง ") + Loc.T(item.displayName) + Text(" to its spot", " กลับเข้าที่"));
+            if (TrashBin.For(gm.player)) gm.ui.SetPrompt(Text("[Q] Throw ", "[Q] ทิ้ง") + Loc.T(item.displayName) + Text(" in the bin", "ลงถังขยะ"));
+            else if (item.NearHome(gm.player)) gm.ui.SetPrompt(Text("[Q] Return ", "[Q] วาง ") + Loc.T(item.displayName) + Text(" to its spot", " กลับเข้าที่"));
         }
 
         void CreateHomeGhost(MessyProp item)

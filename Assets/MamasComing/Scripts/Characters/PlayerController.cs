@@ -472,6 +472,10 @@ namespace MamasComing
                 return;
             }
 
+            // trash near a bin: lid pops open and it goes straight in
+            var bin = TrashBin.For(this);
+            if (bin) { if (actions) actions.Play(KidActionAnimator.Clip.PlaceDown, 0.4f); actionLock = 0.2f; NetGame.Interact(bin, this); return; }
+
             bool ok = FindPlaceSpot(out Vector3 spot, out bool home);
             Held = null;
             h.transform.SetParent(null, true);
