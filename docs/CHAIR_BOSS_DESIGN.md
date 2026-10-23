@@ -3,10 +3,10 @@ GDD §11–16, §18, §20.4 · Source of truth = GDD; ข้อเพิ่ม�
 
 ## Design Review (game-design-review)
 - **Player problem**: "จะนั่งบนสิ่งที่วิ่งหนีได้อย่างไร" — ปัญหาเชิงพื้นที่ ไม่ใช่ HP
-- **Meaningful choice**: ไล่ตรง ๆ จนเหนื่อย (ปลอดภัยแต่นาน) vs ขึ้น balcony ดักหน้า (เสี่ยงพลาด) vs ดันบล็อกปิดทาง (ต้องวางแผน) vs ใช้การ์ด (M6)
+- **Meaningful choice**: ไล่ตรง ๆ จนเหนื่อย (ปลอดภัยแต่นาน) vs ขึ้น balcony ดักหน้า (เสี่ยงพลาด) vs ดันบล็อกปิดทาง (ต้องวางแผน) — ระบบการ์ดถูกนำออก 2026-10-23
 - **Dominant strategy check**: sprint เร็วกว่าเก้าอี้ปกติ (8 > 6.1) แต่เก้าอี้เลือกทางหนีที่อ้อมสิ่งกีดขวาง + panic 7.2 → ไล่ตรงอย่างเดียวได้ผลช้า; ทุก opening ยังต้อง "เดินไปกด E แล้วนั่งค้าง 2 วิ"
 - **Readability**: ทุก state มีภาษากายเฉพาะ (ตาโต/สั่น/ล้ม/งอตัวหอบ) + "!" ตอนเห็นผู้เล่น + prompt SIT เฉพาะตอนนั่งได้
-- **Acceptance**: ชนะ baseline ได้โดยไม่ใช้การ์ด, bot 50 seeds ไม่มี softlock/ออกนอก arena, victory ครั้งเดียว
+- **Acceptance**: ชนะ baseline ได้ด้วยการไล่/ใช้ฉาก/นั่งเอง, bot 50 seeds ไม่มี softlock/ออกนอก arena, victory ครั้งเดียว
 
 ## State Machine
 ```text
