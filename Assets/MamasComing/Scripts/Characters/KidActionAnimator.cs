@@ -27,6 +27,13 @@ namespace MamasComing
         Transform body, leaf, armL, armR, armLLo, armRLo;
         Vector3 bodyRP, leafRP, armLRP, armRRP, armLLoRP, armRLoRP;
         Quaternion bodyRR, leafRR, armLRR, armRRR, armLLoRR, armRLoRR;
+        // Skinned fruit rigs (Banana_Rigged.fbx): limbs live under a bone frame whose axes differ from
+        // the character's, and Hand_L/Hand_R mark the wrists. The apple rig has neither, so it keeps
+        // identity conversions and the original 0.16 forearm.
+        Transform frame, handL, handR;
+        Quaternion basis = Quaternion.identity;
+        Vector3 pivotRig, handLRP, handRRP;
+        float forearmL = .16f, forearmR = .16f;
 
         struct Pose
         {
@@ -69,10 +76,23 @@ namespace MamasComing
             Rest(body, out bodyRP, out bodyRR); Rest(leaf, out leafRP, out leafRR);
             Rest(armL, out armLRP, out armLRR); Rest(armR, out armRRP, out armRRR);
             Rest(armLLo, out armLLoRP, out armLLoRR); Rest(armRLo, out armRLoRP, out armRLoRR);
+            frame = body ? body.parent : chr; pivotRig = pivot;
+            if (frame && frame != chr)
+            {
+                basis = Quaternion.Inverse(frame.rotation) * chr.rotation;
+                pivotRig = frame.InverseTransformPoint(chr.TransformPoint(pivot));
+            }
+            handL = Find("Hand_L"); handR = Find("Hand_R");
+            if (handL && armLLo) { handLRP = frame.InverseTransformPoint(handL.position); forearmL = Vector3.Distance(handLRP, armLLoRP); }
+            if (handR && armRLo) { handRRP = frame.InverseTransformPoint(handR.position); forearmR = Vector3.Distance(handRRP, armRLoRP); }
             if (player && player.holdPoint) defaultHold = player.holdPoint.localPosition;
         }
 
         Transform Find(string n) { foreach (var t in chr.GetComponentsInChildren<Transform>(true)) if (t.name == n) return t; return null; }
+        Quaternion ToRig(Quaternion q) => basis * q * Quaternion.Inverse(basis);
+        Vector3 ToRig(Vector3 v) => frame == chr ? v : frame.InverseTransformVector(chr.TransformVector(v));
+        // Apple limbs rotate about their own axes; bone limbs rotate about the character's axes.
+        Quaternion Turn(Quaternion rest, Quaternion e) => frame == chr ? rest * e : ToRig(e) * rest;
         static void Rest(Transform t, out Vector3 p, out Quaternion r) { p = t ? t.localPosition : Vector3.zero; r = t ? t.localRotation : Quaternion.identity; }
 
         /// <summary>Play a one-shot action (pick up, slam, push...).</summary>
@@ -312,8 +332,8 @@ namespace MamasComing
         void ApplyPose(Pose p)
         {
             // 1) extra body lean / twist / crouch around the feet, carried by body, leaf and arms
-            Quaternion extra = Quaternion.Euler(p.bp, p.by, p.br);
-            Vector3 off = new Vector3(0f, -p.crouch, p.fwd);
+            Quaternion extra = ToRig(Quaternion.Euler(p.bp, p.by, p.br));
+            Vector3 off = ToRig(new Vector3(0f, -p.crouch, p.fwd));
             TransformAround(body, extra, off);
             TransformAround(leaf, extra, off);
             TransformAround(armL, extra, off); TransformAround(armR, extra, off);
@@ -334,15 +354,15 @@ namespace MamasComing
                 if (contacts)
                 {
                     player.holdPoint.localPosition = Vector3.Lerp(player.holdPoint.localPosition, contacts.carryAnchor, 1f - Mathf.Exp(-25f * Time.deltaTime));
-                    LeftGripWorld = ReachArm(armL, armLLo, armLRP, armLLoRP, armLRR, armLLoRR, contacts.LeftWorld, -1f);
-                    RightGripWorld = ReachArm(armR, armRLo, armRRP, armRLoRP, armRRR, armRLoRR, contacts.RightWorld, 1f);
+                    LeftGripWorld = ReachArm(armL, armLLo, armLRP, armLLoRP, armLRR, armLLoRR, contacts.LeftWorld, -1f, handL ? handLRP - armLLoRP : Vector3.zero, forearmL);
+                    RightGripWorld = ReachArm(armR, armRLo, armRRP, armRLoRP, armRRR, armRLoRR, contacts.RightWorld, 1f, handR ? handRRP - armRLoRP : Vector3.zero, forearmR);
                     return;
                 }
                 Vector3 baseLocal = p.holdLocal;
                 if (p.handFollow > 0.01f && armLLo && armRLo)
                 {
-                    Vector3 hands = (HandWorld(armLLo, armL) + HandWorld(armRLo, armR)) * 0.5f;
-                    if (player.Held && (player.Held.tool == ToolType.Towel || player.Held.tool == ToolType.Lid)) hands = HandWorld(armRLo, armR);
+                    Vector3 hands = (HandWorld(armLLo, armL, handL) + HandWorld(armRLo, armR, handR)) * 0.5f;
+                    if (player.Held && (player.Held.tool == ToolType.Towel || player.Held.tool == ToolType.Lid)) hands = HandWorld(armRLo, armR, handR);
                     Vector3 handLocal = transform.InverseTransformPoint(hands) + new Vector3(0f, -0.04f, 0.1f);
                     baseLocal = Vector3.Lerp(baseLocal, handLocal, p.handFollow);
                 }
@@ -350,8 +370,9 @@ namespace MamasComing
             }
         }
 
-        Vector3 HandWorld(Transform lower, Transform upper)
+        Vector3 HandWorld(Transform lower, Transform upper, Transform hand)
         {
+            if (hand) return hand.position;
             // tip of the lower arm: continue from elbow along the arm direction
             Vector3 elbow = lower.position;
             Vector3 dir = (lower.position - upper.position);
@@ -359,7 +380,7 @@ namespace MamasComing
             return elbow + dir.normalized * 0.16f;
         }
 
-        Vector3 ReachArm(Transform upper, Transform lower, Vector3 restUpper, Vector3 restLower, Quaternion upperRestRotation, Quaternion lowerRestRotation, Vector3 worldTarget, float side)
+        Vector3 ReachArm(Transform upper, Transform lower, Vector3 restUpper, Vector3 restLower, Quaternion upperRestRotation, Quaternion lowerRestRotation, Vector3 worldTarget, float side, Vector3 restForearm, float second)
         {
             if (!upper || !lower) return worldTarget;
             var frame = upper.parent;
@@ -370,27 +391,28 @@ namespace MamasComing
             upper.localPosition += frame.InverseTransformVector((transform.forward * (grip?grip.shoulderForward:.45f) - transform.right * side * (grip?grip.shoulderInward:.17f)) * cradle);
             Vector3 start = upper.localPosition;
             Vector3 desired = frame.InverseTransformPoint(worldTarget) - start;
-            float first = Vector3.Distance(restUpper, restLower), second = .16f;
+            float first = Vector3.Distance(restUpper, restLower);
             if (first < .01f || desired.sqrMagnitude < .00001f) return lower.position;
             float distance = Mathf.Clamp(desired.magnitude, Mathf.Abs(first - second) + .003f, first + second - .003f);
             Vector3 direction = desired.normalized;
-            Vector3 bend = Vector3.down + Vector3.right * side * .65f;
+            Vector3 bend = ToRig(Vector3.down + Vector3.right * side * .65f);
             bend = Vector3.ProjectOnPlane(bend, direction).normalized;
             if (bend.sqrMagnitude < .01f) bend = Vector3.back;
             float along = (first * first - second * second + distance * distance) / (2f * distance);
             Vector3 elbow = start + direction * along + bend * Mathf.Sqrt(Mathf.Max(0, first * first - along * along));
             Vector3 wrist = start + direction * distance;
             Vector3 restDirection = restLower - restUpper;
+            Vector3 restLowerDirection = restForearm.sqrMagnitude > 1e-8f ? restForearm : restDirection;
             upper.localRotation = Quaternion.FromToRotation(restDirection, elbow - start) * upperRestRotation;
             lower.localPosition = elbow;
-            lower.localRotation = Quaternion.FromToRotation(restDirection, wrist - elbow) * lowerRestRotation;
+            lower.localRotation = Quaternion.FromToRotation(restLowerDirection, wrist - elbow) * lowerRestRotation;
             return frame.TransformPoint(wrist);
         }
 
         void TransformAround(Transform tr, Quaternion extra, Vector3 off)
         {
             if (!tr) return;
-            tr.localPosition = pivot + extra * (tr.localPosition - pivot) + off;
+            tr.localPosition = pivotRig + extra * (tr.localPosition - pivotRig) + off;
             tr.localRotation = extra * tr.localRotation;
         }
 
@@ -398,13 +420,13 @@ namespace MamasComing
         {
             if (!up) return;
             Vector3 tp = body.localPosition + bodyDelta * (upRP - bodyRP);
-            Quaternion tr = bodyDelta * upRR * Quaternion.Euler(a.x, a.y * side, side * a.z);
+            Quaternion tr = bodyDelta * Turn(upRR, Quaternion.Euler(a.x, a.y * side, side * a.z));
             up.localPosition = Vector3.Lerp(up.localPosition, tp, w);
             up.localRotation = Quaternion.Slerp(up.localRotation, tr, w);
             if (!lo) return;
             Quaternion d = up.localRotation * Quaternion.Inverse(upRR);
             Vector3 lp = up.localPosition + d * (loRP - upRP);
-            Quaternion lr = d * loRR * Quaternion.Euler(-elbow, 0f, 0f);
+            Quaternion lr = d * Turn(loRR, Quaternion.Euler(-elbow, 0f, 0f));
             lo.localPosition = Vector3.Lerp(lo.localPosition, lp, w);
             lo.localRotation = Quaternion.Slerp(lo.localRotation, lr, w);
         }

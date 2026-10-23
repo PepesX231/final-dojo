@@ -25,7 +25,21 @@ namespace MamasComing.EditorTools
             Debug.Log("[Mama's Coming] fruit prefabs built in " + Dir);
         }
 
-        static AnimationClip SetupImport(string fbx, string name)
+        /// Rebuild only PF_Kid_Banana (after re-running build_banana_rig.py), leaving the other fruit prefabs untouched.
+        [MenuItem("Mama's Coming/Build Banana Kid Prefab")]
+        public static void BuildBanana()
+        {
+            var kid = Object.FindObjectsByType<PlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.None).FirstOrDefault(k => k.name.StartsWith("Kid"));
+            if (!kid) { Debug.LogError("[Mama's Coming] open MamasKitchen first (needs the configured scene kid)"); return; }
+            Build("Banana", kid);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Mama's Coming] PF_Kid_Banana built from " + RiggedPath("Banana"));
+        }
+
+        /// Skinned, bone-animated export from ArtSource/Blender/Scripts/build_banana_rig.py (hands drivable by KidActionAnimator).
+        static string RiggedPath(string n) => "Assets/MamasComing/Art/Family/" + n + "/" + n + "_Rigged.fbx";
+
+        static AnimationClip SetupImport(string fbx, string name, bool rigged = false)
         {
             var imp = (ModelImporter)AssetImporter.GetAtPath(fbx);
             imp.animationType = ModelImporterAnimationType.Generic;
@@ -34,7 +48,8 @@ namespace MamasComing.EditorTools
             if (src.Length > 0)
             {
                 var c = src[0]; c.name = name + "_Walk"; c.loopTime = true; c.loopPose = false;
-                c.lastFrame = Mathf.Max(c.firstFrame + 1, c.lastFrame - 1);   // frame 40 == frame 1: skip the duplicate
+                if (!rigged) c.lastFrame = Mathf.Max(c.firstFrame + 1, c.lastFrame - 1);   // frame 40 == frame 1: skip the duplicate
+                // rigged: the last key repeats the first, so the full range loops without a dropped frame
                 imp.clipAnimations = new[] { c };
             }
             imp.SaveAndReimport();
@@ -43,8 +58,9 @@ namespace MamasComing.EditorTools
 
         static void Build(string n, PlayerController sceneKid)
         {
-            string fbx = "Assets/MamasComing/Art/Family/" + n + "/" + n + "_Walk.fbx";
-            var clip = SetupImport(fbx, n);
+            bool rigged = AssetDatabase.LoadAssetAtPath<GameObject>(RiggedPath(n));
+            string fbx = rigged ? RiggedPath(n) : "Assets/MamasComing/Art/Family/" + n + "/" + n + "_Walk.fbx";
+            var clip = SetupImport(fbx, n, rigged);
 
             string ctrlPath = Dir + "/" + n + "_Fruit.controller";
             AssetDatabase.DeleteAsset(ctrlPath);
@@ -65,7 +81,10 @@ namespace MamasComing.EditorTools
             model.transform.SetParent(holder, false);
             model.transform.localRotation = Quaternion.Euler(0, Yaw, 0) * model.transform.localRotation;
             var an = model.GetComponent<Animator>(); if (!an) an = model.AddComponent<Animator>();
-            an.runtimeAnimatorController = ctrl; an.applyRootMotion = false; an.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
+            an.runtimeAnimatorController = ctrl; an.applyRootMotion = false;
+            // KidActionAnimator layers on top of the animated bones each frame; culled bones would accumulate its offsets
+            an.cullingMode = rigged ? AnimatorCullingMode.AlwaysAnimate : AnimatorCullingMode.CullUpdateTransforms;
+            if (rigged) FaceForward(model.transform, holder);
             foreach (var r in model.GetComponentsInChildren<Renderer>()) { r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On; if (r is SkinnedMeshRenderer smr) smr.updateWhenOffscreen = true; }
 
             // fit: feet on the ground, centred, kid-sized
@@ -77,12 +96,32 @@ namespace MamasComing.EditorTools
             holder.position += off;
 
             var fa = holder.gameObject.AddComponent<FruitAnimator>(); fa.anim = an; fa.player = go.GetComponent<PlayerController>();
-            var act = go.GetComponent<KidActionAnimator>(); if (act) act.chr = holder;   // no apple rig: keep its hold logic, skip the bends
+            // rigged: KidActionAnimator finds Body/Arm_*/Arm_*_Lower/Hand_* bones under the holder and drives the hands;
+            // otherwise there is no apple rig, so it keeps the hold logic and skips the bends
+            var act = go.GetComponent<KidActionAnimator>(); if (act) act.chr = holder;
             if (!go.GetComponent<KidRoughhouse>()) go.AddComponent<KidRoughhouse>();
 
+            if (rigged && act) act.pivot = holder.InverseTransformPoint(go.transform.position + Vector3.up * 0.12f);
             string path = Dir + "/PF_Kid_" + n + ".prefab";
             PrefabUtility.SaveAsPrefabAsset(go, path);
             Object.DestroyImmediate(go);
+        }
+
+        /// Turn the model so its shoulders run along the kid's +X (Arm_R on the right), whatever axis the FBX arrived in.
+        static void FaceForward(Transform model, Transform holder)
+        {
+            Transform face = null, body = null, left = null, right = null;
+            foreach (var t in model.GetComponentsInChildren<Transform>(true))
+            {
+                if (t.name == "Face") face = t; else if (t.name == "Body") body = t;
+                else if (t.name == "Arm_L") left = t; else if (t.name == "Arm_R") right = t;
+            }
+            if (!left || !right) { Debug.LogWarning("[Mama's Coming] rigged model has no Arm_L/Arm_R bones; facing left as imported"); return; }
+            Vector3 side = holder.InverseTransformDirection(right.position - left.position); side.y = 0f;
+            Vector3 forward = Vector3.Cross(side, Vector3.up);
+            model.localRotation = Quaternion.Euler(0f, Vector3.SignedAngle(forward, Vector3.forward, Vector3.up), 0f) * model.localRotation;
+            if (face && body && Vector3.Dot(holder.InverseTransformDirection(face.position - body.position), Vector3.forward) <= 0f)
+                Debug.LogError("[Mama's Coming] rigged model faces backwards after shoulder alignment: Arm_L/Arm_R are swapped in the export");
         }
     }
 }
