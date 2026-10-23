@@ -26,7 +26,7 @@ namespace MamasComing
             objMain.fontSize = 30; objMain.alignment = TextAnchor.UpperLeft;
             objMain.rectTransform.offsetMin = new Vector2(22, 40); objMain.rectTransform.offsetMax = new Vector2(-20, -12);
             goalSub = Txt(Rect("GoalSub", (RectTransform)h.Find("ObjBanner"), BL, BR, BL, new Vector2(22, 14), new Vector2(-38, 30)), "", 21, ReadableInk, TextAnchor.MiddleLeft, 0, false);
-            goalSub.text = MamaReadability.Text("Fix it. Hide it. Survive her inspection.", "แก้ให้ทัน หรือซ่อนให้เนียน แล้วผ่านการตรวจของแม่");
+            goalSub.text = MamaReadability.Text("Party's over. Fix it together before Mom's inspection!", "ปาร์ตี้จบแล้ว ช่วยกันแก้ก่อนแม่มาตรวจ!");
             roomLabel = Txt(Rect("RoomName", h, TL, TL, TL, new Vector2(32, -151), new Vector2(520, 36)), "", 22, Color.white, TextAnchor.MiddleLeft, 0, true);
             Shadowed(roomLabel);
             MovePanel(h, "Timer", new Vector2(-30, -26), new Vector2(160, 160));
@@ -83,10 +83,10 @@ namespace MamasComing
             var titleCard = titleGO.transform.Find("Card");
             titleCard.localRotation = Quaternion.identity;
             var sub = titleCard.Find("Sub").GetComponentInChildren<Text>();
-            sub.text = MamaReadability.Text("You fell asleep. The bath is flooding. Dinner is burning.\nMom will be home in FIVE MINUTES.", "เผลอหลับ... น้ำล้นอ่าง แกงกำลังไหม้\nอีก 5 นาที แม่จะกลับถึงบ้าน");
+            sub.text = MamaReadability.Text("Mom was away for the day, so you threw a SECRET PARTY... and everyone fell asleep.\nNow the house is flooding, burning and wrecked - and Mom is coming home EARLY.", "แม่ไม่อยู่บ้านทั้งวัน เลยแอบจัดปาร์ตี้กับเพื่อน... แล้วหลับกันหมด\nตื่นมาบ้านน้ำท่วม ไฟไหม้ ของพังเละ - และแม่กำลังจะกลับเร็วกว่าที่คิด!");
             sub.fontSize = 38;
             var controls = titleCard.Find("Controls").GetComponentInChildren<Text>();
-            controls.text = MamaReadability.Text("YOUR GOAL: leave no evidence for Mom.\nClean up properly, hide the mess, or mix both. You choose.\n\nWASD move  •  E inspect / pick up  •  Q put down\nHold H for an idea  •  TAB for house notes", "เป้าหมาย: อย่าให้แม่จับได้ว่าบ้านเละ\nจะเก็บจริง แอบซ่อน หรือทำทั้งสองอย่าง เลือกเองได้\n\nWASD เดิน  •  E ใช้ / หยิบ  •  Q วาง\nกด H ค้างเมื่ออยากได้คำใบ้  •  TAB ดูภาพรวมบ้าน");
+            controls.text = MamaReadability.Text("WORK TOGETHER: every room has a problem, and ignored problems cause NEW ones.\nStop the disasters first, then clean up or hide the evidence.\n\nWASD move  •  E use / pick up  •  Q put down  •  RMB throw\nHold H for an idea  •  TAB house notes  •  ESC settings / co-op", "ช่วยกันนะ: ทุกห้องมีปัญหา และปัญหาที่ปล่อยไว้จะลามเป็นปัญหาใหม่\nหยุดหายนะก่อน แล้วค่อยเก็บกวาดหรือซ่อนหลักฐาน\n\nWASD เดิน  •  E ใช้ / หยิบ  •  Q วาง  •  คลิกขวา ขว้าง\nกด H ค้าง คำใบ้  •  TAB ภาพรวม  •  ESC ตั้งค่า / เล่นกับเพื่อน");
             controls.fontSize = 30; controls.color = ReadableInk;
             RefreshReadabilityCopy();
         }
@@ -98,10 +98,10 @@ namespace MamasComing
             fireRow.title.text = MamaReadability.Text("HEAT / FIRE", "ความร้อน / ไฟ");
             floodRow.title.text = MamaReadability.Text("WATER", "น้ำบนพื้น");
             smokeRow.title.text = MamaReadability.Text("SMOKE", "ควัน");
-            goalSub.text = MamaReadability.Text("Fix it. Hide it. Survive her inspection.", "แก้ให้ทัน หรือซ่อนให้เนียน แล้วผ่านการตรวจของแม่");
+            goalSub.text = MamaReadability.Text("Party's over. Fix it together before Mom's inspection!", "ปาร์ตี้จบแล้ว ช่วยกันแก้ก่อนแม่มาตรวจ!");
             var card = titleGO.transform.Find("Card");
-            card.Find("Sub").GetComponentInChildren<Text>().text = MamaReadability.Text("You fell asleep. The bath is flooding. Dinner is burning.\nMom will be home in FIVE MINUTES.", "เผลอหลับ... น้ำล้นอ่าง แกงกำลังไหม้\nอีก 5 นาที แม่จะกลับถึงบ้าน");
-            card.Find("Controls").GetComponentInChildren<Text>().text = MamaReadability.Text("YOUR GOAL: leave no evidence for Mom.\nClean up properly, hide the mess, or mix both. You choose.\n\nWASD move  •  E inspect / pick up  •  Q put down\nHold H for an idea  •  TAB for house notes", "เป้าหมาย: อย่าให้แม่จับได้ว่าบ้านเละ\nจะเก็บจริง แอบซ่อน หรือทำทั้งสองอย่าง เลือกเองได้\n\nWASD เดิน  •  E ใช้ / หยิบ  •  Q วาง\nกด H ค้างเมื่ออยากได้คำใบ้  •  TAB ดูภาพรวมบ้าน");
+            card.Find("Sub").GetComponentInChildren<Text>().text = MamaReadability.Text("Mom was away for the day, so you threw a SECRET PARTY... and everyone fell asleep.\nNow the house is flooding, burning and wrecked - and Mom is coming home EARLY.", "แม่ไม่อยู่บ้านทั้งวัน เลยแอบจัดปาร์ตี้กับเพื่อน... แล้วหลับกันหมด\nตื่นมาบ้านน้ำท่วม ไฟไหม้ ของพังเละ - และแม่กำลังจะกลับเร็วกว่าที่คิด!");
+            card.Find("Controls").GetComponentInChildren<Text>().text = MamaReadability.Text("WORK TOGETHER: every room has a problem, and ignored problems cause NEW ones.\nStop the disasters first, then clean up or hide the evidence.\n\nWASD move  •  E use / pick up  •  Q put down  •  RMB throw\nHold H for an idea  •  TAB house notes  •  ESC settings / co-op", "ช่วยกันนะ: ทุกห้องมีปัญหา และปัญหาที่ปล่อยไว้จะลามเป็นปัญหาใหม่\nหยุดหายนะก่อน แล้วค่อยเก็บกวาดหรือซ่อนหลักฐาน\n\nWASD เดิน  •  E ใช้ / หยิบ  •  Q วาง  •  คลิกขวา ขว้าง\nกด H ค้าง คำใบ้  •  TAB ภาพรวม  •  ESC ตั้งค่า / เล่นกับเพื่อน");
         }
 
         static Color ReadableInk => new Color(0.17f, 0.21f, 0.23f);

@@ -12,7 +12,7 @@ namespace MamasComing.EditorTools
     /// kitchen (fire source), laundry (valve / extinguisher / cleaning gear) and dining room.
     /// Menu: Mama's Coming > Build House Level. Re-running rebuilds everything.
     /// </summary>
-    public static class MamaLevelBuilder
+    public static partial class MamaLevelBuilder
     {
         const string Root = "Assets/MamasComing";
         const string MatDir = Root + "/Materials";
@@ -64,6 +64,8 @@ namespace MamasComing.EditorTools
                 Dining();
                 Outside();
                 Clutter();
+                PartyWing();
+                PartyHazards();
                 Kid();
                 Mom();
                 Systems();
@@ -90,27 +92,36 @@ namespace MamasComing.EditorTools
         // =====================================================================  SHELL
         static void Shell()
         {
-            Cube("FloorCollider", gHouse, V(11f, -0.1f, 7f), V(22.4f, 0.2f, 14.4f), M("Hidden", C("777777")), true).GetComponent<Renderer>().enabled = false;
+            Cube("FloorCollider", gHouse, V(15f, -0.1f, 7f), V(30.4f, 0.2f, 14.4f), M("Hidden", C("777777")), true).GetComponent<Renderer>().enabled = false;
 
             Floor("Living", 0, 0, 13, 6, Tex("WoodWarm", 1), V2(13, 6));
             Floor("Laundry", 13, 0, 17, 6, Tex("TileGrey", 4), V2(4 / 0.6f, 6 / 0.6f));
             Floor("Dining", 17, 0, 22, 6, Tex("WoodWarm", 1), V2(5, 6));
-            Floor("Hallway", 0, 6, 22, 8, Tex("WoodLight", 2), V2(22, 2));
+            Floor("Hallway", 0, 6, 30, 8, Tex("WoodLight", 2), V2(30, 2));
+            Floor("Garage", 22, 0, 30, 6, Tex("TileGrey", 4), V2(8 / 0.9f, 6 / 0.9f));
+            Floor("GameRoom", 22, 8, 30, 14, Tex("WoodWarm", 1), V2(8, 6));
             Floor("Bedroom", 0, 8, 7, 14, Tex("WoodLight", 2), V2(7, 6));
             Floor("Bathroom", 7, 8, 12, 14, Tex("TileBathWarm", 13), V2(5 / 0.5f, 6 / 0.5f));
             Floor("Kitchen", 12, 8, 22, 14, Tex("Checker", 0), V2(10 / 1.2f, 6 / 1.2f));
 
             Material wLiving = Wall("Living", Tex("StripeMint", 6)), wHall = Wall("Hall", Tex("StripeButter", 7)), wBed = Wall("Bed", Tex("StripeLilac", 8)),
                 wBath = Wall("Bath", Tex("WallTile", 9)), wKit = Wall("Kitchen", Tex("StripeOrange", 10)), wLaun = Wall("Laundry", Tex("StripeSky", 11)),
-                wDin = Wall("Dining", Tex("StripePeach", 12)), wOut = M("Siding", C("FFF1D6"));
+                wDin = Wall("Dining", Tex("StripePeach", 12)), wOut = M("Siding", C("FFF1D6")),
+                wGar = M("GarageWall", C("D8D2C6")), wGame = M("GameRoomWall", C("5B4B8A"));
 
             // exterior
             WallZ(0f, 0f, 6f, null, wOut, wLiving);
             WallZ(0f, 6f, 8f, null, wOut, wHall);
             WallZ(0f, 8f, 14f, null, wOut, wBed);
-            WallZ(22f, 0f, 6f, null, wDin, wOut);
-            WallZ(22f, 6f, 8f, null, wHall, wOut);
-            WallZ(22f, 8f, 14f, new[] { V2(10f, 11.5f) }, wKit, wOut, true);
+            WallZ(22f, 0f, 6f, null, wDin, wGar);
+            WallZ(22f, 8f, 14f, null, wKit, wGame);
+            WallZ(30f, 0f, 6f, null, wGar, wOut);
+            WallZ(30f, 6f, 8f, null, wHall, wOut);
+            WallZ(30f, 8f, 14f, new[] { V2(10f, 11.5f) }, wGame, wOut, true);
+            WallX(0f, 22f, 30f, null, wOut, wGar);
+            WallX(14f, 22f, 30f, new[] { V2(25.5f, 27f) }, wGame, wOut, new[] { true });
+            WallX(6f, 22f, 30f, new[] { V2(23.2f, 24.6f) }, wGar, wHall);
+            WallX(8f, 22f, 30f, new[] { V2(23.5f, 25.5f) }, wHall, wGame);
             WallX(0f, 0f, 13f, new[] { V2(2f, 3.5f), V2(8f, 9.2f) }, wOut, wLiving, new[] { true, false });
             WallX(0f, 13f, 17f, null, wOut, wLaun);
             WallX(0f, 17f, 22f, new[] { V2(19f, 20.5f) }, wOut, wDin, new[] { true });
@@ -968,7 +979,7 @@ namespace MamasComing.EditorTools
             Cube("Porch", gOutside, V(8.6f, -0.1f, -1.3f), V(2.6f, 0.2f, 2.4f), M("Porch", C("EBD8BC")), true);
             Cube("Path", gOutside, V(8.6f, -0.24f, -5.5f), V(1.4f, 0.04f, 6f), M("PathStone", C("D9C7A6")));
             var bush = M("Bush", C("4FAF4F")); var bush2 = M("Bush2", C("6CC63A"));
-            Vector3[] b = { V(3f, 0.45f, -0.9f), V(5f, 0.4f, -0.9f), V(12f, 0.45f, -0.9f), V(15f, 0.5f, -0.9f), V(-0.9f, 0.5f, 3f), V(22.9f, 0.5f, 4f), V(4f, 0.5f, 14.9f), V(18f, 0.5f, 14.9f), V(-0.9f, 0.5f, 11f) };
+            Vector3[] b = { V(3f, 0.45f, -0.9f), V(5f, 0.4f, -0.9f), V(12f, 0.45f, -0.9f), V(15f, 0.5f, -0.9f), V(-0.9f, 0.5f, 3f), V(30.9f, 0.5f, 4f), V(4f, 0.5f, 14.9f), V(18f, 0.5f, 14.9f), V(-0.9f, 0.5f, 11f) };
             for (int i = 0; i < b.Length; i++) Sph("Bush", gOutside, b[i], V(1.2f, 0.9f, 1.0f), i % 2 == 0 ? bush : bush2);
             for (int i = 0; i < 4; i++)
             {
@@ -1192,6 +1203,11 @@ namespace MamasComing.EditorTools
                 IP(rg, "LaundryOut", V(15.0f, 0, 7.0f), 0f, false, false, null),
                 IP(rg, "Dining", V(19.5f, 0, 4.6f), 3.0f, true, false, null),
                 IP(rg, "DiningOut", V(19.5f, 0, 7.0f), 0f, false, false, null),
+                IP(rg, "Hall far east", V(24.5f, 0, 7.0f), 2.4f, true, false, null),
+                IP(rg, "Game room", V(26.0f, 0, 10.6f), 4.4f, true, true, "What's this room doing like THIS?"),
+                IP(rg, "GameOut", V(24.5f, 0, 7.0f), 0f, false, false, null),
+                IP(rg, "Garage", V(24.0f, 0, 3.4f), 3.6f, true, true, "Let me put the bags in the garage..."),
+                IP(rg, "GarageOut", V(23.9f, 0, 7.0f), 0f, false, false, null),
                 IP(rg, "Back to hall", V(5.0f, 0, 7.0f), 0f, false, false, null),
                 IP(rg, "Sofa", V(4.6f, 0, 2.6f), 3.0f, true, false, "Ahh~ finally, time to sit down..."),
             };
@@ -1206,15 +1222,15 @@ namespace MamasComing.EditorTools
             // flood sim
             var fsGo = new GameObject("FloodSim"); fsGo.transform.SetParent(gSystems, false);
             var fs = fsGo.AddComponent<FloodSim>();
-            fs.origin = V2(-0.5f, -0.5f); fs.cell = 0.2f; fs.width = 116; fs.height = 76;
+            fs.origin = V2(-0.5f, -0.5f); fs.cell = 0.2f; fs.width = 156; fs.height = 76;
             fs.walls = new List<Vector4>(blockRects);
             fs.groundRects = new List<Vector4>(groundRects); fs.groundOffsets = new List<float>(groundOffs);
             var plane = GameObject.CreatePrimitive(PrimitiveType.Quad);
             Object.DestroyImmediate(plane.GetComponent<Collider>());
             plane.name = "WaterSurface"; plane.transform.SetParent(fsGo.transform, false);
-            plane.transform.position = V(-0.5f + 116 * 0.2f / 2, 0.006f, -0.5f + 76 * 0.2f / 2);
+            plane.transform.position = V(-0.5f + 156 * 0.2f / 2, 0.006f, -0.5f + 76 * 0.2f / 2);
             plane.transform.rotation = Quaternion.Euler(90, 0, 0);
-            plane.transform.localScale = V(116 * 0.2f, 76 * 0.2f, 1);
+            plane.transform.localScale = V(156 * 0.2f, 76 * 0.2f, 1);
             var pr = plane.GetComponent<MeshRenderer>(); pr.sharedMaterial = puddleMat; pr.shadowCastingMode = ShadowCastingMode.Off;
             fs.surface = pr;
             splashFx = MakeSplash(fsGo.transform);
@@ -1223,7 +1239,7 @@ namespace MamasComing.EditorTools
             // smoke sim
             var smGo = new GameObject("SmokeSim"); smGo.transform.SetParent(gSystems, false);
             var sm = smGo.AddComponent<SmokeSim>();
-            sm.origin = V2(-0.5f, -0.5f); sm.cell = 0.5f; sm.width = 47; sm.height = 31; sm.walls = new List<Vector4>(blockRects);
+            sm.origin = V2(-0.5f, -0.5f); sm.cell = 0.5f; sm.width = 63; sm.height = 31; sm.walls = new List<Vector4>(blockRects);
             sm.smokeFx = MakeSmokePS(smGo.transform);
 
             // hood vent (weak) + windows registered automatically
@@ -1234,7 +1250,7 @@ namespace MamasComing.EditorTools
             ui.circleSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
             var gm = gmGo.AddComponent<GameManager>();
             gm.player = kid; gm.mom = mom; gm.tap = tap; gm.mainValve = valve; gm.stove = stove; gm.pot = pot; gm.alarm = alarm;
-            gm.frontDoor = frontDoor; gm.ui = ui; gm.livingRoomCarpet = carpetT; gm.totalTime = 300f;
+            gm.frontDoor = frontDoor; gm.ui = ui; gm.livingRoomCarpet = carpetT; gm.totalTime = 540f;
             gm.floodSeeds = new[] { V(9.5f, 0, 11.6f), V(8.6f, 0, 9.4f), V(10.8f, 0, 12.4f), V(9.5f, 0, 7.2f) };
             gm.floodSeedRadius = 1.6f; gm.floodSeedDepth = 0.0042f; gm.startHeat = 15f; gm.startSmoke = 3f;
 
@@ -1454,6 +1470,7 @@ namespace MamasComing.EditorTools
             var l = new GameObject(n).AddComponent<Light>();
             l.transform.SetParent(parent, false);
             l.transform.position = p; l.type = LightType.Point; l.color = c; l.range = range; l.intensity = intensity; l.shadows = LightShadows.None;
+            if (parent == gRooms) l.gameObject.AddComponent<PoweredLight>();
         }
 
         static Material M(string name, Color c, float smooth = 0.15f, float metal = 0f)

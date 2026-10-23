@@ -51,6 +51,12 @@ namespace MamasComing
 
         public static void Play(string name, Vector3? pos = null, float vol = 1f, float pitch = 1f)
         {
+            NetGame.SoundHook?.Invoke(name, pos, vol, pitch);
+            PlayLocal(name, pos, vol, pitch);
+        }
+
+        public static void PlayLocal(string name, Vector3? pos = null, float vol = 1f, float pitch = 1f)
+        {
             if (I == null) Ensure();
             if (I == null || !I.clips.TryGetValue(name, out var c)) return;
             AudioSource s = null;
@@ -62,6 +68,8 @@ namespace MamasComing
             s.Play();
         }
 
+        public static AudioClip Clip(string name) { if (I == null) Ensure(); return I != null && I.clips.TryGetValue(name, out var c) ? c : null; }
+
         /// Keep the extinguisher hiss alive (call every frame while spraying).
         public static void Hiss(Vector3 p) { if (I) { I.hissT = 0.12f; I.hissLoop.transform.position = p; } }
         public static void Gurgle(Vector3 p) { if (I) { I.drainT = 0.25f; I.drainLoop.transform.position = p; } }
@@ -71,7 +79,7 @@ namespace MamasComing
             // water: loudest running tap / overflow
             float wv = 0f; Vector3 wp = transform.position;
             foreach (var t in FindObjectsByType<WaterTap>(FindObjectsSortMode.None))
-                if (t.Flowing) { wv = 0.32f; wp = t.transform.position; }
+                if (t.Flowing) { wv = 0.22f; wp = t.transform.position; }
             var fs = FloodSim.I;
             if (fs != null && wv == 0f && fs.TotalLiters > 30f) { wv = 0.05f; }
             waterLoop.transform.position = wp;
@@ -131,6 +139,21 @@ namespace MamasComing
             Make("car", Car());
             Make("flare", Swish(0.9f, 0.03f, 0.14f));
             Make("wring", Splash(0.7f, 0.25f));
+            // ---- party / co-op
+            Make("zap", Zap());
+            Make("slap", Splash(0.14f, 0.5f));
+            Make("steam", Swish(1.6f, 0.1f, 0.3f));
+            Make("squeakhi", Tone(0.12f, 2600f, 3200f, 0.005f, 0.05f, 0.25f, 0.02f, 1f));
+            Make("thwop", Tone(0.22f, 160f, 60f, 0.003f, 0.08f, 0.8f, 0.3f));
+            Make("ratchet", Ratchet());
+            Make("crack", Tone(0.15f, 900f, 300f, 0.001f, 0.03f, 0.6f, 0.7f));
+            Make("rip", Swish(0.28f, 0.2f, 0.6f));
+            clips["party"] = Make("party", PartyLoop());
+            clips["buzz"] = Make("buzz", Buzz());
+            clips["sizzle"] = Make("sizzle", Fire(2f));
+            clips["whir"] = Make("whir", NoiseLoop(2f, 0.04f, 0.09f, 3f, 0.7f));
+            clips["sparkle"] = Make("sparkle", Sparkle());
+            clips["hum"] = Make("hum", Hum());
         }
 
         // 72 bpm lo-fi: soft maj7 pads, gentle pluck melody, light shaker.
@@ -201,21 +224,28 @@ namespace MamasComing
         // warm, low running water: brown-ish noise through two low-pass stages + soft low bubbles
         float[] SoftWater(float dur)
         {
-            int n = (int)(dur * SR); var d = new float[n]; float a = 0, b = 0, c = 0;
-            for (int i = 0; i < n; i++)
-            {
-                float t = i / (float)SR;
-                a += (R() - a) * 0.09f; b += (a - b) * 0.12f; c += (b - c) * 0.3f;
-                float swell = 0.8f + 0.2f * Mathf.Sin(t * 2.1f) * Mathf.Sin(t * 0.7f + 1f);
-                d[i] = c * 1.6f * swell;
-            }
-            int bub = (int)(dur * 10);
+            // Physical tap model: a stream hitting water = thousands of tiny bubbles (Minnaert resonances,
+            // pitch gliding up as they collapse) over a soft low-passed splash bed.
+            int n = (int)(dur * SR); var d = new float[n]; float a = 0, b = 0;
+            for (int i = 0; i < n; i++) { a += (R() - a) * 0.12f; b += (a - b) * 0.2f; d[i] = b * 0.45f; }
+            int bub = (int)(dur * 420);
             for (int k = 0; k < bub; k++)
             {
-                int s0 = rng.Next(n); float f0 = 160f + (float)rng.NextDouble() * 260f; int len = 1400 + rng.Next(1600); float amp = 0.05f + (float)rng.NextDouble() * 0.06f;
-                for (int s = 0; s < len; s++) { float t = s / (float)SR; d[(s0 + s) % n] += Mathf.Sin(2 * Mathf.PI * f0 * (1f + t * 2.5f) * t) * amp * Mathf.Sin(Mathf.PI * s / len); }
+                int s0 = rng.Next(n);
+                float r = (float)rng.NextDouble();
+                float f0 = Mathf.Lerp(380f, 1500f, r * r);            // most bubbles small-ish & mid pitched
+                float amp = Mathf.Lerp(0.05f, 0.012f, r) * (0.5f + (float)rng.NextDouble());
+                float decay = 0.004f + (1f - r) * 0.012f;
+                int len = (int)(decay * 5f * SR); float ph = 0;
+                for (int s = 0; s < len; s++)
+                {
+                    float t = s / (float)SR; float f = f0 * (1f + 3.5f * t / decay * 0.05f);
+                    ph += 2 * Mathf.PI * f / SR;
+                    d[(s0 + s) % n] += Mathf.Sin(ph) * amp * Mathf.Exp(-t / decay);
+                }
             }
-            return CrossFade(d, 0.25f);
+            float lp = 0; for (int i = 0; i < n; i++) { lp += (d[i] - lp) * 0.55f; d[i] = lp * 0.9f; }
+            return CrossFade(d, 0.3f);
         }
 
         // cozy campfire: low rumble + soft, dull pops (no sharp crackle)
@@ -347,6 +377,55 @@ namespace MamasComing
                 d[i] = on ? (Mathf.Sin(2 * Mathf.PI * 1300f * t) + Mathf.Sin(2 * Mathf.PI * 1560f * t)) * 0.18f * trem : 0f;
             }
             return d;
+        }
+
+        float[] Zap()
+        {
+            int n = (int)(0.35f * SR); var d = new float[n];
+            for (int i = 0; i < n; i++) { float t = i / (float)SR; d[i] = (Mathf.Sign(Mathf.Sin(2 * Mathf.PI * 120f * t)) * 0.3f + R() * 0.5f) * Env(t, 0.002f, 0.08f) * (0.6f + 0.4f * Mathf.Sign(Mathf.Sin(t * 180f))); }
+            return d;
+        }
+        float[] Ratchet()
+        {
+            int n = (int)(0.25f * SR); var d = new float[n];
+            for (int k = 0; k < 4; k++) { int s0 = (int)(k * 0.05f * SR); for (int s = 0; s < 500 && s0 + s < n; s++) d[s0 + s] += R() * Mathf.Exp(-s / 70f) * 0.7f; }
+            return d;
+        }
+        // muffled party music heard through the walls: kick, bass line, hats, 120 bpm
+        float[] PartyLoop()
+        {
+            float beat = 0.5f; int n = (int)(beat * 16 * SR); var d = new float[n];
+            int[] bass = { 36, 36, 43, 41, 36, 36, 46, 43 };
+            for (int b = 0; b < 16; b++)
+            {
+                int s0 = (int)(b * beat * SR);
+                for (int s = 0; s < (int)(0.25f * SR); s++) { float t = s / (float)SR; d[(s0 + s) % n] += Mathf.Sin(2 * Mathf.PI * (50f + 90f * Mathf.Exp(-t * 30f)) * t) * Mathf.Exp(-t * 9f) * 0.75f; }
+                float f = 440f * Mathf.Pow(2f, (bass[(b / 2) % 8] - 69) / 12f);
+                int h0 = (int)((b + 0.5f) * beat * SR);
+                for (int s = 0; s < (int)(beat * 0.45f * SR); s++) { float t = s / (float)SR; d[(h0 + s) % n] += (Mathf.Sin(2 * Mathf.PI * f * t) + 0.3f * Mathf.Sin(4 * Mathf.PI * f * t)) * Mathf.Exp(-t * 4f) * 0.35f; }
+                for (int s = 0; s < 400; s++) d[(h0 + s) % n] += R() * Mathf.Exp(-s / 60f) * 0.06f;
+            }
+            float lp = 0; for (int i = 0; i < n; i++) { lp += (d[i] - lp) * 0.12f; d[i] = lp * 1.4f; }
+            return d;
+        }
+        float[] Buzz()
+        {
+            int n = SR; var d = new float[n];
+            for (int i = 0; i < n; i++) { float t = i / (float)SR; d[i] = (Mathf.Sin(2 * Mathf.PI * 100f * t) * 0.3f + Mathf.Sign(Mathf.Sin(2 * Mathf.PI * 100f * t)) * 0.08f + R() * 0.03f); }
+            return d;
+        }
+        float[] Hum()
+        {
+            int n = SR * 2; var d = new float[n];
+            for (int i = 0; i < n; i++) { float t = i / (float)SR; d[i] = Mathf.Sin(2 * Mathf.PI * 60f * t) * 0.25f + Mathf.Sin(2 * Mathf.PI * 120f * t) * 0.08f; }
+            return d;
+        }
+        float[] Sparkle()
+        {
+            int n = SR * 2; var d = new float[n]; float a = 0;
+            for (int i = 0; i < n; i++) { a += (R() - a) * 0.5f; d[i] = a * 0.05f; }
+            for (int k = 0; k < 160; k++) { int s0 = rng.Next(n); for (int s = 0; s < 120; s++) d[(s0 + s) % n] += R() * Mathf.Exp(-s / 25f) * 0.25f; }
+            return CrossFade(d, 0.1f);
         }
 
         float[] Car()

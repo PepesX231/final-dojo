@@ -21,14 +21,14 @@ namespace MamasComing
 
         void Update()
         {
-            spin = Mathf.MoveTowards(spin, on ? 1440f : 0f, Time.deltaTime * 900f);
+            spin = Mathf.MoveTowards(spin, on && PowerGrid.On ? 1440f : 0f, Time.deltaTime * 900f);
             if (blades) blades.Rotate(0f, 0f, spin * Time.deltaTime, Space.Self);
-            if (head && on) head.localRotation = Quaternion.Euler(0f, Mathf.Sin(Time.time * 0.7f) * oscillate, 0f);
+            if (head && on && PowerGrid.On) head.localRotation = Quaternion.Euler(0f, Mathf.Sin(Time.time * 0.7f) * oscillate, 0f);
         }
 
         void FixedUpdate()
         {
-            if (!on) return;
+            if (!on || !PowerGrid.On) return;
             Vector3 o = HeadPos, f = HeadForward;
             foreach (var m in MessyProp.Lights)
             {

@@ -62,6 +62,9 @@ namespace MamasComing
             return x >= 0 && z >= 0 && x < width && z < height;
         }
 
+        public byte[] Pack() { var b = new byte[c.Length]; for (int i = 0; i < c.Length; i++) b[i] = (byte)Mathf.Clamp(Mathf.RoundToInt(c[i] / 3f * 255f), 0, 255); return b; }
+        public void Unpack(byte[] b) { if (b == null || b.Length != c.Length) return; float tot = 0f, pk = 0f; for (int i = 0; i < c.Length; i++) { c[i] = b[i] * (3f / 255f); tot += c[i]; if (c[i] > pk) pk = c[i]; } Total = tot; Peak = pk; }
+
         public float At(Vector3 p)
         {
             if (!Cell(p, out int i)) return 0f;
@@ -89,7 +92,7 @@ namespace MamasComing
             float dt = Time.deltaTime;
             bool sim = GameManager.I == null || GameManager.I.SimRunning;
             simAcc += dt;
-            while (sim && simAcc >= 0.1f) { simAcc -= 0.1f; Step(0.05f); Step(0.05f); }
+            while (sim && NetGame.IsAuthority && simAcc >= 0.1f) { simAcc -= 0.1f; Step(0.05f); Step(0.05f); }
             fxAcc += dt;
             if (fxAcc >= 0.08f) { EmitFx(fxAcc); fxAcc = 0f; }
         }
@@ -123,7 +126,7 @@ namespace MamasComing
                 Vent(v.transform.position, v.radius, v.rate * dt);
             }
             if (fans != null)
-                foreach (var f in fans) if (f && f.on) Blow(f.HeadPos, f.HeadForward, f.range, dt);
+                foreach (var f in fans) if (f && f.on && PowerGrid.On) Blow(f.HeadPos, f.HeadForward, f.range, dt);
         }
 
         void Vent(Vector3 p, float r, float frac)

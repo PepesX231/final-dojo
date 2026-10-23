@@ -41,7 +41,10 @@ namespace MamasComing
         public float startHeat = 15f;
         public float startSmoke = 1.2f;
 
-        public bool SimRunning => state == State.Intro || state == State.Playing || state == State.MomHome;
+        /// World simulation ticks (only on the host in online co-op).
+        public bool SimRunning => Live && NetGame.IsAuthority;
+        /// The round is in progress (UI, input, minigames).
+        public bool Live => state == State.Intro || state == State.Playing || state == State.MomHome;
 
         int suspicion;
         bool major, potAvalanche, smokeChecked, fireDept, carpetWarned;
@@ -66,6 +69,9 @@ namespace MamasComing
             MamaSettings.Ensure();
             if (!GetComponent<MamaReadability>()) gameObject.AddComponent<MamaReadability>();
             if (!GetComponent<MiniGame>()) gameObject.AddComponent<MiniGame>().ui = ui;
+            if (!GetComponent<QuestDirector>()) gameObject.AddComponent<QuestDirector>();
+            Puzzles.Ensure();
+            NetSession.Ensure();
             ui.ShowTitle(true);
             player.controlsEnabled = false;
             player.SetSleeping();
@@ -84,16 +90,10 @@ namespace MamasComing
             {
                 case State.Title:
                     if (MamaInput.EscDown) MamaSettings.Toggle();
-                    if (MamaInput.AnyStart && !MamaSettings.BlockStart)
+                    if (MamaInput.AnyStart && !MamaSettings.BlockStart && NetGame.IsAuthority)
                     {
-                        state = State.Intro;
-                        MamaAudio.Play("pop", null, 0.7f);
-                        ui.ShowTitle(false);
-                        player.WakeUp();
-                        introT = 2.0f;
-                        Toast("*cough cough* ...is something BURNING?!");
-                        Toast("...and why are my socks WET?!");
-                        LockCursor(true);
+                        StartRound();
+                        NetGame.Broadcast(NetGame.Msg.Start, null, null, 0);
                     }
                     break;
 
@@ -104,7 +104,7 @@ namespace MamasComing
                         state = State.Playing;
                         player.controlsEnabled = true;
                         if (cam) cam.inputEnabled = true;
-                        ui.Call("Bathroom FLOODING + kitchen SMOKING. Mom is on her way. GO GO GO!", MamaUI.Orange);
+                        ui.Call(MamaReadability.Text("You threw a secret party... and fell asleep. The house is a DISASTER. Work together - fix it before Mom gets back!", "แอบจัดปาร์ตี้... แล้วเผลอหลับ บ้านพังยับ! ช่วยกันแก้ก่อนแม่กลับ!"), MamaUI.Orange);
                     }
                     break;
 
@@ -112,12 +112,13 @@ namespace MamasComing
                     TimeLeft -= Time.deltaTime;
                     if (MamaInput.DevSkip) TimeLeft = Mathf.Min(TimeLeft, 3f);
                     Calls();
-                    FireDepartmentCheck();
+                    if (NetGame.IsAuthority) FireDepartmentCheck();
                     FloodWarnings();
                     if (TimeLeft <= 0f) { TimeLeft = 0f; MomArrives(); }
                     break;
 
                 case State.MomHome:
+                    if (!NetGame.IsAuthority) break;
                     FireDepartmentCheck();
                     CheckHeldEvidence();
                     if (endDelay > 0f) { endDelay -= Time.deltaTime; if (endDelay <= 0f) ShowEnding(); }
@@ -125,7 +126,7 @@ namespace MamasComing
 
                 case State.Ending:
                     endShownT += Time.deltaTime;
-                    if (MamaInput.RestartDown && endShownT > 0.5f) Restart();
+                    if (MamaInput.RestartDown && endShownT > 0.5f && NetGame.IsAuthority) { NetGame.Broadcast(NetGame.Msg.Restart, null, null, 0); Restart(); }
                     break;
             }
 
@@ -135,7 +136,7 @@ namespace MamasComing
                 else if (!MamaSettings.Open && Cursor.lockState != CursorLockMode.Locked && MamaInput.ClickDown && !MamaSettings.BlockStart) LockCursor(true);
             }
 
-            if (SimRunning) RefreshHUD();
+            if (Live) RefreshHUD();
             trackT -= Time.deltaTime;
             if (trackT <= 0f) { trackT = 0.5f; TrackProblems(); }
         }
@@ -143,11 +144,11 @@ namespace MamasComing
         // ------------------------------------------------------------------ flow
         void Calls()
         {
-            float[] at = { 240f, 180f, 90f, 30f };
+            float[] at = { totalTime - 60f, 180f, 90f, 30f };
             string[] msg =
             {
-                "PHONE - Mom: \"Hi sweetie~ I'm leaving the market now!\"",
-                "PHONE - Mom: \"Traffic's good! Home in 3 minutes. Did you eat the curry?\"",
+                "PHONE - Mom: \"Hi sweetie~ Grandma's fine! I'm coming home EARLY tonight!\"",
+                "PHONE - Mom: \"Traffic's good! Home in 3 minutes. Did you eat the curry I left?\"",
                 "*VROOM* ...Mom's car just turned into the street!",
                 "*jingle jingle*  KEYS AT THE FRONT DOOR!!"
             };
@@ -193,7 +194,7 @@ namespace MamasComing
             ui.Call("*CLICK* The door opens... MOM IS HOME! Act natural!", MamaUI.Red);
         }
 
-        public void MomSay(string line) { ui.MomSay(line); }
+        public void MomSay(string line) { ui.MomSay(line); NetGame.Broadcast(NetGame.Msg.MomSay, line, null, 0); }
 
         public void MomInspect(MomController.InspectPoint ip, MomController m)
         {
@@ -295,7 +296,7 @@ namespace MamasComing
             MomSay(line);
         }
 
-        void ShowEnding()
+        public void ShowEnding()
         {
             if (state == State.Ending) return;
             state = State.Ending;
@@ -356,9 +357,33 @@ namespace MamasComing
                 for (int i = 0; i < foundLines.Count && i < 7; i++) stats += "\n- " + foundLines[i];
             }
             ui.ShowEnding(title, body, stats, col);
+            NetGame.BroadcastEnding(title, body, stats, col);
         }
 
-        void Restart()
+        /// Title -> intro. Host runs it locally and tells clients to do the same.
+        public void StartRound()
+        {
+            if (state != State.Title) return;
+            state = State.Intro;
+            MamaAudio.Play("pop", null, 0.7f);
+            ui.ShowTitle(false);
+            foreach (var pc in PlayerController.AllPlayers) if (pc) pc.WakeUp();
+            introT = 2.0f;
+            ui.Toast("*cough cough* ...is something BURNING?!");
+            ui.Toast("...and why are my socks WET?!");
+            LockCursor(true);
+        }
+
+        /// Client side: show the ending the host computed.
+        public void ShowRemoteEnding(string title, string body, string stats, Color col)
+        {
+            state = State.Ending; endShownT = 0f;
+            player.controlsEnabled = false; if (cam) cam.inputEnabled = false; LockCursor(false);
+            ui.ShowEnding(title, body, stats, col);
+            MamaAudio.Play(col == MamaUI.Teal || col == MamaUI.Orange ? "win" : "lose", null, 0.85f);
+        }
+
+        public void Restart()
         {
             var s = SceneManager.GetActiveScene();
             if (s.buildIndex >= 0) SceneManager.LoadScene(s.buildIndex); else SceneManager.LoadScene(s.name);
@@ -464,19 +489,23 @@ namespace MamasComing
         }
 
         // ------------------------------------------------------------------ room warnings + kid thoughts
-        static readonly string[] RoomNames = { "Living room", "Laundry", "Dining room", "Hallway", "Bedroom", "Bathroom", "Kitchen" };
-        static readonly Rect[] RoomRects = { new Rect(0, 0, 13, 6), new Rect(13, 0, 4, 6), new Rect(17, 0, 5, 6), new Rect(0, 6, 22, 2), new Rect(0, 8, 7, 6), new Rect(7, 8, 5, 6), new Rect(12, 8, 10, 6) };
+        public static readonly string[] RoomNames = { "Living room", "Laundry", "Dining room", "Hallway", "Bedroom", "Bathroom", "Kitchen", "Garage", "Game room" };
+        public static readonly Rect[] RoomRects = { new Rect(0, 0, 13, 6), new Rect(13, 0, 4, 6), new Rect(17, 0, 5, 6), new Rect(0, 6, 30, 2), new Rect(0, 8, 7, 6), new Rect(7, 8, 5, 6), new Rect(12, 8, 10, 6), new Rect(22, 0, 8, 6), new Rect(22, 8, 8, 6) };
         string lastThought; float thoughtT;
 
-        static int RoomOf(Vector3 p)
+        public static int RoomOf(Vector3 p)
         {
             for (int i = 0; i < RoomRects.Length; i++) if (RoomRects[i].Contains(new Vector2(p.x, p.z))) return i;
             return -1;
         }
 
-        static Vector3 RoomCenter(int i) { var r = RoomRects[i]; return new Vector3(r.center.x, 2.3f, r.center.y); }
+        public static Vector3 RoomCenter(int i) { var r = RoomRects[i]; return new Vector3(r.center.x, 2.3f, r.center.y); }
 
-        public void KidSay(string s) { if (ui) ui.KidSay(s); }
+        public void KidSay(string s) { if (NetGame.ActingRemote(s)) return; if (ui) ui.KidSay(s); }
+
+        /// Neighbour complaint etc: Mom arrives earlier.
+        public void CutTime(float seconds) { TimeLeft = Mathf.Max(20f, TimeLeft - seconds); }
+        public void SetTimeLeft(float t) { TimeLeft = t; }
 
         void UpdateRoomWarnings()
         {
@@ -711,7 +740,7 @@ namespace MamasComing
         }
 
         // ------------------------------------------------------------------ hooks
-        public void Toast(string s) { if (ui) ui.Toast(s); }
+        public void Toast(string s) { if (ui) ui.Toast(s); NetGame.Broadcast(NetGame.Msg.Toast, s, null, 0); }
 
         public void OnPlayerSlipped(string reason)
         {

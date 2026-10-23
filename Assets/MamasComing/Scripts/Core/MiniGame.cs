@@ -12,7 +12,7 @@ namespace MamasComing
     public class MiniGame : MonoBehaviour
     {
         public static MiniGame I { get; private set; }
-        public enum Kind { None, Timing, Mash }   // Timing = gas knob, Mash = valve wheel (names kept for compatibility)
+        public enum Kind { None, Timing, Mash, Wires, Simon, Plunger, Bolts, Tug, Blow, Glue, Tape }   // Timing = gas knob, Mash = valve wheel (names kept for compatibility)
 
         public MamaUI ui;
         [Header("Valve")]
@@ -48,11 +48,13 @@ namespace MamasComing
             angle = 0f; hits = 0; lastKey = 0; flash = 0f; phase = Random.Range(0f, 6.28f); speed = startSpeed;
             goal = target is MainValve ? mainValveGoal : tapGoal;
             startFrame = Time.frameCount;
+            if ((int)k > (int)Kind.Mash) { Puzzles.Ensure(); Puzzles.I.Begin(k, label); return; }
             MamaAudio.Play(k == Kind.Timing ? "click" : "creak", target.transform.position, 0.7f);
         }
 
         public void Cancel()
         {
+            if ((int)Current > (int)Kind.Mash && Puzzles.I) Puzzles.I.End();
             Active = false; Current = Kind.None;
             if (ui) ui.SetMini2(false, null, Kind.None, 0, 0, 0, 0, 0, 0, false);
         }
@@ -61,12 +63,20 @@ namespace MamasComing
         {
             if (!Active) return;
             float dt = Time.deltaTime;
-            if (!player || !Target || player.Stunned || (GameManager.I && !GameManager.I.SimRunning)) { Cancel(); return; }
+            if (!player || !Target || player.Stunned || (GameManager.I && !GameManager.I.Live)) { Cancel(); return; }
             Vector3 d = Target.InteractPoint - player.transform.position; d.y = 0f;
             if (d.magnitude > Target.interactRadius + 1f) { Cancel(); return; }
             if (MamaInput.DropDown || MamaInput.EscDown) { Cancel(); return; }
             bool fresh = Time.frameCount > startFrame;
             if (flash > 0f) flash -= dt;
+            if ((int)Current > (int)Kind.Mash)
+            {
+                int res = Puzzles.I ? Puzzles.I.Tick(dt, fresh) : 1;
+                if (player.actions) player.actions.Hold(KidActionAnimator.Clip.Twist);
+                if (res > 0) Succeed();
+                else if (res < 0) { var tg = Target; var pl = player; Cancel(); MamaAudio.Play("bad", null, 0.8f); if (GameManager.I) GameManager.I.KidSay(Loc.Thai ? "ไม่ทัน! ลองใหม่!" : "Argh! Try again!"); if (tg is BreakerPanel && pl) pl.KnockBack(tg.transform.position, 2.5f); }
+                return;
+            }
             var k = Keyboard.current; var g = Gamepad.current;
 
             if (Current == Kind.Mash)
@@ -116,7 +126,7 @@ namespace MamasComing
             var t = Target; var p = player;
             Cancel();
             MamaAudio.Play("good", null, 0.8f);
-            if (t && p) t.Interact(p);
+            if (t && p) NetGame.Interact(t, p);
         }
     }
 }

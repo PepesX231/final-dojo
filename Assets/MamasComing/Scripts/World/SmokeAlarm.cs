@@ -27,7 +27,7 @@ namespace MamasComing
             float dt = Time.deltaTime;
             if (hush > 0f) hush -= dt;
             bool was = Beeping;
-            Beeping = !BatteryOut && hush <= 0f && Smoke > threshold && (GameManager.I == null || GameManager.I.SimRunning);
+            Beeping = !BatteryOut && hush <= 0f && Smoke > threshold && (GameManager.I == null || GameManager.I.Live);
             if (Beeping && !was && GameManager.I) GameManager.I.OnAlarm();
 
             blink += dt;

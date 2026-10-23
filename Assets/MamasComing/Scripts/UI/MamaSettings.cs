@@ -90,18 +90,35 @@ namespace MamasComing
 
             var dim = R("Settings", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
             Im(dim, new Color(0, 0, 0, 0.45f)); panel = dim.gameObject;
-            var p = R("Panel", dim, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(720, 640));
+            var p = R("Panel", dim, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760, 900));
             p.localRotation = Quaternion.Euler(0, 0, -0.6f); Im(p, Paper, true);
             var band = R("Band", p, new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), new Vector2(0, -20), new Vector2(-60, 86)); Im(band, Pink);
             title = Tx(R("T", band, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero), "", 46, Color.white);
 
-            langLbl = Tx(R("LangL", p, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 160), new Vector2(600, 40)), "", 30, Ink);
-            Btn(p, new Vector2(-130, 105), new Vector2(230, 64), Paper, "English", () => Loc.SetThai(false), out _, out btnEN);
-            Btn(p, new Vector2(130, 105), new Vector2(230, 64), Paper, "ภาษาไทย", () => Loc.SetThai(true), out var thLbl, out btnTH);
+            langLbl = Tx(R("LangL", p, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 300), new Vector2(600, 40)), "", 30, Ink);
+            Btn(p, new Vector2(-130, 245), new Vector2(230, 64), Paper, "English", () => Loc.SetThai(false), out _, out btnEN);
+            Btn(p, new Vector2(130, 245), new Vector2(230, 64), Paper, "ภาษาไทย", () => Loc.SetThai(true), out var thLbl, out btnTH);
             thLbl.font = thaiFont ? thaiFont : baseFont;
 
-            masterLbl = VolRow(p, 20, 0); musicLbl = VolRow(p, -60, 1); sfxLbl = VolRow(p, -140, 2);
-            Btn(p, new Vector2(0, -238), new Vector2(260, 70), Teal, "", Toggle, out closeLbl, out _);
+            masterLbl = VolRow(p, 160, 0); musicLbl = VolRow(p, 95, 1); sfxLbl = VolRow(p, 30, 2);
+
+            // ---- co-op
+            coopLbl = Tx(R("CoopL", p, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, -40), new Vector2(680, 40)), "", 30, Ink);
+            Btn(p, new Vector2(-180, -95), new Vector2(220, 58), Paper, "", () => { NetSession.Ensure(); NetSession.I.HostOnline(); }, out hostLbl, out _);
+            Btn(p, new Vector2(60, -95), new Vector2(220, 58), Paper, "", () => { NetSession.Ensure(); NetSession.I.HostLan(); }, out lanLbl, out _);
+            Btn(p, new Vector2(270, -95), new Vector2(150, 58), Paper, "", () => { if (NetSession.I) NetSession.I.Leave(); }, out leaveLbl, out _);
+            var inRT = R("Code", p, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-70, -165), new Vector2(420, 58));
+            Im(inRT, Color.white, true);
+            var itx = Tx(R("Text", inRT, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(-20, -8)), "", 28, Ink); itx.alignment = TextAnchor.MiddleLeft; itx.supportRichText = false;
+            var iph = Tx(R("Ph", inRT, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(-20, -8)), "", 24, new Color(0.5f, 0.45f, 0.4f)); iph.alignment = TextAnchor.MiddleLeft; iph.fontStyle = FontStyle.Italic;
+            codeField = inRT.gameObject.AddComponent<InputField>(); codeField.textComponent = itx; codeField.placeholder = iph; codeField.characterLimit = 40;
+            placeholder = iph;
+            Btn(p, new Vector2(230, -165), new Vector2(180, 58), Teal, "", () => { NetSession.Ensure(); NetSession.I.Join(codeField.text); }, out joinLbl, out _);
+            joinLbl.color = Color.white;
+            netStatus = Tx(R("NetStatus", p, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, -225), new Vector2(700, 40)), "", 22, Edge);
+            netStatus.horizontalOverflow = HorizontalWrapMode.Wrap;
+
+            Btn(p, new Vector2(0, -320), new Vector2(260, 70), Teal, "", Toggle, out closeLbl, out _);
             closeLbl.color = Color.white;
             hint = Tx(R("Hint", p, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0, 12), new Vector2(600, 30)), "", 20, Edge);
             panel.SetActive(false);
@@ -137,9 +154,18 @@ namespace MamasComing
             bars[0].fillAmount = MasterVol; bars[1].fillAmount = MusicVol; bars[2].fillAmount = SfxVol;
         }
 
+        Text coopLbl, hostLbl, lanLbl, leaveLbl, joinLbl, netStatus, placeholder; InputField codeField;
+
         void RefreshLabels()
         {
             bool th = Loc.Thai;
+            coopLbl.text = th ? "เล่นกับเพื่อน (2-3 คน)" : "CO-OP  (2-3 players)";
+            hostLbl.text = th ? "สร้างห้องออนไลน์" : "Host online";
+            lanLbl.text = th ? "สร้างห้อง LAN" : "Host LAN";
+            leaveLbl.text = th ? "ออก" : "Leave";
+            joinLbl.text = th ? "เข้าร่วม" : "Join";
+            placeholder.text = th ? "รหัสห้อง หรือ IP ของเพื่อน" : "Room code or friend's IP";
+            foreach (var t in new[] { coopLbl, hostLbl, lanLbl, leaveLbl, joinLbl, netStatus, placeholder, codeField.textComponent }) t.font = th ? thaiFont : baseFont;
             title.text = th ? "ตั้งค่า" : "SETTINGS";
             langLbl.text = th ? "ภาษา" : "Language";
             masterLbl.text = th ? "เสียงรวม" : "Master";
@@ -173,6 +199,7 @@ namespace MamasComing
         void LateUpdate()
         {
             if (gear) gear.gameObject.SetActive(!Open && Cursor.lockState != CursorLockMode.Locked);
+            if (Open && netStatus) netStatus.text = NetSession.I ? NetSession.I.Status : (Loc.Thai ? "เล่นคนเดียว - เพื่อนกดเข้าร่วมด้วยรหัสห้องได้" : "Solo - host a room and give friends the code");
             rescan -= Time.unscaledDeltaTime;
             if (rescan <= 0f) { rescan = 1f; all = FindObjectsByType<Text>(FindObjectsInactive.Include, FindObjectsSortMode.None); }
             bool th = Loc.Thai;

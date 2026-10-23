@@ -50,6 +50,13 @@ namespace MamasComing
         Renderer ghostR;
         MaterialPropertyBlock mpb;
 
+        public static readonly System.Collections.Generic.List<PlayerController> AllPlayers = new System.Collections.Generic.List<PlayerController>();
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)] static void ResetPlayers() { AllPlayers.Clear(); }
+        /// False for other players' avatars in online co-op (they are driven by the network).
+        public bool isLocal = true;
+        void OnEnable() { if (!AllPlayers.Contains(this)) AllPlayers.Add(this); }
+        void OnDisable() { AllPlayers.Remove(this); }
+
         void Awake()
         {
             Motor = GetComponent<PlayerMotor3D>();
@@ -83,8 +90,30 @@ namespace MamasComing
 
         public void WakeUp() { if (anim) anim.sleeping = false; }
 
+        /// Remote player's avatar (online co-op): pose comes from the network; just keep the held item in the hands.
+        public void RemoteTick(float speed, bool sprint, bool stunned)
+        {
+            remoteSpeed = speed;
+            // feed the procedural animator: velocity from the network pose
+            float dt0 = Mathf.Max(0.0001f, Time.deltaTime);
+            Vector3 v = (transform.position - remoteLast) / dt0; v.y = 0f; remoteLast = transform.position;
+            remoteVel = Vector3.Lerp(remoteVel, v, 1f - Mathf.Exp(-10f * dt0));
+            if (Motor)
+            {
+                if (planarField == null) planarField = typeof(PlayerMotor3D).GetField("_planar", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                planarField?.SetValue(Motor, remoteVel);
+                typeof(PlayerMotor3D).GetProperty("IsGrounded").SetValue(Motor, true); typeof(PlayerMotor3D).GetProperty("IsSprinting").SetValue(Motor, sprint);
+            }
+            if (Held != null) Held.TickHeldPose(Time.deltaTime);
+            stun = stunned ? Mathf.Max(stun, 0.1f) : stun;
+            AnimateFall(Time.deltaTime);
+        }
+        public float remoteSpeed;
+        Vector3 remoteLast, remoteVel; static System.Reflection.FieldInfo planarField;
+
         void Update()
         {
+            if (!isLocal) { if (stun > 0f) stun -= Time.deltaTime; return; }
             float dt = Time.deltaTime;
             scrubbedLastFrame = Scrubbing;
             Scrubbing = false;
@@ -95,7 +124,7 @@ namespace MamasComing
             if (actionLock > 0f) actionLock -= dt;
 
             bool inMini = MiniGame.I && MiniGame.I.Active;
-            bool canMove = controlsEnabled && !Stunned && !inMini;
+            bool canMove = controlsEnabled && !Stunned && !inMini && !MamaSettings.Open;
             bool holdingAction = HoldProgress > 0f;
             Motor.InputEnabled = canMove;
             Motor.AllowJump = canMove && Held == null;
@@ -103,6 +132,7 @@ namespace MamasComing
             float mult = Held ? Held.SpeedMultiplier : 1f;
             if (scrubbedLastFrame) mult *= Held && Held.tool == ToolType.Mop ? 0.75f : 0.6f;
             if (actionLock > 0f) mult *= 0.25f;
+            mult *= SplatMess.StickyAt(transform.position);
             if (holdingAction) mult = 0f;
             Motor.MoveSpeedScale = mult;
             Motor.AllowSprint = !(Held && (Held.dragOnFloor || Held.tool == ToolType.Bucket));
@@ -151,7 +181,7 @@ namespace MamasComing
                     var mg = t.MiniGameKind(this);
                     if (mg != MiniGame.Kind.None && MiniGame.I) { MiniGame.I.Begin(mg, t, this, t.MiniGameTitle); return; }
                     PlayClipFor(t);
-                    t.Interact(this);
+                    NetGame.Interact(t, this);
                 }
                 return;
             }
@@ -166,7 +196,7 @@ namespace MamasComing
                 {
                     HoldProgress = 0f;
                     holdTarget = null;
-                    Target.Interact(this);
+                    NetGame.Interact(Target, this);
                 }
             }
             else { HoldProgress = 0f; holdTarget = null; }
