@@ -13,6 +13,7 @@ namespace MamasComing.EditorTools
         const string Dir = "Assets/MamasComing/Prefabs/Characters";
         public const float Height = 1.08f;
         public static float Yaw = 0f;
+        public static float CarryDepth = .45f;
 
         [MenuItem("Mama's Coming/Build Fruit Character Prefabs")]
         public static void BuildAll()
@@ -101,7 +102,11 @@ namespace MamasComing.EditorTools
             var act = go.GetComponent<KidActionAnimator>(); if (act) act.chr = holder;
             if (!go.GetComponent<KidRoughhouse>()) go.AddComponent<KidRoughhouse>();
 
-            if (rigged && act) act.pivot = holder.InverseTransformPoint(go.transform.position + Vector3.up * 0.12f);
+            if (rigged && act)
+            {
+                act.pivot = holder.InverseTransformPoint(go.transform.position + Vector3.up * 0.12f);
+                act.carryDepth = CarryDepth;   // slim banana: hug items close instead of the apple's round-belly reach
+            }
             string path = Dir + "/PF_Kid_" + n + ".prefab";
             PrefabUtility.SaveAsPrefabAsset(go, path);
             Object.DestroyImmediate(go);

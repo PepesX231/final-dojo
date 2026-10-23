@@ -23,6 +23,8 @@ namespace MamasComing
         [Tooltip("Rotation pivot for leaning (local to the character root of the rig).")]
         public Vector3 pivot = new Vector3(0f, 0.12f, 0f);
         public float blend = 14f;
+        [Tooltip("Scales how far in front of the body carried CarryGrip items sit (anchor depth, shoulder roll). 1 = apple kid.")]
+        public float carryDepth = 1f;
 
         Transform body, leaf, armL, armR, armLLo, armRLo;
         Vector3 bodyRP, leafRP, armLRP, armRRP, armLLoRP, armRLoRP;
@@ -353,7 +355,7 @@ namespace MamasComing
                 var contacts = player.Held ? player.Held.GetComponent<CarryGrip>() : null;
                 if (contacts)
                 {
-                    player.holdPoint.localPosition = Vector3.Lerp(player.holdPoint.localPosition, contacts.carryAnchor, 1f - Mathf.Exp(-25f * Time.deltaTime));
+                    player.holdPoint.localPosition = Vector3.Lerp(player.holdPoint.localPosition, Vector3.Scale(contacts.carryAnchor, new Vector3(1f, 1f, carryDepth)), 1f - Mathf.Exp(-25f * Time.deltaTime));
                     LeftGripWorld = ReachArm(armL, armLLo, armLRP, armLLoRP, armLRR, armLLoRR, contacts.LeftWorld, -1f, handL ? handLRP - armLLoRP : Vector3.zero, forearmL);
                     RightGripWorld = ReachArm(armR, armRLo, armRRP, armRLoRP, armRRR, armRLoRR, contacts.RightWorld, 1f, handR ? handRRP - armRLoRP : Vector3.zero, forearmR);
                     return;
@@ -388,7 +390,7 @@ namespace MamasComing
             // pulling the object through the face just to keep it inside the arm span.
             float cradle = player.Held && player.Held.Grabbing ? Mathf.SmoothStep(0, 1, player.Held.GrabProgress / .34f) : 1f;
             var grip=player.Held?player.Held.GetComponent<CarryGrip>():null;
-            upper.localPosition += frame.InverseTransformVector((transform.forward * (grip?grip.shoulderForward:.45f) - transform.right * side * (grip?grip.shoulderInward:.17f)) * cradle);
+            upper.localPosition += frame.InverseTransformVector((transform.forward * (grip?grip.shoulderForward:.45f) - transform.right * side * (grip?grip.shoulderInward:.17f)) * cradle * carryDepth);
             Vector3 start = upper.localPosition;
             Vector3 desired = frame.InverseTransformPoint(worldTarget) - start;
             float first = Vector3.Distance(restUpper, restLower);

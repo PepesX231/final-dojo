@@ -141,6 +141,7 @@ namespace MamasComing.Editor
                 float clear = banana.transform.InverseTransformPoint(held.center).z - banana.transform.InverseTransformPoint(Bone("Body").position).z;
                 lines.Add(propName + " held centre ahead of Body bone metres=" + clear.ToString("F3"));
                 Assert(clear > .1f, propName + " is carried in front of the Banana");
+                Assert(clear < .5f, propName + " is hugged close to the Banana, not floating ahead of it");
                 MamaRecastEvidence.Render("banana-hold-" + propName.Replace(" ", "-").ToLowerInvariant(), at + new Vector3(1.4f, 1.2f, 2.0f), at + Vector3.up * .6f);
                 driver.velocity = Vector3.right * 1.5f; yield return .6f; driver.velocity = Vector3.zero;
                 left = Vector3.Distance(act.LeftGripWorld, grip.LeftWorld); rightErr = Vector3.Distance(act.RightGripWorld, grip.RightWorld);
