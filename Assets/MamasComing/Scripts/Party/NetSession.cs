@@ -55,6 +55,7 @@ namespace MamasComing
             I = this;
             SceneManager.sceneLoaded += (s, m) => { BindScene(); };
             NetGame.SendInteract = (t, p) => SendAct(0, t, null);
+            NetGame.SendHit = SendHitMsg;
             NetGame.SendBroadcast = (m, en, th, lvl) => SendEvent((byte)m, en, th, lvl, null);
             NetGame.GetName = p => { foreach (var kv in avatars) if (kv.Value == p) return "P" + (kv.Key + 1); return null; };
             NetGame.SoundHook = (n, p, v, pi) => { if (State == Mode.Host && p.HasValue) sounds.Add((n, p.Value, v, pi)); };
@@ -200,6 +201,7 @@ namespace MamasComing
             cm.RegisterNamedMessageHandler("mc/evt", OnEvent);
             cm.RegisterNamedMessageHandler("mc/roster", OnRoster);
             cm.RegisterNamedMessageHandler("mc/snd", OnSound);
+            cm.RegisterNamedMessageHandler("mc/hit", OnHit);
         }
 
         public async void HostOnline()
@@ -700,6 +702,36 @@ namespace MamasComing
         {
             using (var fw = Pack())
                 foreach (var id in nm.ConnectedClientsIds) if (id != nm.LocalClientId) nm.CustomMessagingManager.SendNamedMessage(name, id, fw, d);
+        }
+
+        // ================================================================== slapstick hits (shove / bump), any peer -> victim's owner
+        int SlotOfAvatar(PlayerController pc)
+        {
+            if (pc == localKid) return mySlot;
+            foreach (var kv in avatars) if (kv.Value == pc) return kv.Key;
+            return -1;
+        }
+        void WriteHit(BinaryWriter w, int slot, Vector3 dir, float force, float stun, bool drop)
+        { w.Write((byte)slot); w.Write(dir.x); w.Write(dir.z); w.Write(force); w.Write(stun); w.Write(drop); }
+
+        void SendHitMsg(PlayerController victim, Vector3 dir, float force, float stun, bool drop)
+        {
+            int slot = SlotOfAvatar(victim); if (slot < 0) return;
+            var w = Begin(); WriteHit(w, slot, dir, force, stun, drop);
+            if (State == Mode.Host) { foreach (var kv in slotOf) if (kv.Value == slot && kv.Key != nm.LocalClientId) Send("mc/hit", kv.Key, w, NetworkDelivery.Reliable); }
+            else SendHost("mc/hit", w, NetworkDelivery.Reliable);
+        }
+
+        void OnHit(ulong sender, FastBufferReader reader)
+        {
+            var r = Read(reader); if (r == null) return;
+            int slot = r.ReadByte(); var dir = new Vector3(r.ReadSingle(), 0f, r.ReadSingle()); float force = r.ReadSingle(), stun = r.ReadSingle(); bool drop = r.ReadBoolean();
+            if (slot == mySlot) { if (localKid) localKid.Bonk(dir, Mathf.Min(force, 8f), Mathf.Min(stun, 1.5f), drop); return; }
+            if (State == Mode.Host)   // relay to the victim's owner
+            {
+                var w = Begin(); WriteHit(w, slot, dir, force, stun, drop);
+                foreach (var kv in slotOf) if (kv.Value == slot && kv.Key != nm.LocalClientId && kv.Key != sender) Send("mc/hit", kv.Key, w, NetworkDelivery.Reliable);
+            }
         }
 
         void OnApplicationQuit() { if (nm && nm.IsListening) nm.Shutdown(); }

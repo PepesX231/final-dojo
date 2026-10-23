@@ -133,7 +133,7 @@ namespace MamasComing
             if (state == State.Playing || state == State.MomHome)
             {
                 if (MamaInput.EscDown) MamaSettings.Toggle();
-                else if (!MamaSettings.Open && Cursor.lockState != CursorLockMode.Locked && MamaInput.ClickDown && !MamaSettings.BlockStart) LockCursor(true);
+                else if (!MamaSettings.Open && !(MiniGame.I && MiniGame.I.Active) && Cursor.lockState != CursorLockMode.Locked && MamaInput.ClickDown && !MamaSettings.BlockStart) LockCursor(true);
             }
 
             if (Live) RefreshHUD();

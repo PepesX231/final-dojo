@@ -1,0 +1,13 @@
+import bpy
+for n in ['Arm L','Leg L']:
+    for o in bpy.data.objects:
+        if o.name.startswith(n):
+            print('OBJ',o.name,o.type,'parent',o.parent.name if o.parent else None)
+            for m in o.modifiers: print('  MOD',m.type,m.name, getattr(m,'object',None), getattr(m,'node_group',None))
+            if o.type=='CURVE': print('  bevel',o.data.bevel_depth, 'pts', [len(s.points) + len(s.bezier_points) for s in o.data.splines])
+            ad=o.animation_data; print('  anim', ad.action.name if ad and ad.action else None, 'drivers', len(ad.drivers) if ad else 0)
+            if ad:
+                for d in ad.drivers: print('  DRV', d.data_path)
+            if o.data and hasattr(o.data,'shape_keys') and o.data.shape_keys: print('  shapekeys', [k.name for k in o.data.shape_keys.key_blocks])
+            if o.data and o.data.animation_data: print('  dataanim', o.data.animation_data.action, len(o.data.animation_data.drivers))
+            for c in o.constraints: print('  CON', c.type)

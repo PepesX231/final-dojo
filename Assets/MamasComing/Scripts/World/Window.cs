@@ -14,6 +14,8 @@ namespace MamasComing
             if (sash) sash.localPosition = Vector3.Lerp(sash.localPosition, open ? openLocal : closedLocal, Time.deltaTime * 6f);
         }
 
+        public override float Priority(PlayerController p) => p != null && p.Held != null ? -1.2f : -0.5f;
+
         public override string GetPrompt(PlayerController p) => open ? "Close the window" : "Open the window";
 
         public override void Interact(PlayerController p)

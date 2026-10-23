@@ -19,6 +19,8 @@ namespace MamasComing
 
         public virtual Vector3 InteractPoint => interactAnchor ? interactAnchor.position : transform.position;
         public virtual bool CanInteract(PlayerController p) => true;
+        /// <summary>Tie-breaker when several things overlap in front of the player (higher wins).</summary>
+        public virtual float Priority(PlayerController p) => 0f;
         public abstract string GetPrompt(PlayerController p);
         public abstract void Interact(PlayerController p);
 

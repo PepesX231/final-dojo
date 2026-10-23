@@ -155,6 +155,7 @@ namespace MamasComing
 
         // ---------------------------------------------------------------- Interactable
         public override bool CanInteract(PlayerController p) => Urgent;
+        public override float Priority(PlayerController p) => Urgent ? 0.6f : 0f;
         public override string GetPrompt(PlayerController p) => Quest;
         public override MiniGame.Kind MiniGameKind(PlayerController p) => puzzle;
         public override string MiniGameTitle => T(puzzleEn ?? questEn, puzzleTh ?? questTh);

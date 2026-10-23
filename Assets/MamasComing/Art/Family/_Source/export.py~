@@ -1,0 +1,11 @@
+import bpy, sys, os
+out = sys.argv[sys.argv.index('--')+1]
+for o in list(bpy.data.objects):
+    if o.type in ('CAMERA','LIGHT') or o.name.startswith('Studio'):
+        bpy.data.objects.remove(o, do_unlink=True)
+bpy.ops.object.select_all(action='SELECT')
+os.makedirs(os.path.dirname(out), exist_ok=True)
+bpy.ops.export_scene.fbx(filepath=out, use_selection=True, apply_scale_options='FBX_SCALE_ALL', axis_forward='-Z', axis_up='Y',
+    use_mesh_modifiers=True, mesh_smooth_type='FACE', add_leaf_bones=False, bake_anim=True, bake_anim_use_all_actions=False,
+    bake_anim_use_nla_strips=False, bake_anim_force_startend_keying=True, bake_anim_step=1.0, bake_anim_simplify_factor=0.0, object_types={'EMPTY','MESH','ARMATURE'})
+print('EXPORTED', out)

@@ -58,7 +58,7 @@ namespace MamasComing
         {
             base.OnDropped(p, velocity);
             if (Dead || !NetGame.IsAuthority) return;
-            if (tank && tank.Patched && homeInTank && Vector3.Distance(Flat(transform.position), Flat(tank.transform.position)) < 1.6f) { SaveTo(homeInTank, true); return; }
+            if (tank && tank.Patched && homeInTank && Vector3.Distance(Flat(transform.position), Flat(tank.transform.position)) < 2.3f) { SaveTo(homeInTank, true); return; }
             foreach (var b in FindObjectsByType<Bucket>(FindObjectsSortMode.None))
                 if (b && b.liters > 1f && Vector3.Distance(Flat(transform.position), Flat(b.transform.position)) < 1.1f) { SaveTo(b.transform, false); return; }
         }

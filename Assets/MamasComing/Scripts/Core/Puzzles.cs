@@ -78,7 +78,7 @@ namespace MamasComing
             timeLeft = limit;
         }
 
-        public void End() { if (card) card.gameObject.SetActive(false); }
+        public void End() { if (kind == MiniGame.Kind.Wires && card && card.gameObject.activeSelf) EndWires(); if (card) card.gameObject.SetActive(false); }
 
         /// 0 = running, 1 = won, -1 = failed.
         public int Tick(float dt, bool fresh)
@@ -121,42 +121,61 @@ namespace MamasComing
         static bool EHeld => MamaInput.InteractHeld || (Keyboard.current != null && (Keyboard.current.eKey.isPressed || Keyboard.current.spaceKey.isPressed));
 
         // ================================================================== WIRES  (match colours left -> right)
-        int[] rightCols;
+        int[] rightCols; bool[] doneL, doneR; int dragFrom = -1; RectTransform dragLine; CursorLockMode prevLock; bool prevVis, prevCam;
+        static readonly float[] WireY = { 105, 35, -35, -105 };
         void BuildWires()
         {
-            limit = 15f; hint.text = T("W/S choose the matching socket  •  E connect  •  wrong = ZAP!", "W/S เลือกช่องสีเดียวกัน  •  E ต่อสาย  •  ผิด = ไฟช็อต!");
+            limit = 18f; hint.text = T("Drag each wire with the MOUSE to the socket of the same colour  •  wrong = ZAP!", "ใช้เมาส์ลากสายไปเสียบช่องสีเดียวกัน  •  ผิด = ไฟช็อต!");
             rightCols = new[] { 0, 1, 2, 3 }; for (int i = 0; i < 4; i++) { int j = Random.Range(i, 4); (rightCols[i], rightCols[j]) = (rightCols[j], rightCols[i]); }
-            var panel = Img(Add("Panel", new Vector2(0, 0), new Vector2(560, 280)), new Color(0.22f, 0.24f, 0.27f), round);
+            doneL = new bool[4]; doneR = new bool[4]; dragFrom = -1;
+            Img(Add("Panel", new Vector2(0, 0), new Vector2(560, 280)), new Color(0.22f, 0.24f, 0.27f), round);
             for (int i = 0; i < 4; i++)
             {
-                float y = 105 - i * 70;
-                var l = Img(Add("L" + i, new Vector2(-230, y), new Vector2(60, 40)), WireCols[i], round); imgs.Add(l);
-                var r = Img(Add("R" + i, new Vector2(230, y), new Vector2(60, 40)), WireCols[rightCols[i]], round); imgs.Add(r);
+                imgs.Add(Img(Add("L" + i, new Vector2(-230, WireY[i]), new Vector2(60, 40)), WireCols[i], round));
+                imgs.Add(Img(Add("R" + i, new Vector2(230, WireY[i]), new Vector2(60, 40)), WireCols[rightCols[i]], round));
             }
-            var cur = Img(Add("Cursor", new Vector2(230, 105), new Vector2(84, 58)), new Color(1, 1, 1, 0.0f), round);
-            var co = cur.gameObject.AddComponent<Outline>(); co.effectColor = Color.white; co.effectDistance = new Vector2(4, -4); rts.Add(cur.rectTransform);
-            var src = Img(Add("Src", new Vector2(-230, 105), new Vector2(84, 58)), new Color(1, 1, 1, 0f), round);
-            var so = src.gameObject.AddComponent<Outline>(); so.effectColor = new Color(1, 1, 0.6f); so.effectDistance = new Vector2(4, -4); rts.Add(src.rectTransform);
-            lastKey = 0; // cursor row
+            dragLine = Add("Drag", Vector2.zero, new Vector2(0, 14)); Img(dragLine, Color.white, white); dragLine.gameObject.SetActive(false);
+            prevLock = Cursor.lockState; prevVis = Cursor.visible; Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
+            var cam = GameManager.I ? GameManager.I.cam : null; prevCam = cam && cam.inputEnabled; if (cam) cam.inputEnabled = false;
+        }
+        void EndWires()
+        {
+            Cursor.lockState = prevLock; Cursor.visible = prevVis;
+            var cam = GameManager.I ? GameManager.I.cam : null; if (cam) cam.inputEnabled = prevCam;
+        }
+        int HitSocket(Vector2 local, float x)
+        {
+            for (int i = 0; i < 4; i++) if (Mathf.Abs(local.x - x) < 50f && Mathf.Abs(local.y - WireY[i]) < 30f) return i;
+            return -1;
         }
         int TickWires(float dt)
         {
-            int k = ArrowDown();
-            if (k == 1) lastKey = (lastKey + 3) % 4; if (k == 3) lastKey = (lastKey + 1) % 4;
-            rts[0].anchoredPosition = new Vector2(230, 105 - lastKey * 70);
-            rts[1].anchoredPosition = new Vector2(-230, 105 - step * 70);
-            rts[1].localScale = Vector3.one * (1f + Mathf.Sin(Time.time * 10f) * 0.05f);
-            if (E)
+            var m = Mouse.current; if (m == null) return 0;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(area, m.position.ReadValue(), null, out Vector2 local);
+            for (int i = 0; i < 4; i++) if (!doneL[i]) imgs[i * 2].rectTransform.localScale = Vector3.one * (dragFrom == i ? 1.2f : 1f + Mathf.Sin(Time.time * 6f + i) * 0.04f);
+            if (m.leftButton.wasPressedThisFrame) { int l = HitSocket(local, -230f); if (l >= 0 && !doneL[l]) { dragFrom = l; MamaAudio.Play("click", null, 0.5f, 1.3f); } }
+            if (dragFrom >= 0)
             {
-                if (rightCols[lastKey] == step)
+                SetLine(dragLine, new Vector2(-200, WireY[dragFrom]), local, WireCols[dragFrom]);
+                if (m.leftButton.wasReleasedThisFrame)
                 {
-                    Line(new Vector2(-200, 105 - step * 70), new Vector2(200, 105 - lastKey * 70), WireCols[step], 14f);
-                    Good("click", 1f + step * 0.15f); step++;
-                    if (step >= 4) return 1;
+                    int r = HitSocket(local, 230f);
+                    if (r >= 0 && !doneR[r] && rightCols[r] == dragFrom)
+                    {
+                        Line(new Vector2(-200, WireY[dragFrom]), new Vector2(200, WireY[r]), WireCols[dragFrom], 14f);
+                        doneL[dragFrom] = doneR[r] = true; step++; Good("click", 1f + step * 0.15f);
+                    }
+                    else if (r >= 0) { Bad("zap"); timeLeft -= 2.5f; }
+                    dragFrom = -1; dragLine.gameObject.SetActive(false);
+                    if (step >= 4) { EndWires(); return 1; }
                 }
-                else { Bad("zap"); timeLeft -= 2.5f; }
             }
             return 0;
+        }
+        void SetLine(RectTransform r, Vector2 p0, Vector2 p1, Color c)
+        {
+            r.gameObject.SetActive(true); r.anchoredPosition = (p0 + p1) / 2f; r.sizeDelta = new Vector2((p1 - p0).magnitude, 14f);
+            r.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(p1.y - p0.y, p1.x - p0.x) * Mathf.Rad2Deg); r.GetComponent<Image>().color = c;
         }
 
         // ================================================================== SIMON  (watch the lights, repeat)

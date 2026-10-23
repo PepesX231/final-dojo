@@ -36,7 +36,12 @@ namespace MamasComing.EditorTools
         static Transform carpetT; static ParticleSystem splashFx; static Window kitchenWinN, kitchenWinE;
 
         [MenuItem("Mama's Coming/Build House Level")]
-        public static void BuildDeferred() { EditorApplication.delayCall += Build; }
+        public static void BuildDeferred()
+        {
+            // the scene is now hand-edited: a rebuild would wipe every manual change
+            if (!EditorUtility.DisplayDialog("Rebuild the whole house?", "This DELETES MamasKitchen and rebuilds it from code. All manual edits (sizes, materials, positions) will be lost.\n\nThe scene is hand-edited now - you almost certainly do NOT want this.", "Rebuild anyway", "Cancel")) return;
+            EditorApplication.delayCall += Build;
+        }
 
         public static void Build()
         {
@@ -46,6 +51,7 @@ namespace MamasComing.EditorTools
             blockRects.Clear(); groundRects.Clear(); groundOffs.Clear();
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            TextMat(Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"));   // must exist before asset editing starts
             AssetDatabase.StartAssetEditing();
             try
             {
@@ -66,6 +72,7 @@ namespace MamasComing.EditorTools
                 Clutter();
                 PartyWing();
                 PartyHazards();
+                PartyDetails();
                 Kid();
                 Mom();
                 Systems();
@@ -87,6 +94,24 @@ namespace MamasComing.EditorTools
             EditorBuildSettings.scenes = list.ToArray();
             AssetDatabase.SaveAssets();
             Debug.Log("[Mama's Coming] House built: " + ScenePath);
+            FriendPasses();
+        }
+
+        /// The friend's art passes (crafted materials, recast FBX models, Mother Apple). They MUST run after every
+        /// rebuild, otherwise a rebuild silently throws their work away.
+        static void FriendPasses()
+        {
+            System.IO.Directory.CreateDirectory("DevBridge/mama-rebuild");
+            try { MamasComing.Editor.MamaVisualPolish.Apply(); } catch (System.Exception ex) { Debug.LogError("[Mama's Coming] MamaVisualPolish failed: " + ex); }
+            try { MamasComing.Editor.MamaRecastBuilder.Apply(); } catch (System.Exception ex) { Debug.LogError("[Mama's Coming] MamaRecastBuilder failed: " + ex); }
+            // their passes reset the sun to a midday white; keep the 5 PM sunset on top
+            var sun = GameObject.Find("Sun")?.GetComponent<Light>();
+            if (sun) { sun.transform.rotation = Quaternion.Euler(9f, -125f, 0f); sun.color = C("FF9A5C"); sun.intensity = 1.7f; sun.shadowStrength = 0.75f; }
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = C("A796C8"); RenderSettings.ambientEquatorColor = C("F2A47E"); RenderSettings.ambientGroundColor = C("5E4352");
+            var scene = EditorSceneManager.GetActiveScene();
+            EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
+            Debug.Log("[Mama's Coming] Friend passes re-applied (recast models + Mother Apple + polish).");
         }
 
         // =====================================================================  SHELL
@@ -1153,6 +1178,7 @@ namespace MamasComing.EditorTools
             var act = go.AddComponent<KidActionAnimator>();
             act.player = kid;
             kid.actions = act;
+            go.AddComponent<KidRoughhouse>();
         }
 
         static void Mom()
@@ -1269,12 +1295,19 @@ namespace MamasComing.EditorTools
 
         static void Environment()
         {
+            // golden-hour sunset: low orange sun, lavender sky above, pink haze at the horizon
             RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = C("FFE6C7"); RenderSettings.ambientEquatorColor = C("E8C9A6"); RenderSettings.ambientGroundColor = C("8A7058");
-            RenderSettings.fog = true; RenderSettings.fogMode = FogMode.Exponential; RenderSettings.fogDensity = 0.012f; RenderSettings.fogColor = C("8C8279");
+            RenderSettings.ambientSkyColor = C("A796C8"); RenderSettings.ambientEquatorColor = C("F2A47E"); RenderSettings.ambientGroundColor = C("5E4352");
+            RenderSettings.fog = true; RenderSettings.fogMode = FogMode.Exponential; RenderSettings.fogDensity = 0.011f; RenderSettings.fogColor = C("E99A9A");
+            var sky = new Material(Shader.Find("MamasComing/SunsetSky"));
+            sky.SetColor("_Top", C("2E3474")); sky.SetColor("_Mid", C("7A5BB0")); sky.SetColor("_Low", C("F2879A"));
+            sky.SetColor("_Horizon", C("FFB26A")); sky.SetColor("_Ground", C("5A4058")); sky.SetColor("_SunColor", C("FFE2A8"));
+            sky.SetColor("_SunGlow", C("FF8A4C")); sky.SetFloat("_SunSize", 0.03f); sky.SetFloat("_Clouds", 0.4f);
+            string skyPath = MatDir + "/EveningSky.mat"; if (AssetDatabase.LoadAssetAtPath<Material>(skyPath)) AssetDatabase.DeleteAsset(skyPath);
+            AssetDatabase.CreateAsset(sky, skyPath); RenderSettings.skybox = sky;
             var sun = new GameObject("Sun").AddComponent<Light>();
-            sun.type = LightType.Directional; sun.transform.rotation = Quaternion.Euler(55f, -35f, 0f);
-            sun.color = C("FFE9CF"); sun.intensity = 1.35f; sun.shadows = LightShadows.Soft; sun.shadowStrength = 0.65f;
+            sun.type = LightType.Directional; sun.transform.rotation = Quaternion.Euler(9f, -125f, 0f);
+            sun.color = C("FF9A5C"); sun.intensity = 1.7f; sun.shadows = LightShadows.Soft; sun.shadowStrength = 0.7f;
             RenderSettings.sun = sun;
             PointLight("LivingLight", V(4f, 2.6f, 3f), C("FFD9A8"), 9f, 1.4f, gRooms);
             PointLight("EntryLight", V(10f, 2.6f, 3f), C("FFD9A8"), 7f, 1.0f, gRooms);

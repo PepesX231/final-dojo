@@ -1,0 +1,5 @@
+import bpy
+print('OBJS', len(bpy.data.objects))
+for o in bpy.data.objects: print('OBJ', o.name, o.type, o.parent.name if o.parent else '-', 'anim' if (o.animation_data and o.animation_data.action) else '', [m.type for m in o.modifiers])
+for a in bpy.data.actions: print('ACT', a.name, a.frame_range[:])
+print('SCN', bpy.context.scene.frame_start, bpy.context.scene.frame_end)

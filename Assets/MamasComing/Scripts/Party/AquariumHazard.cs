@@ -14,6 +14,12 @@ namespace MamasComing
         public ParticleSystem drip;
         Quaternion baseRot;
         public bool Patched => Fixed;
+        bool FishInHand(PlayerController p) => Patched && p && p.Held is Fish f && !f.Dead;
+        public override bool CanInteract(PlayerController p) => base.CanInteract(p) || FishInHand(p);
+        public override float Priority(PlayerController p) => FishInHand(p) ? 2.5f : base.Priority(p) + (p && p.Held is Fish ? 1f : 0f);
+        public override string GetPrompt(PlayerController p) => FishInHand(p) ? (Loc.Thai ? "ปล่อยปลากลับลงตู้" : "Put the fish back in the tank") : base.GetPrompt(p);
+        public override MiniGame.Kind MiniGameKind(PlayerController p) => FishInHand(p) ? MiniGame.Kind.None : base.MiniGameKind(p);
+        public override void Interact(PlayerController p) { if (FishInHand(p)) { p.Drop(false); return; } base.Interact(p); }
 
         protected override void Start() { if (tankBody) baseRot = tankBody.localRotation; base.Start(); }
         protected override void OnActivated()

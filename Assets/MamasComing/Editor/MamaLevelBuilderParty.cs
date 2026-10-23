@@ -86,14 +86,30 @@ namespace MamasComing.EditorTools
             laundrySocketT = G("LaundrySocket", gParty, V(14.2f, 0.25f, 0.6f));
             Cube("Socket", gParty, V(14.2f, 0.28f, 0.09f), V(0.12f, 0.12f, 0.02f), M("White", C("FFFFFF")));
 
-            // ---------------------------------------------------------- GARAGE: breaker panel (power)
-            var bp = G("Breaker panel", gParty, V(22.12f, 1.4f, 2.0f));
-            Cube("Box", bp, V(22.12f, 1.4f, 2.0f), V(0.12f, 0.8f, 0.6f), M("PanelGrey", C("B8BEC6"), 0.5f, 0.3f));
-            var lever = G("Lever", bp, V(22.2f, 1.55f, 2.0f));
-            L(PrimitiveType.Cube, "Handle", lever, V(0.05f, 0, 0), V(0.1f, 0.18f, 0.06f), M("Black", C("1A1A1F"), 0.8f));
-            var bl = new GameObject("PanelLight").AddComponent<Light>(); bl.transform.SetParent(bp, false); bl.transform.position = V(22.4f, 1.8f, 2.0f);
-            bl.type = LightType.Point; bl.range = 1.5f; bl.intensity = 1.2f;
-            Sph("LED", bp, V(22.19f, 1.78f, 2.2f), Vector3.one * 0.04f, ME("LEDGreen", C("44FF66"), new Color(0.3f, 2f, 0.4f)));
+            // ---------------------------------------------------------- GARAGE: breaker cabinet (wall-mounted, west wall)
+            var steel = M("PanelGrey", C("B8BEC6"), 0.5f, 0.3f);
+            var dark = M("Black", C("1A1A1F"), 0.8f);
+            var bp = G("Breaker panel", gParty, V(22.17f, 1.4f, 2.0f));
+            Cube("Backplate", bp, V(22.09f, 1.4f, 2.0f), V(0.02f, 1.0f, 0.75f), M("Plywood", C("C9A877")));
+            Cube("Cabinet", bp, V(22.17f, 1.4f, 2.0f), V(0.14f, 0.85f, 0.6f), steel, true);
+            Cube("Inner", bp, V(22.245f, 1.4f, 2.0f), V(0.005f, 0.75f, 0.5f), M("PanelInner", C("2A2D33")));
+            for (int r = 0; r < 4; r++) for (int c = 0; c < 3; c++)
+                Cube("Breaker", bp, V(22.255f, 1.62f - r * 0.12f, 1.84f + c * 0.1f), V(0.02f, 0.07f, 0.06f), r == 1 && c == 1 ? M("RedPlastic", C("FF5A5A")) : M("White", C("FFFFFF")));
+            var doorPiv = G("DoorHinge", bp, V(22.25f, 1.4f, 2.3f)); doorPiv.rotation = Quaternion.Euler(0, -110, 0);
+            Cube("Door", doorPiv, V(22.25f, 1.4f, 2.0f), V(0.02f, 0.83f, 0.58f), steel);
+            Cube("Warning", doorPiv, V(22.262f, 1.6f, 2.0f), V(0.005f, 0.12f, 0.2f), M("TagYellow", C("FFD447")));
+            Cyl("Conduit", bp, V(22.15f, 2.3f, 2.0f), V(0.05f, 0.5f, 0.05f), steel);
+            Cyl("ConduitLow", bp, V(22.15f, 0.5f, 2.15f), V(0.04f, 0.5f, 0.04f), steel);
+            var lever = G("Lever", bp, V(22.26f, 1.25f, 2.0f));
+            L(PrimitiveType.Cube, "Base", lever, V(0.0f, 0, 0), V(0.03f, 0.08f, 0.14f), dark);
+            L(PrimitiveType.Cube, "Handle", lever, V(0.06f, 0.06f, 0), V(0.12f, 0.03f, 0.05f), M("RedPlastic", C("FF5A5A")));
+            var bl = new GameObject("PanelLight").AddComponent<Light>(); bl.transform.SetParent(bp, false); bl.transform.position = V(22.5f, 1.85f, 2.0f);
+            bl.type = LightType.Point; bl.range = 1.4f; bl.intensity = 1.0f;
+            Sph("LED", bp, V(22.25f, 1.78f, 2.22f), Vector3.one * 0.035f, ME("LEDGreen", C("44FF66"), new Color(0.3f, 2f, 0.4f)));
+            Cube("FloorMat", bp, V(22.8f, 0.006f, 2.0f), V(0.9f, 0.012f, 0.8f), M("RubberMat", C("2F3238")));
+            Floor2D(gParty, new Vector2(22.8f, 2.0f), V2(1.0f, 0.9f), "HazardStripe", C("FFD447"));
+            Cube("BoltSign", bp, V(22.1f, 2.0f, 2.0f), V(0.02f, 0.18f, 0.45f), M("TagYellow", C("FFD447")));
+            Label3D(bp, "! ELECTRIC", V(22.115f, 2.0f, 2.0f), Quaternion.Euler(0, -90, 0), 0.05f, C("1A1A1F"));
             var breaker = bp.gameObject.AddComponent<BreakerPanel>();
             breaker.displayName = "Breaker panel"; breaker.lever = lever; breaker.panelLight = bl; breaker.laundrySocket = laundrySocketT;
             breaker.interactAnchor = G("Anchor", bp, V(22.9f, 0, 2.0f)); breaker.interactRadius = 1.5f;
@@ -102,22 +118,37 @@ namespace MamasComing.EditorTools
             breaker.doneEn = "Power's back on!"; breaker.doneTh = "ไฟกลับมาแล้ว!";
             breaker.escalateTime = 9999f; breaker.severity = 2;
 
-            // ---------------------------------------------------------- GARAGE: water heater (co-op valves)
-            var wh = G("Water heater", gParty, V(28.9f, 0f, 5.2f));
-            Cyl("Tank", wh, V(28.9f, 0.85f, 5.2f), V(0.8f, 0.85f, 0.8f), M("HeaterWhite", C("ECECE6"), 0.4f), true);
-            Cyl("Top", wh, V(28.9f, 1.72f, 5.2f), V(0.82f, 0.03f, 0.82f), M("Chrome", C("D5DAE0"), 0.9f, 0.9f));
-            Cyl("PipeUp", wh, V(28.9f, 2.2f, 5.2f), V(0.07f, 0.5f, 0.07f), M("Copper", C("D9814A"), 0.7f, 0.7f));
-            Cyl("PipeRun", wh, V(26.0f, 2.6f, 5.85f), V(0.06f, 2.9f, 0.06f), M("Copper", C("D9814A"), 0.7f, 0.7f), false, V(0, 0, 90));
-            Cyl("PipeDown", wh, V(23.1f, 1.7f, 5.85f), V(0.06f, 0.9f, 0.06f), M("Copper", C("D9814A"), 0.7f, 0.7f));
-            var gauge = G("Gauge", wh, V(28.45f, 1.35f, 5.2f));
-            Cyl("Dial", gauge, V(28.45f, 1.35f, 5.2f), V(0.22f, 0.02f, 0.22f), M("White", C("FFFFFF")), false, V(0, 0, 90));
-            Cube("RedZone", gauge, V(28.44f, 1.42f, 5.25f), V(0.005f, 0.05f, 0.08f), M("RedPlastic", C("FF5A5A")));
-            var needle = G("Needle", gauge, V(28.43f, 1.35f, 5.2f)); needle.rotation = Quaternion.Euler(0, -90, 0);
-            L(PrimitiveType.Cube, "N", needle, V(0, 0.05f, 0), V(0.012f, 0.09f, 0.005f), M("Black", C("1A1A1F"), 0.8f));
-            var steam = NewPS("Steam", wh, V(28.9f, 1.8f, 5.2f), ParticleMat("FX_Smoke", false), 200);
-            SetupMist(steam, new Color(1f, 1f, 1f, 0.5f), 1.4f);
+            // ---------------------------------------------------------- GARAGE: water heater + two pipe valves along the north wall
+            var copper = M("Copper", C("D9814A"), 0.7f, 0.7f);
+            var wh = G("Water heater", gParty, V(29.0f, 0f, 5.25f));
+            Cube("Platform", wh, V(29.0f, 0.06f, 5.25f), V(1.1f, 0.12f, 1.1f), M("Concrete", C("A9A49B")), true);
+            Cyl("Tank", wh, V(29.0f, 0.97f, 5.25f), V(0.8f, 0.85f, 0.8f), M("HeaterWhite", C("ECECE6"), 0.4f), true);
+            Cyl("BaseRing", wh, V(29.0f, 0.16f, 5.25f), V(0.82f, 0.04f, 0.82f), steel);
+            Cyl("TopCap", wh, V(29.0f, 1.83f, 5.25f), V(0.82f, 0.03f, 0.82f), M("Chrome", C("D5DAE0"), 0.9f, 0.9f));
+            Cube("AccessPanel", wh, V(28.6f, 0.45f, 5.25f), V(0.01f, 0.25f, 0.3f), steel);
+            Cube("Sticker", wh, V(28.6f, 1.3f, 5.25f), V(0.01f, 0.2f, 0.15f), M("TagYellow", C("FFD447")));
+            Cyl("Flue", wh, V(29.0f, 2.3f, 5.25f), V(0.12f, 0.45f, 0.12f), steel);
+            Cyl("OutUp", wh, V(29.0f, 1.95f, 5.6f), V(0.05f, 0.1f, 0.05f), copper);
+            Cyl("OutRise", wh, V(29.0f, 1.45f, 5.85f), V(0.05f, 0.5f, 0.05f), copper);
+            Cyl("OutBend", wh, V(29.0f, 1.95f, 5.73f), V(0.05f, 0.13f, 0.05f), copper, false, V(90, 0, 0));
+            // one tidy LOW pipe along the north wall: heater -> valve A -> valve B -> into the wall (never crosses the door at x23.2-24.6)
+            Cyl("PipeLow", wh, V(27.1f, 0.97f, 5.85f), V(0.05f, 1.9f, 0.05f), copper, false, V(0, 0, 90));
+            Cyl("PipeWallIn", wh, V(25.2f, 0.97f, 5.92f), V(0.065f, 0.08f, 0.065f), copper, false, V(90, 0, 0));
+            Cube("WallPlate", wh, V(25.2f, 0.97f, 5.985f), V(0.22f, 0.22f, 0.02f), steel);
+            foreach (var bx in new[] { 26.5f, 28.3f }) Cube("Bracket", wh, V(bx, 0.97f, 5.92f), V(0.06f, 0.14f, 0.1f), steel);
+            Cyl("ReliefPipe", wh, V(28.55f, 0.6f, 5.6f), V(0.03f, 0.55f, 0.03f), copper);
+            Cyl("FloorDrain", wh, V(28.55f, 0.005f, 5.6f), V(0.18f, 0.005f, 0.18f), dark);
+            var gauge = G("Gauge", wh, V(28.6f, 1.0f, 5.75f));
+            Cyl("GaugeStem", gauge, V(28.6f, 1.0f, 5.8f), V(0.03f, 0.05f, 0.03f), steel, false, V(90, 0, 0));
+            Cyl("Dial", gauge, V(28.6f, 1.0f, 5.72f), V(0.2f, 0.015f, 0.2f), M("White", C("FFFFFF")), false, V(90, 0, 0));
+            Cube("RedZone", gauge, V(28.55f, 1.06f, 5.71f), V(0.06f, 0.03f, 0.003f), M("RedPlastic", C("FF5A5A")));
+            var needle = G("Needle", gauge, V(28.6f, 1.0f, 5.705f));
+            L(PrimitiveType.Cube, "N", needle, V(0, 0.04f, 0), V(0.01f, 0.08f, 0.004f), dark);
+            var steam = NewPS("Steam", wh, V(28.55f, 0.3f, 5.6f), ParticleMat("FX_Smoke", false), 200);
+            SetupMist(steam, new Color(1f, 1f, 1f, 0.5f), 1.2f);
+            Cube("Sign", wh, V(26.55f, 1.95f, 5.92f), V(1.4f, 0.28f, 0.01f), M("TagYellow", C("FFD447")));
             var heater = wh.gameObject.AddComponent<WaterHeaterHazard>();
-            heater.displayName = "Water heater"; heater.needle = needle; heater.steam = steam; heater.burstPoint = G("Burst", wh, V(28.2f, 0, 5.0f));
+            heater.displayName = "Water heater"; heater.needle = needle; heater.steam = steam; heater.burstPoint = G("Burst", wh, V(28.55f, 0, 5.3f));
             heater.questEn = "Release the water-heater pressure (2 valves AT ONCE)"; heater.questTh = "ลดแรงดันเครื่องทำน้ำร้อน (หมุน 2 วาล์วพร้อมกัน)";
             heater.startEn = "The water heater gauge is creeping into the RED... (garage)"; heater.startTh = "เข็มเครื่องทำน้ำร้อนเริ่มขึ้นช่องแดง... (โรงรถ)";
             heater.failEn = "KA-BOOM! The water heater blew its valve - the garage is flooding!"; heater.failTh = "ตูม! วาล์วเครื่องทำน้ำร้อนระเบิด - โรงรถน้ำท่วม!";
@@ -125,9 +156,12 @@ namespace MamasComing.EditorTools
             heater.momEn = "Why is the water heater making that noise?!"; heater.momTh = "ทำไมเครื่องทำน้ำร้อนเสียงดังแปลก ๆ?!";
             heater.momFailEn = "WHAT HAPPENED TO THE WATER HEATER?! The garage is soaked!"; heater.momFailTh = "เครื่องทำน้ำร้อนเป็นอะไร?! โรงรถเปียกหมดเลย!";
             heater.startAt = 15f; heater.escalateTime = 170f; heater.coop = true; heater.severity = 2; heater.loopClip = "hum"; heater.loopVolume = 0.18f;
-            heater.interactAnchor = G("Anchor", wh, V(28.1f, 0, 5.1f));
-            heater.valveA = HeaterValveAt(heater, V(28.3f, 0.95f, 4.55f), V(27.8f, 0, 4.4f), "Valve A");
-            heater.valveB = HeaterValveAt(heater, V(23.1f, 1.2f, 5.75f), V(23.4f, 0, 5.1f), "Valve B");
+            heater.interactAnchor = G("Anchor", wh, V(29.4f, 0, 4.5f));
+            heater.valveA = HeaterValveAt(heater, V(27.5f, 0.97f, 5.75f), Quaternion.Euler(90, 0, 0), V(27.5f, 0, 4.9f), "A");
+            heater.valveB = HeaterValveAt(heater, V(25.6f, 0.97f, 5.75f), Quaternion.Euler(90, 0, 0), V(25.6f, 0, 4.9f), "B");
+            heater.window = 4f;
+            Label3D(wh, "PRESSURE RELEASE:  TURN  A + B  TOGETHER", V(26.55f, 1.95f, 5.9f), Quaternion.identity, 0.05f, C("1A1A1F"));
+            Label3D(wh, "HOT", V(28.59f, 1.3f, 5.25f), Quaternion.Euler(0, 90, 0), 0.06f, C("E53935"));
 
             // ---------------------------------------------------------- KITCHEN: burst pipe (chain from the heater)
             var pipeRoot = G("Burst pipe", gParty, V(18.15f, 0.25f, 13.2f));
@@ -485,17 +519,50 @@ namespace MamasComing.EditorTools
             var s = g.AddComponent<SplatMess>(); s.kind = k; s.sticky = k == SplatKind.Soda;
         }
 
-        static HeaterValve HeaterValveAt(WaterHeaterHazard heater, Vector3 pos, Vector3 anchor, string name)
+        static HeaterValve HeaterValveAt(WaterHeaterHazard heater, Vector3 pos, Quaternion axis, Vector3 anchor, string letter)
         {
-            var v = G(name, heater.transform, pos);
-            var wheel = G("Wheel", v, pos);
-            L(PrimitiveType.Cylinder, "Rim", wheel, Vector3.zero, V(0.24f, 0.02f, 0.24f), M("ValveRed", C("E53935"), 0.4f), false, V(90, 0, 0));
-            L(PrimitiveType.Cube, "Spoke", wheel, Vector3.zero, V(0.22f, 0.03f, 0.03f), M("ValveRed", C("E53935"), 0.4f));
-            L(PrimitiveType.Cube, "Spoke", wheel, Vector3.zero, V(0.03f, 0.22f, 0.03f), M("ValveRed", C("E53935"), 0.4f));
-            Cube("Tag", v, pos + V(0, 0.2f, 0), V(0.12f, 0.08f, 0.01f), M("TagYellow", C("FFD447")));
+            var v = G("Valve " + letter, heater.transform, pos);
+            Cube("Body", v, pos - new Vector3(anchor.x - pos.x, 0, anchor.z - pos.z).normalized * 0.05f, V(0.14f, 0.14f, 0.14f), M("Brass", C("F2C14E"), 0.7f, 0.6f));
+            var wheel = G("Wheel", v, pos); wheel.rotation = axis;
+            L(PrimitiveType.Cylinder, "Rim", wheel, V(0, 0.08f, 0), V(0.34f, 0.02f, 0.34f), M("ValveRed", C("E53935"), 0.4f));
+            L(PrimitiveType.Cube, "Spoke", wheel, V(0, 0.08f, 0), V(0.32f, 0.025f, 0.035f), M("ValveRed", C("E53935"), 0.4f));
+            L(PrimitiveType.Cube, "Spoke", wheel, V(0, 0.08f, 0), V(0.035f, 0.025f, 0.32f), M("ValveRed", C("E53935"), 0.4f));
+            L(PrimitiveType.Cylinder, "Hub", wheel, V(0, 0.08f, 0), V(0.08f, 0.03f, 0.08f), M("Chrome", C("D5DAE0"), 0.9f, 0.9f));
+            Vector3 dir = new Vector3(anchor.x - pos.x, 0, anchor.z - pos.z).normalized;
+            var board = Cube("LetterBoard", v, pos + V(0, 0.5f, 0) - dir * 0.08f, V(0.32f, 0.32f, 0.02f), M("TagYellow", C("FFD447")));
+            board.transform.rotation = Quaternion.LookRotation(dir);
+            Label3D(v, letter, pos + V(0, 0.5f, 0) - dir * 0.065f, Quaternion.LookRotation(-dir), 0.25f, C("1A1A1F"));
+            Floor2D(gParty, new Vector2(anchor.x, anchor.z), V2(0.8f, 0.8f), "HazardStripe", C("FFD447"));
+            Label3D(v, letter, V(anchor.x, 0.012f, anchor.z), Quaternion.Euler(90, 0, 0), 0.3f, C("FFD447"));
             var hv = v.gameObject.AddComponent<HeaterValve>();
-            hv.heater = heater; hv.wheel = wheel; hv.displayName = name; hv.interactAnchor = G("Anchor", v, anchor); hv.interactRadius = 1.2f;
+            hv.heater = heater; hv.wheel = wheel; hv.displayName = "Valve " + letter; hv.interactAnchor = G("Anchor", v, anchor); hv.interactRadius = 1.2f;
             return hv;
+        }
+
+        /// Depth-tested text material: the built-in font material draws THROUGH walls.
+        static Material TextMat(Font f)
+        {
+            const string path = MatDir + "/Text3D.mat";
+            var m = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (!m) { m = new Material(Shader.Find("MamasComing/Text3D")); AssetDatabase.CreateAsset(m, path); }
+            m.mainTexture = f.material.mainTexture; EditorUtility.SetDirty(m);
+            return m;
+        }
+
+        static void Label3D(Transform parent, string text, Vector3 pos, Quaternion rot, float size, Color col)
+        {
+            var go = new GameObject("Text"); go.transform.SetParent(parent, false); go.transform.SetPositionAndRotation(pos, rot);
+            var tm = go.AddComponent<TextMesh>(); tm.text = text; tm.fontSize = 64; tm.characterSize = size * 0.15f; tm.anchor = TextAnchor.MiddleCenter; tm.alignment = TextAlignment.Center; tm.color = col; tm.fontStyle = FontStyle.Bold;
+            tm.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); go.GetComponent<MeshRenderer>().sharedMaterial = TextMat(tm.font);
+        }
+
+        static void Floor2D(Transform parent, Vector2 c, Vector2 size, string mat, Color col)
+        {
+            var m = M(mat, col, 0.2f);
+            Cube("MarkN", parent, V(c.x, 0.004f, c.y + size.y / 2), V(size.x, 0.006f, 0.06f), m);
+            Cube("MarkS", parent, V(c.x, 0.004f, c.y - size.y / 2), V(size.x, 0.006f, 0.06f), m);
+            Cube("MarkW", parent, V(c.x - size.x / 2, 0.004f, c.y), V(0.06f, 0.006f, size.y), m);
+            Cube("MarkE", parent, V(c.x + size.x / 2, 0.004f, c.y), V(0.06f, 0.006f, size.y), m);
         }
 
         static void SetupMist(ParticleSystem ps, Color col, float size)
@@ -509,6 +576,63 @@ namespace MamasComing.EditorTools
             var g = new Gradient(); g.SetKeys(new[] { new GradientColorKey(Color.white, 0), new GradientColorKey(Color.white, 1) }, new[] { new GradientAlphaKey(0f, 0), new GradientAlphaKey(1f, 0.2f), new GradientAlphaKey(0f, 1) });
             c.color = g;
             ps.Play();
+        }
+
+        // =====================================================================  DETAIL PASS: garage, game room, outside
+        static void PartyDetails()
+        {
+            var t = G("Details", gRooms);
+            var wood = M("BenchDark", C("8A5E36")); var card = M("Cardboard", C("C9A06A"));
+            for (int i = 0; i < 3; i++) Cube("StorageBox", t, V(22.35f, 2.1f, 3.9f + i * 0.4f), V(0.4f, 0.3f, 0.35f), card, true);
+            Cube("Broom", t, V(22.15f, 0.75f, 5.4f), V(0.04f, 1.5f, 0.04f), M("Wood", C("C47A45")), false, V(8, 0, 0));
+            Cube("BroomHead", t, V(22.2f, 0.06f, 5.5f), V(0.12f, 0.12f, 0.35f), M("Bristle", C("E0B84A")));
+            var mower = G("LawnMower", t, V(28.8f, 0, 1.0f));
+            Cube("Deck", mower, V(28.8f, 0.25f, 1.0f), V(0.6f, 0.18f, 0.5f), M("MowerGreen", C("3FA14F"), 0.4f), true);
+            foreach (var w in new[] { V(28.55f, 0.1f, 0.78f), V(29.05f, 0.1f, 0.78f), V(28.55f, 0.1f, 1.22f), V(29.05f, 0.1f, 1.22f) }) Cyl("Wheel", mower, w, V(0.18f, 0.03f, 0.18f), M("Black", C("1A1A1F"), 0.8f), false, V(0, 0, 90));
+            Cube("Handle", mower, V(28.8f, 0.65f, 1.45f), V(0.45f, 0.04f, 0.04f), M("Chrome", C("D5DAE0"), 0.9f, 0.9f));
+            Cube("TubeLight", t, V(26f, 2.76f, 3f), V(1.4f, 0.05f, 0.15f), ME("Bulb", C("FFF6DD"), new Color(1.5f, 1.3f, 1f)));
+            for (int i = 0; i < 2; i++) Cube("ParkLine", t, V(24.4f + i * 3.4f, 0.005f, 2.6f), V(0.08f, 0.006f, 3.6f), M("TagYellow", C("FFD447")));
+            foreach (var cz in new[] { 10.4f, 11.7f })
+            {
+                Cube("GamingSeat", t, V(23.3f, 0.45f, cz), V(0.5f, 0.1f, 0.5f), M("SeatRed", C("D0342C")), true);
+                Cube("GamingBack", t, V(23.55f, 0.85f, cz), V(0.1f, 0.75f, 0.5f), M("SeatRed", C("D0342C")), true);
+                Cyl("Stem", t, V(23.3f, 0.22f, cz), V(0.05f, 0.2f, 0.05f), M("Black", C("1A1A1F"), 0.8f));
+            }
+            Cube("FigShelf", t, V(29.8f, 1.5f, 12.4f), V(0.3f, 0.04f, 1.2f), wood, true);
+            Color[] fc = { C("FF6F61"), C("43CFC4"), C("FFD447"), C("7A5CD6") };
+            for (int i = 0; i < 4; i++) Cap("Figure", t, V(29.8f, 1.62f, 11.95f + i * 0.3f), V(0.08f, 0.1f, 0.08f), M("Fig" + i, fc[i], 0.5f));
+            Frame(t, V(27.0f, 1.8f, 8.09f), 0.7f, 0.9f, Vector3.forward, C("FF4FD8"));
+            Frame(t, V(28.6f, 1.8f, 8.09f), 0.6f, 0.8f, Vector3.forward, C("4FD8FF"));
+            Cube("LEDStrip", t, V(26f, 2.72f, 13.9f), V(7.6f, 0.03f, 0.03f), ME("LEDStrip", C("FF4FD8"), new Color(2.5f, 0.4f, 2f)));
+            Plant(t, V(29.5f, 0, 6.5f), 1.5f, C("4FA3E0"));
+            Frame(t, V(27.0f, 1.8f, 7.92f), 0.6f, 0.45f, Vector3.back, C("A4E05A"));
+
+            var o = G("Neighborhood", gOutside);
+            Cube("Driveway", o, V(26f, -0.24f, -4.5f), V(5.4f, 0.04f, 9f), M("Driveway", C("BDB6AA")));
+            Cube("Street", o, V(14f, -0.245f, -10.5f), V(70f, 0.04f, 5f), M("Asphalt", C("4A4A50"), 0.3f));
+            for (int i = 0; i < 14; i++) Cube("StreetLine", o, V(-18f + i * 5f, -0.22f, -10.5f), V(2.2f, 0.01f, 0.15f), M("White", C("FFFFFF")));
+            Cube("Sidewalk", o, V(14f, -0.2f, -7.4f), V(70f, 0.08f, 1.4f), M("Sidewalk", C("D9D2C3")));
+            var fence = M("Fence", C("F4ECDD"));
+            for (int i = 0; i < 18; i++) { float x = -1.5f + i * 1.9f; Cube("FencePost", o, V(x, 0.1f, 16.5f), V(0.1f, 0.9f, 0.1f), fence, true); }
+            Cube("FenceRail", o, V(14.65f, 0.4f, 16.5f), V(32.4f, 0.08f, 0.05f), fence);
+            Cube("FenceRail2", o, V(14.65f, 0.05f, 16.5f), V(32.4f, 0.08f, 0.05f), fence);
+            for (int i = 0; i < 4; i++)
+            {
+                var lp = V(-2f + i * 11f, -0.25f, -8.4f);
+                Cyl("LampPost", o, lp + V(0, 1.6f, 0), V(0.08f, 1.6f, 0.08f), M("LampPole", C("2F3238"), 0.5f, 0.4f), true);
+                Sph("LampHead", o, lp + V(0, 3.25f, 0), V(0.35f, 0.25f, 0.35f), ME("StreetLamp", C("FFE2A8"), new Color(2.2f, 1.6f, 0.9f)));
+                var l = new GameObject("StreetLight").AddComponent<Light>(); l.transform.SetParent(o, false); l.transform.position = lp + V(0, 3.0f, 0);
+                l.type = LightType.Point; l.range = 8f; l.intensity = 1.6f; l.color = C("FFC98A");
+            }
+            Color[] hc = { C("F2B8A0"), C("A8D8E8"), C("F5DE9A"), C("C9B8E8") };
+            for (int i = 0; i < 4; i++)
+            {
+                var hp = V(-6f + i * 11f, -0.25f, -18f);
+                Cube("NeighbourHouse", o, hp + V(0, 1.6f, 0), V(7f, 3.2f, 6f), M("Neighbour" + i, hc[i]), true);
+                Cube("Roof", o, hp + V(0, 3.55f, 0), V(7.6f, 0.7f, 6.6f), M("RoofRed", C("B5524A")));
+                for (int w = 0; w < 3; w++) Cube("Window", o, hp + V(-2.2f + w * 2.2f, 1.7f, 3.02f), V(0.9f, 0.9f, 0.05f), ME("WarmWindow", C("FFD9A0"), new Color(1.6f, 1.1f, 0.5f)));
+            }
+            for (int i = 0; i < 5; i++) { var tp = V(33f, -0.25f, -2f + i * 4.5f); Cyl("Trunk", o, tp + V(0, 1f, 0), V(0.35f, 1f, 0.35f), M("Trunk", C("8A5A3A"))); Sph("Crown", o, tp + V(0, 2.8f, 0), V(2.4f, 2.2f, 2.4f), M("Bush2", C("6CC63A"))); }
         }
     }
 }

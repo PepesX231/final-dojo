@@ -180,6 +180,8 @@ namespace MamasComing
                     Face(t.InteractPoint);
                     var mg = t.MiniGameKind(this);
                     if (mg != MiniGame.Kind.None && MiniGame.I) { MiniGame.I.Begin(mg, t, this, t.MiniGameTitle); return; }
+                    // fish back into the patched tank: a local drop, so the normal pickup sync carries it
+                    if (t is AquariumHazard aqh && aqh.Patched && Held is Fish) { Drop(false); return; }
                     PlayClipFor(t);
                     NetGame.Interact(t, this);
                 }
@@ -298,7 +300,7 @@ namespace MamasComing
                 if (dist > it.interactRadius) continue;
                 float dot = dist > 0.01f ? Vector3.Dot(fwd, d / dist) : 1f;
                 if (dot < -0.2f) continue;
-                float score = dist - dot * 0.9f;
+                float score = dist * 0.85f - dot * 1.3f - it.Priority(this);
                 // A held fire tool should select the burning pot, rather than the closer
                 // stove knob underneath it. Otherwise E misleadingly turns the gas back on.
                 if (it is CookPot cp && cp.Fire && cp.Fire.burning && (Held is Lid || Held is Towel)) score -= 1.25f;
@@ -379,6 +381,19 @@ namespace MamasComing
             if (FloodSim.I) FloodSim.I.Splash(transform.position, 2.5f);
             MamaAudio.Play("splash", transform.position, 1f, 0.85f); MamaAudio.Play("thud", transform.position, 0.9f);
             if (GameManager.I) GameManager.I.OnPlayerSlipped(reason);
+        }
+
+        /// Shoved / bumped by another kid: fly back a bit, maybe drop what you hold.
+        public void Bonk(Vector3 dir, float force, float stunTime, bool dropHeld)
+        {
+            dir.y = 0f; if (dir.sqrMagnitude < 1e-4f) dir = -transform.forward; dir.Normalize();
+            stun = Mathf.Max(stun, stunTime);
+            if (stunTime > 0.5f) fallAnim = Mathf.Max(fallAnim, 0.6f);
+            HoldProgress = 0f;
+            Motor.Launch(dir * force + Vector3.up * (1.2f + force * 0.25f));
+            if (dropHeld && Held != null) { var h = ReleaseHeld(); h.OnDropped(this, dir * 2f + Vector3.up * 2.2f); if (h is Bucket b) b.Spill(0.6f); }
+            MamaAudio.Play("thud", transform.position, 0.8f, Random.Range(1.1f, 1.4f));
+            if (isLocal && GameManager.I && GameManager.I.cam) GameManager.I.cam.Shake(0.25f);
         }
 
         public void KnockBack(Vector3 from, float force)
