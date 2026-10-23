@@ -98,10 +98,10 @@ namespace MamasComing.Menu
         {
             var rt = Rect("Btn " + label, parent, anchor, pos, size);
             rt.localRotation = Quaternion.Euler(0, 0, tilt);
-            var shadow = Rect("Drop", rt, new Vector2(.5f, .5f), new Vector2(6, -9), size); Panel(shadow, Shade);
-            var face = Rect("Face", rt, new Vector2(.5f, .5f), Vector2.zero, size);
-            var img = Panel(face, fill, Ink, 5f, true);
-            var txt = Punchy(Label(face, label, fontSize, Color.white), Ink, 3f);
+            var drop = Rect("Drop", rt, new Vector2(.5f, .5f), new Vector2(6, -9), size); Panel(drop, Shade);
+            var faceRt = Rect("Face", rt, new Vector2(.5f, .5f), Vector2.zero, size);
+            var img = Panel(faceRt, fill, Ink, 5f, true);
+            var txt = Punchy(Label(faceRt, label, fontSize, Color.white), Ink, 3f);
             var b = rt.gameObject.AddComponent<PunchButton>();
             b.Init(img, txt, fill, onClick);
             return b;
@@ -129,20 +129,21 @@ namespace MamasComing.Menu
             if (!interactable) { MenuSfx.Play(MenuSfx.Kind.Nope); wiggle = 1.5f; return; }
             scale = 1.25f; MenuSfx.Play(MenuSfx.Kind.Click); click?.Invoke();
         }
+        /// Keyboard / code path (Enter key etc.).
+        public void Press() { if (interactable) OnPointerClick(null); }
 
         void Update()
         {
             float goal = !interactable ? 1f : down ? .9f : hover ? 1.08f : 1f;
             // spring toward the goal scale so clicks overshoot and wobble
-            vel += (goal - scale) * 320f * Time.unscaledDeltaTime; vel *= Mathf.Exp(-14f * Time.unscaledDeltaTime);
-            scale += vel * Time.unscaledDeltaTime;
-            wiggle = Mathf.MoveTowards(wiggle, 0f, Time.unscaledDeltaTime * 3f);
-            var face = this.face ? this.face.rectTransform : null;
-            if (face)
-            {
-                face.localScale = new Vector3(scale, scale, 1f);
-                face.localRotation = Quaternion.Euler(0, 0, Mathf.Sin(Time.unscaledTime * 30f) * 4f * wiggle);
-            }
+            float dt = Time.unscaledDeltaTime;
+            vel += (goal - scale) * 320f * dt; vel *= Mathf.Exp(-14f * dt);
+            scale += vel * dt;
+            wiggle = Mathf.MoveTowards(wiggle, 0f, dt * 3f);
+            if (!face) return;
+            var rt = face.rectTransform;
+            rt.localScale = new Vector3(scale, scale, 1f);
+            rt.localRotation = Quaternion.Euler(0, 0, Mathf.Sin(Time.unscaledTime * 30f) * 4f * wiggle);
         }
     }
 
