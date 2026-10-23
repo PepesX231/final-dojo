@@ -1,4 +1,13 @@
 # Milestone Reports — P0
+
+## 2026-10-23 — MAMA'S COMING! readability pass (current game)
+
+- Replaced the competing always-on checklist/markers with a compact goal, contextual item descriptions, optional held-H ideas and a Tab overview. Teddy names its bedroom/bed/pillow and gains a matching home silhouette nearby; off-screen optional destination labels stay visible. Oil fire offers environmental clues and alternative tools. New text switches between Thai/English. Reduced bloom/saturation in a cloned runtime profile and improved UI contrast.
+- Fixed two reproduced interaction problems: returning a teddy could bounce it away from home; carrying a lid selected the nearby stove instead of the burning pot. Added immediate return confirmation and positive fire-resolution feedback.
+- Files: MamasComing GameManager, PlayerController, MessyProp, MamaUI, new MamaUI.Readability/MamaReadability/MamaPresentation and Editor/MamaUxReview. Did not rebuild the house. Preserved the original dirty scene before changes; its final SHA256 matches that saved backup.
+- Validation: Runtime/Editor compile with 0 errors; **31 focused staged-input checks passed** (`DevBridge/mama-ux/review-121606.txt`). Actual Game View captures reviewed. Earlier failures retained; exact external connector authorization rejection excluded, gameplay errors remain failures. Input/language preferences restored. Two pre-existing compile warnings remain.
+- Limits/next: no uncoached human playthrough, controller session, lower-resolution visual audit or standalone build. Check whether a fresh player understands the goal, teddy home and fire alternatives without explanation. Full design/evidence: `docs/MAMA_UX_REVIEW.md`.
+
 รูปแบบตาม GDD §35: Completed · Files · Tests run · Actual results · Known bugs · Design risks · Art findings · Next
 หลักฐานอยู่ `docs/evidence/<Milestone>/`
 
@@ -857,3 +866,9 @@ Not a release-art approval or human fun/performance certification. No real-save 
 - Recorded earlier failures: first **1 passed / 2 failed**, second **2 passed / 1 failed**; final **3 passed / 0 failed**. A specific unrelated background MCP authorization error is expected by the new fixture; game errors remain failures. Unity domain-reload hang required a restart explicitly approved by the user.
 - Runtime World 1 screenshot reviewed with no card HUD. This is a camera-render capture, not final-art approval. No human keyboard playthrough, standalone build/performance test, or subjective fun claim in this change.
 - Details, changed systems and evidence: docs/CARD_REMOVAL_REPORT.md; local originals and hashes: DevBridge/card-removal-backup/manifest.json.
+
+## 2026-10-23 — Isolated tiny-apple witch test
+
+Built `Assets/MamasComing/WitchTest/Scenes/AppleWitch_Test.unity`: real-scale kitchen with a 12cm apple, one levitation wand, three manually placed props, a human-scale witch mother's arrival, generated raster UI and painted material textures. Ten authored Blender models and editable/reproducible source retained. Original Mama scene is not replaced.
+
+Focused staged virtual-keyboard/mouse and swept-physics review: final 29/29 passed after the arrival framing correction, at `DevBridge/witch-test/review-latest.txt`. Actual Game View evidence and limits are in `docs/MAMA_WITCH_IMPLEMENTATION.md`. This is a playable single encounter, not a multi-map campaign, human playtest, standalone performance certification or release-art approval.

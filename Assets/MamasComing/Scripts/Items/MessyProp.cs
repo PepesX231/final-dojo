@@ -75,9 +75,14 @@ namespace MamasComing
             {
                 base.OnDropped(p, Vector3.zero);
                 transform.SetPositionAndRotation(homePosition, homeRotation);
+                // Commit the restored pose to physics too: the last carried pose must not
+                // become a release velocity that throws a correctly returned prop away.
+                Body.position = homePosition;
+                Body.rotation = homeRotation;
                 Body.linearVelocity = Vector3.zero;
                 Body.angularVelocity = Vector3.zero;
-                if (GameManager.I) GameManager.I.Toast("Put the " + displayName.ToLower() + " back where it belongs.");
+                Body.Sleep(); // remains dynamic; a later collision can still knock it out of place
+                if (GameManager.I && GameManager.I.ui) GameManager.I.ui.Confirm(MamaReadability.Text(displayName + " is back where it belongs.", Loc.T(displayName) + " กลับเข้าที่แล้ว"));
                 return;
             }
             base.OnDropped(p, velocity);

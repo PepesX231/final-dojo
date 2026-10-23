@@ -1,0 +1,55 @@
+{
+  "units": "metres",
+  "models": [
+    {
+      "name": "PROP_AppleWand",
+      "objects": 9,
+      "triangles": 3992
+    },
+    {
+      "name": "PROP_MoonCup",
+      "objects": 6,
+      "triangles": 3512
+    },
+    {
+      "name": "PROP_MoonPotion",
+      "objects": 5,
+      "triangles": 2852
+    },
+    {
+      "name": "PROP_Grimoire",
+      "objects": 19,
+      "triangles": 3268
+    },
+    {
+      "name": "PROP_CupSaucer",
+      "objects": 3,
+      "triangles": 2048
+    },
+    {
+      "name": "PROP_PotionRack",
+      "objects": 6,
+      "triangles": 1516
+    },
+    {
+      "name": "PROP_BookStack",
+      "objects": 6,
+      "triangles": 1128
+    },
+    {
+      "name": "PROP_OpenSpellbook",
+      "objects": 4,
+      "triangles": 566
+    },
+    {
+      "name": "ENV_WitchKitchen",
+      "objects": 149,
+      "triangles": 31680
+    },
+    {
+      "name": "CHR_MotherWitch",
+      "objects": 27,
+      "triangles": 13820
+    }
+  ]
+}

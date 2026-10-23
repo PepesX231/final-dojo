@@ -3706,6 +3706,7 @@ GameObject:
   m_Component:
   - component: {fileID: 66720022}
   - component: {fileID: 66720023}
+  - component: {fileID: 66720024}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -3793,6 +3794,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &66720024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 66720021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &69011604
 GameObject:
   m_ObjectHideFlags: 0
@@ -4279,7 +4309,7 @@ Transform:
   m_GameObject: {fileID: 75729708}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.020000458, y: 0.015999999, z: 0.020000458}
+  m_LocalPosition: {x: -0.011, y: 0.015999999, z: -0.002}
   m_LocalScale: {x: 0.18, y: 0.04, z: 0.15}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4705,6 +4735,7 @@ GameObject:
   m_Component:
   - component: {fileID: 91023442}
   - component: {fileID: 91023443}
+  - component: {fileID: 91023444}
   m_Layer: 0
   m_Name: LEDLight
   m_TagString: Untagged
@@ -4792,6 +4823,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &91023444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 91023441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &91921128
 GameObject:
   m_ObjectHideFlags: 0
@@ -40486,7 +40546,7 @@ Transform:
   m_GameObject: {fileID: 388318414}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 18.95, y: 1.8, z: 5.92}
+  m_LocalPosition: {x: 20.746, y: 1.8, z: 5.92}
   m_LocalScale: {x: 0.06, y: 0.6, z: 0.04}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -47412,7 +47472,7 @@ Transform:
   m_GameObject: {fileID: 530917342}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.21643962, z: -0, w: 0.976296}
-  m_LocalPosition: {x: 2.38, y: 0.75, z: 5.45}
+  m_LocalPosition: {x: 2.077, y: 0.75, z: 5.37}
   m_LocalScale: {x: 0.85, y: 0.6, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -76604,6 +76664,7 @@ GameObject:
   m_Component:
   - component: {fileID: 968015293}
   - component: {fileID: 968015294}
+  - component: {fileID: 968015295}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -76691,6 +76752,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &968015295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 968015292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &971226180
 GameObject:
   m_ObjectHideFlags: 0
@@ -88504,6 +88594,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1018471810}
   - component: {fileID: 1018471811}
+  - component: {fileID: 1018471812}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -88591,6 +88682,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1018471812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1018471809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1019810211
 GameObject:
   m_ObjectHideFlags: 0
@@ -108142,6 +108262,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1127436807}
   - component: {fileID: 1127436808}
+  - component: {fileID: 1127436809}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -108229,6 +108350,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1127436809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127436806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1127776331
 GameObject:
   m_ObjectHideFlags: 0
@@ -112454,7 +112604,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeY:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -112507,7 +112657,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeZ:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -125556,7 +125706,7 @@ Transform:
   m_GameObject: {fileID: 1296678359}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 19.5, y: 1.8, z: 5.925}
+  m_LocalPosition: {x: 21.296, y: 1.8, z: 5.925}
   m_LocalScale: {x: 1.1, y: 0.6, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -145874,6 +146024,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1500431156}
   - component: {fileID: 1500431157}
+  - component: {fileID: 1500431158}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -145961,6 +146112,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1500431158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1500431155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1503726266
 GameObject:
   m_ObjectHideFlags: 0
@@ -158609,6 +158789,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1638679572}
   - component: {fileID: 1638679573}
+  - component: {fileID: 1638679574}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -158696,6 +158877,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1638679574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1638679571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1640468840
 GameObject:
   m_ObjectHideFlags: 0
@@ -170538,7 +170748,7 @@ Transform:
   m_GameObject: {fileID: 1770427622}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 16.4, y: 1.2, z: 13.88}
+  m_LocalPosition: {x: 16.4, y: 0.725, z: 13.88}
   m_LocalScale: {x: 8.4, y: 0.55, z: 0.02}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -178346,6 +178556,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1925389914}
   - component: {fileID: 1925389915}
+  - component: {fileID: 1925389916}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -178433,6 +178644,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1925389916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925389913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1926085473
 GameObject:
   m_ObjectHideFlags: 0
@@ -180130,7 +180370,7 @@ Transform:
   m_GameObject: {fileID: 1952014066}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 20.05, y: 1.8, z: 5.92}
+  m_LocalPosition: {x: 21.845999, y: 1.8, z: 5.92}
   m_LocalScale: {x: 0.06, y: 0.6, z: 0.04}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -182426,7 +182666,7 @@ Transform:
   m_GameObject: {fileID: 2004141446}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 19.5, y: 1.5, z: 5.92}
+  m_LocalPosition: {x: 21.296, y: 1.5, z: 5.92}
   m_LocalScale: {x: 1.16, y: 0.06, z: 0.04}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -182606,7 +182846,7 @@ Transform:
   m_GameObject: {fileID: 2010347962}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 19.5, y: 2.1, z: 5.92}
+  m_LocalPosition: {x: 21.296, y: 2.1, z: 5.92}
   m_LocalScale: {x: 1.16, y: 0.06, z: 0.04}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -201239,7 +201479,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Presentation.BlobShadow
   target: {fileID: 1141343241773126922}
-  material: {fileID: 2100000, guid: 6c4243a5ce5cde143a0571b30f62125e, type: 2}
+  material: {fileID: 0}
   baseSize: 0.95
   minScaleAtMaxHeight: 0.55
   maxHeight: 8

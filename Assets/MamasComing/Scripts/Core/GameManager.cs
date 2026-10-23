@@ -60,9 +60,11 @@ namespace MamasComing
         void Start()
         {
             if (!ui) ui = GetComponent<MamaUI>();
+            Loc.Load();
             ui.Build();
             MamaAudio.Ensure();
             MamaSettings.Ensure();
+            if (!GetComponent<MamaReadability>()) gameObject.AddComponent<MamaReadability>();
             if (!GetComponent<MiniGame>()) gameObject.AddComponent<MiniGame>().ui = ui;
             ui.ShowTitle(true);
             player.controlsEnabled = false;
@@ -456,7 +458,7 @@ namespace MamasComing
             foreach (var m in MessRegistry.All) if (MessRegistry.Visible(m)) score += m.Severity;
             score += Mathf.Clamp(wet / 4f, 0f, 6f);
             ui.SetMess(Mathf.Clamp01(score / 30f));
-            UpdateRoomWarnings();
+            // MamaReadability owns contextual hints instead of competing always-on markers.
             ui.TickBubble(player.transform);
 
         }
@@ -732,7 +734,14 @@ namespace MamasComing
             if (cam) cam.Shake(1.2f);
         }
 
-        public void OnFireOut(FireSource f) { }
+        public void OnFireOut(FireSource f)
+        {
+            bool anotherFire = false;
+            foreach (var source in FireSource.All) if (source && source.burning) { anotherFire = true; break; }
+            ui.Call(anotherFire
+                ? MamaReadability.Text("One fire out. There are still flames elsewhere!", "ไฟจุดนี้ดับแล้ว แต่ยังมีไฟที่อื่น!")
+                : MamaReadability.Text("Fire out. The smoke and evidence still remain.", "ดับไฟแล้ว ควันและร่องรอยยังต้องจัดการ"), anotherFire ? MamaUI.Orange : MamaUI.Teal);
+        }
 
         public void OnAlarm()
         {

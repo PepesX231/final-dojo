@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace MamasComing
 {
     /// <summary>Builds the whole "handmade paper" HUD at runtime.</summary>
-    public class MamaUI : MonoBehaviour
+    public partial class MamaUI : MonoBehaviour
     {
         public Sprite roundSprite;
         public Sprite circleSprite;
@@ -13,7 +13,7 @@ namespace MamasComing
         public static readonly Color Paper = new Color(0.99f, 0.93f, 0.80f);
         public static readonly Color PaperDark = new Color(0.93f, 0.84f, 0.68f);
         public static readonly Color Edge = new Color(0.58f, 0.36f, 0.20f);
-        public static readonly Color Ink = new Color(0.40f, 0.21f, 0.11f);
+        public static readonly Color Ink = new Color(0.17f, 0.21f, 0.23f);
         public static readonly Color Pink = new Color(1f, 0.56f, 0.69f);
         public static readonly Color Teal = new Color(0.25f, 0.74f, 0.74f);
         public static readonly Color Orange = new Color(1f, 0.6f, 0.2f);
@@ -160,6 +160,7 @@ namespace MamasComing
             promptGO.SetActive(false); toastGO.SetActive(false); callGO.SetActive(false); momGO.SetActive(false); holdGO.SetActive(false);
             BuildTitle();
             BuildEnd();
+            BuildReadability(H);
         }
 
         // ------------------------------------------------------------------ mini game panel
@@ -375,14 +376,16 @@ namespace MamasComing
             Vector3 sp = cam.WorldToScreenPoint(world);
             bool behind = sp.z < 0f;
             if (behind) { sp.x = Screen.width - sp.x; sp.y = Screen.height - sp.y; }
-            float m = 70f;
-            bool off = behind || sp.x < m || sp.x > Screen.width - m || sp.y < m || sp.y > Screen.height - m;
-            Vector2 center = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+            float scale = root.lossyScale.x;
+            float left = 90f * scale, right = Screen.width - 350f * scale;
+            float bottom = 310f * scale, top = Screen.height - 250f * scale;
+            bool off = behind || sp.x < left || sp.x > right || sp.y < bottom || sp.y > top;
+            Vector2 center = new Vector2((left + right) * 0.5f, (bottom + top) * 0.5f);
             Vector2 p2 = new Vector2(sp.x, sp.y);
             if (off)
             {
                 Vector2 d = p2 - center; if (d.sqrMagnitude < 1f) d = Vector2.down;
-                float sx = (Screen.width * 0.5f - m) / Mathf.Max(1e-3f, Mathf.Abs(d.x)), sy = (Screen.height * 0.5f - m) / Mathf.Max(1e-3f, Mathf.Abs(d.y));
+                float sx = (right - left) * 0.5f / Mathf.Max(1e-3f, Mathf.Abs(d.x)), sy = (top - bottom) * 0.5f / Mathf.Max(1e-3f, Mathf.Abs(d.y));
                 p2 = center + d * Mathf.Min(sx, sy);
                 float ang = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg + 90f;
                 g.arrow.localRotation = Quaternion.Euler(0, 0, ang);
@@ -398,7 +401,8 @@ namespace MamasComing
             g.disc.color = Color.Lerp(Paper, col, 0.35f);
             g.glyph.text = glyph; g.glyph.color = col;
             g.label.text = label;
-            g.labelRT.gameObject.SetActive(!off && !string.IsNullOrEmpty(label));
+            g.labelRT.gameObject.SetActive(!string.IsNullOrEmpty(label));
+            g.labelRT.anchoredPosition = new Vector2(off ? (p2.x < center.x ? 115f : -115f) : 0f, off ? -45f : 48f);
             float pulse = 1f + Mathf.Sin(Time.time * 6f) * 0.05f;
             g.root.localScale = Vector3.one * (i >= 2 ? 1f + Mathf.Sin(Time.time * 6f + i) * 0.03f : pulse);
             var cg = g.root.GetComponent<CanvasGroup>(); if (!cg) cg = g.root.gameObject.AddComponent<CanvasGroup>();
@@ -482,11 +486,13 @@ namespace MamasComing
 
         public void SetObjectives(string main, string count, IList<string> rest)
         {
-            objMain.text = main;
+            objMain.text = MamaReadability.Text("Leave no evidence for Mom", "จัดการบ้านก่อนแม่จับได้");
             objCount.text = count;
             var sb = new System.Text.StringBuilder();
             for (int i = 0; i < rest.Count && i < 7; i++) sb.Append("o  ").Append(rest[i]).Append('\n');
             objList.text = sb.ToString();
+            if (overviewList) overviewList.text = MamaReadability.Text("THINGS MOM COULD NOTICE\n", "สิ่งที่แม่อาจสังเกตเห็น\n") + "• " + main + "\n" + sb;
+            objList.transform.parent.gameObject.SetActive(false);
         }
 
         public void SetTimer(float secondsLeft, bool momHome)
@@ -566,6 +572,7 @@ namespace MamasComing
 
         void Update()
         {
+            RefreshReadabilityCopy();
             if (toastGO == null) return;
             float dt = Time.deltaTime;
             if (toastT > 0f) toastT -= dt;

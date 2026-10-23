@@ -269,6 +269,9 @@ namespace MamasComing
                 float dot = dist > 0.01f ? Vector3.Dot(fwd, d / dist) : 1f;
                 if (dot < -0.2f) continue;
                 float score = dist - dot * 0.9f;
+                // A held fire tool should select the burning pot, rather than the closer
+                // stove knob underneath it. Otherwise E misleadingly turns the gas back on.
+                if (it is CookPot cp && cp.Fire && cp.Fire.burning && (Held is Lid || Held is Towel)) score -= 1.25f;
                 if (score < best) { best = score; Target = it; }
             }
         }

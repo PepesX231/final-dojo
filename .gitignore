@@ -108,3 +108,4 @@ InitTestScene*.unity*
 
 # DREAM RUSH dev tooling output
 /DevBridge/
+/.tools/
