@@ -34,6 +34,8 @@ namespace MamasComing.EditorTools
             if (!kid) { Debug.LogError("[Mama's Coming] open MamasKitchen first (needs the configured scene kid)"); return; }
             Build("Banana", kid);
             AssetDatabase.SaveAssets();
+            // the controller was deleted and recreated; reimport so the loaded prefab does not keep a null controller
+            AssetDatabase.ImportAsset(Dir + "/PF_Kid_Banana.prefab", ImportAssetOptions.ForceUpdate);
             Debug.Log("[Mama's Coming] PF_Kid_Banana built from " + RiggedPath("Banana"));
         }
 

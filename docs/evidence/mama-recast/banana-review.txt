@@ -13,19 +13,19 @@ PASS bone Foot_R present
 PASS limb bones share the body frame like the apple rig
 PASS glove follows the forearm
 PASS KidActionAnimator drives the Banana bones
-shoulder axis local=(0.340, -0.028, -0.011) face offset local=(-0.041, 0.356, 0.048)
+shoulder axis local=(0.340, -0.027, -0.017) face offset local=(-0.041, 0.356, 0.050)
 PASS Banana faces the kid's forward with Arm_R on its right
-standing bounds min=(15.614, 0.000, 10.642) max=(16.404, 1.116, 11.122)
+standing bounds min=(15.613, -0.004, 10.641) max=(16.403, 1.119, 11.138)
 PASS Banana stands on the floor at kid height
 PASS moving puppet switches the Banana to its walk
-walking glove travel metres=0.072
+walking glove travel metres=0.123
 PASS walk swings the glove through the bones
 PASS Teddy bear has CarryGrip contacts
 PASS Teddy bear has a reach phase before lifting
 Teddy bear wrist target error metres L=0.000 R=0.000; glove bone to contact L=0.000 R=0.000
 PASS Teddy bear Banana wrists reach both authored contacts
 PASS Teddy bear Banana glove bones sit at the contacts
-Teddy bear held centre ahead of Body bone metres=0.420
+Teddy bear held centre ahead of Body bone metres=0.421
 PASS Teddy bear is carried in front of the Banana
 PASS Teddy bear is hugged close to the Banana, not floating ahead of it
 Teddy bear after walking wrist error L=0.000 R=0.000
