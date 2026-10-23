@@ -239,8 +239,9 @@ namespace MamasComing.Editor
         }
         public static void Screenshot()
         {
-            Directory.CreateDirectory("DevBridge/mama-rebuild");
-            ScreenCapture.CaptureScreenshot("DevBridge/mama-rebuild/game-view.png");
+            var type=AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("DreamRush.DevBridge.DevBridge",false)).First(t=>t!=null);
+            var capture=type.GetMethod("CaptureCamera",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Static);
+            capture.Invoke(null,new object[]{"DevBridge/mama-rebuild/game-view.png",true,1920,1080});
         }
     }
 }
