@@ -79,6 +79,8 @@ namespace MamasComing
         public void Play(Clip c, float duration = 0.45f)
         {
             oneShot = c; oneT = 0f; oneDur = Mathf.Max(0.1f, duration);
+            // our own kid: every other screen plays the same move
+            if (player && player.isLocal && NetGame.Online && NetGame.SendAnim != null) NetGame.SendAnim(player, (byte)c, oneDur);
         }
 
         /// <summary>Call every frame while a hold-interaction is in progress.</summary>

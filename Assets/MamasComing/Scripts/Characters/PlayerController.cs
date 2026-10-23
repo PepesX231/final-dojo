@@ -204,7 +204,7 @@ namespace MamasComing
             else { HoldProgress = 0f; holdTarget = null; }
         }
 
-        KidActionAnimator.Clip HoldClipFor(Interactable t)
+        public KidActionAnimator.Clip HoldClipFor(Interactable t)
         {
             if (t is MainValve) return KidActionAnimator.Clip.Crank;
             if (t is Drain) return KidActionAnimator.Clip.Dig;

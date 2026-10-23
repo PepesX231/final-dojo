@@ -56,6 +56,9 @@ namespace MamasComing
             SceneManager.sceneLoaded += (s, m) => { BindScene(); };
             NetGame.SendInteract = (t, p) => SendAct(0, t, null);
             NetGame.SendHit = SendHitMsg;
+            NetGame.SendAnim = SendFxAnim;
+            NetGame.SendPop = SendFxPop;
+            if (!GetComponent<CoopFriendMarkers>()) gameObject.AddComponent<CoopFriendMarkers>();
             NetGame.SendBroadcast = (m, en, th, lvl) => SendEvent((byte)m, en, th, lvl, null);
             NetGame.GetName = p => { foreach (var kv in avatars) if (kv.Value == p) return "P" + (kv.Key + 1); return null; };
             NetGame.SoundHook = (n, p, v, pi) => { if (State == Mode.Host && p.HasValue) sounds.Add((n, p.Value, v, pi)); };
@@ -67,11 +70,41 @@ namespace MamasComing
                 if (args[i] == "-mamajoin" && i + 1 < args.Length) { string a = args[i + 1]; Invoke(nameof(AutoJoinLater), 1.5f); autoJoin = a; }
                 if (args[i] == "-mamahost") Invoke(nameof(HostLanLater), 1f);
                 if (args[i] == "-mamabot") StartCoroutine(Bot());
+                if (args[i] == "-mamaautostart") StartCoroutine(AutoStart(2));
+                if (args[i] == "-mamaautostartsolo") StartCoroutine(AutoStart(0));
             }
         }
         string autoJoin;
 
         /// Test bot for automated co-op checks (client): close the fridge, carry a party cup, report what it sees.
+        /// Test helper (host): start the round once someone joined, then log what this side sees.
+        System.Collections.IEnumerator AutoStart(int need)
+        {
+            while (slotOf.Count < need) yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(3f);
+            var gm = GameManager.I; if (gm && gm.state == GameManager.State.Title) { gm.StartRound(); NetGame.Broadcast(NetGame.Msg.Start, null, null, 0); }
+            float lastLog = 0f; bool shot = false;
+            while (true)
+            {
+                yield return new WaitForSeconds(0.05f);
+                if (!shot && NetGame.LastPopTime > 0f && Time.time - NetGame.LastPopTime > 0.12f) { shot = true; ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(Application.dataPath, "..\\host_view.png")); LogAvatars("[Host-hit]"); }
+                if (Time.time - lastLog > 4f) { lastLog = Time.time; LogAvatars("[Host]"); }
+            }
+        }
+
+        void LogAvatars(string who)
+        {
+            var sb = new System.Text.StringBuilder(who + " mySlot=" + mySlot + " avatars=" + avatars.Count + " all=" + PlayerController.AllPlayers.Count);
+            foreach (var kv in avatars)
+            {
+                var pc = kv.Value; if (!pc) { sb.Append(" | " + kv.Key + ": NULL"); continue; }
+                int vis = 0, en = 0; foreach (var r in pc.GetComponentsInChildren<Renderer>(true)) { if (r.enabled && r.gameObject.activeInHierarchy) en++; if (r.isVisible) vis++; }
+                remote.TryGetValue(kv.Key, out var rs);
+                sb.Append(" | " + kv.Key + ": " + pc.name + " local=" + pc.isLocal + " active=" + pc.gameObject.activeInHierarchy + " pos=" + pc.transform.position.ToString("0.0") + " net=" + (rs != null ? rs.pos.ToString("0.0") + " age=" + (Time.time - rs.t).ToString("0.0") : "-") + " rend=" + en + " visible=" + vis);
+            }
+            Debug.Log(sb.ToString());
+        }
+
         System.Collections.IEnumerator Bot()
         {
             while (GameManager.I == null || GameManager.I.state != GameManager.State.Playing) yield return new WaitForSeconds(0.5f);
@@ -95,7 +128,28 @@ namespace MamasComing
             kid.Drop(false);
             yield return new WaitForSeconds(1.5f);
             Debug.Log("[Bot] dropped cup at " + cup.transform.position + " settled=" + cup.Settled);
-            while (true) { yield return new WaitForSeconds(5f); Debug.Log("[Bot] t=" + GameManager.I.TimeLeft.ToString("0") + " state=" + GameManager.I.state + " hazards active=" + Hazard.All.FindAll(h => h.Urgent).Count + " water=" + FloodSim.I.TotalLiters.ToString("0")); }
+            ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(Application.dataPath, "..\\bot_far.png"));
+            yield return new WaitForSeconds(0.5f);
+            // walk up to the host's kid and look at it: can we SEE them?
+            foreach (var kv in avatars) if (kv.Value && !kv.Value.isLocal)
+            {
+                var other = kv.Value.transform.position;
+                kid.Motor.Teleport(other + new Vector3(1.0f, 0.05f, 0.25f), Quaternion.LookRotation(new Vector3(-1.0f, 0, -0.25f)));
+                break;
+            }
+            yield return new WaitForSeconds(2f);
+            LogAvatars("[Bot-near]");
+            ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(Application.dataPath, "..\\bot_view.png"));
+            yield return new WaitForSeconds(0.5f);
+            foreach (var kv in avatars) if (kv.Value && !kv.Value.isLocal) { var to = kv.Value.transform.position - kid.transform.position; to.y = 0; kid.transform.rotation = Quaternion.LookRotation(to); kid.Motor.Teleport(kid.transform.position, kid.transform.rotation); break; }
+            yield return new WaitForSeconds(0.3f);
+            kid.SendMessage("Shove");
+            Debug.Log("[Bot] shoved");
+            yield return new WaitForSeconds(0.15f);
+            ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(Application.dataPath, "..\\bot_shove.png"));
+            yield return new WaitForSeconds(1f);
+            LogAvatars("[Bot-after]");
+            while (true) { yield return new WaitForSeconds(5f); LogAvatars("[Bot]"); Debug.Log("[Bot] t=" + GameManager.I.TimeLeft.ToString("0") + " state=" + GameManager.I.state + " hazards active=" + Hazard.All.FindAll(h => h.Urgent).Count + " water=" + FloodSim.I.TotalLiters.ToString("0")); }
         }
         void AutoJoinLater() => Join(autoJoin);
         void HostLanLater() => HostLan();
@@ -126,7 +180,7 @@ namespace MamasComing
         {
             var mom = FindFirstObjectByType<MomController>(); if (mom) mom.enabled = false;
             foreach (var p in pickups) if (p && p.Body) { p.Body.isKinematic = true; p.Body.interpolation = RigidbodyInterpolation.None; }
-            foreach (var s in FindObjectsByType<SplatMess>(FindObjectsSortMode.None)) Destroy(s.gameObject);
+            foreach (var s in FindObjectsByType<SplatMess>(FindObjectsSortMode.None)) { var sr = s.GetComponent<Renderer>(); if (sr) SplatMess.RememberMat(s.kind, sr.sharedMaterial); Destroy(s.gameObject); }
         }
 
         static readonly Vector3[] Spawns = { new Vector3(4.4f, 0.02f, 3f), new Vector3(6.8f, 0.02f, 4.6f), new Vector3(3.0f, 0.02f, 4.8f) };
@@ -202,6 +256,7 @@ namespace MamasComing
             cm.RegisterNamedMessageHandler("mc/roster", OnRoster);
             cm.RegisterNamedMessageHandler("mc/snd", OnSound);
             cm.RegisterNamedMessageHandler("mc/hit", OnHit);
+            cm.RegisterNamedMessageHandler("mc/fx", OnFx);
         }
 
         public async void HostOnline()
@@ -290,6 +345,8 @@ namespace MamasComing
             SpawnPuppet(slot);
             NetGame.Connected = slotOf.Count;
             SendRoster();
+            // joined while the round is already running: bring them straight into the game (otherwise they sit on the title screen and see nobody)
+            if (GameManager.I && GameManager.I.state != GameManager.State.Title) SendEvent((byte)NetGame.Msg.Start, null, null, 0, id);
             if (GameManager.I) GameManager.I.Toast(Txt("P" + (slot + 1) + " joined the party!", "P" + (slot + 1) + " เข้าร่วมแล้ว!"));
             Status = Txt("Room: ", "ห้อง: ") + JoinCode + "   " + Txt("Players: ", "ผู้เล่น: ") + slotOf.Count + "/" + MaxPlayers;
         }
@@ -326,6 +383,8 @@ namespace MamasComing
                 pc.transform.position = Vector3.Lerp(pc.transform.position, rs.pos, 1f - Mathf.Exp(-14f * dt));
                 pc.transform.rotation = Quaternion.Slerp(pc.transform.rotation, Quaternion.Euler(0, rs.yaw, 0), 1f - Mathf.Exp(-14f * dt));
                 pc.RemoteTick(rs.speed, rs.sprint, rs.stunned);
+                // their hold-actions (cranking a valve, lifting the sofa...) look the same on every screen
+                if (pc.actions && rs.holdTarget >= 0 && rs.holdTarget < reg.Count && reg[rs.holdTarget]) pc.actions.Hold(pc.HoldClipFor(reg[rs.holdTarget]));
                 if (State == Mode.Host)
                 {
                     if (rs.use && pc.Held) pc.Held.UseHeld(pc, dt);
@@ -512,7 +571,7 @@ namespace MamasComing
             hz.Sort((a, b) => string.CompareOrdinal(PathOf(a.transform), PathOf(b.transform)));
             for (int i = 0; i < nh; i++) { if (i < hz.Count) hz[i].ReadState(r); else { r.ReadBoolean(); r.ReadBoolean(); r.ReadBoolean(); r.ReadSingle(); } }
             int nsp = r.ReadInt16();
-            while (clientSplats.Count < nsp) clientSplats.Add(SplatMess.Spawn(SplatKind.Confetti, Vector3.zero, 1f, null));
+            while (clientSplats.Count < nsp) clientSplats.Add(SplatMess.Spawn(SplatKind.Confetti, Vector3.zero, 1f, SplatMess.MatFor(SplatKind.Confetti)));
             for (int i = 0; i < clientSplats.Count; i++)
             {
                 if (i >= nsp) { if (clientSplats[i]) Destroy(clientSplats[i].gameObject); continue; }
@@ -711,13 +770,13 @@ namespace MamasComing
             foreach (var kv in avatars) if (kv.Value == pc) return kv.Key;
             return -1;
         }
-        void WriteHit(BinaryWriter w, int slot, Vector3 dir, float force, float stun, bool drop)
-        { w.Write((byte)slot); w.Write(dir.x); w.Write(dir.z); w.Write(force); w.Write(stun); w.Write(drop); }
+        void WriteHit(BinaryWriter w, int slot, Vector3 dir, float force, float stun, bool drop, Vector3 from)
+        { w.Write((byte)slot); w.Write(dir.x); w.Write(dir.z); w.Write(force); w.Write(stun); w.Write(drop); w.Write(from.x); w.Write(from.z); }
 
-        void SendHitMsg(PlayerController victim, Vector3 dir, float force, float stun, bool drop)
+        void SendHitMsg(PlayerController victim, Vector3 dir, float force, float stun, bool drop, Vector3 from)
         {
             int slot = SlotOfAvatar(victim); if (slot < 0) return;
-            var w = Begin(); WriteHit(w, slot, dir, force, stun, drop);
+            var w = Begin(); WriteHit(w, slot, dir, force, stun, drop, from);
             if (State == Mode.Host) { foreach (var kv in slotOf) if (kv.Value == slot && kv.Key != nm.LocalClientId) Send("mc/hit", kv.Key, w, NetworkDelivery.Reliable); }
             else SendHost("mc/hit", w, NetworkDelivery.Reliable);
         }
@@ -726,12 +785,62 @@ namespace MamasComing
         {
             var r = Read(reader); if (r == null) return;
             int slot = r.ReadByte(); var dir = new Vector3(r.ReadSingle(), 0f, r.ReadSingle()); float force = r.ReadSingle(), stun = r.ReadSingle(); bool drop = r.ReadBoolean();
-            if (slot == mySlot) { if (localKid) localKid.Bonk(dir, Mathf.Min(force, 8f), Mathf.Min(stun, 1.5f), drop); return; }
+            var from = new Vector3(r.ReadSingle(), 0f, r.ReadSingle());
+            if (slot == mySlot) { if (localKid) { from.y = localKid.transform.position.y; NetGame.ApplyHit(localKid, dir, Mathf.Min(force, 8f), Mathf.Min(stun, 1.5f), drop, from); } return; }
             if (State == Mode.Host)   // relay to the victim's owner
             {
-                var w = Begin(); WriteHit(w, slot, dir, force, stun, drop);
+                var w = Begin(); WriteHit(w, slot, dir, force, stun, drop, from);
                 foreach (var kv in slotOf) if (kv.Value == slot && kv.Key != nm.LocalClientId && kv.Key != sender) Send("mc/hit", kv.Key, w, NetworkDelivery.Reliable);
             }
+        }
+
+        // ================================================================== shared effects: body moves + comic words + sounds on every screen
+        const byte FxAnim = 0, FxPop = 1;
+
+        void SendFxAnim(PlayerController pc, byte clip, float dur)
+        {
+            int slot = SlotOfAvatar(pc); if (slot < 0) return;
+            var w = Begin(); w.Write(FxAnim); w.Write((byte)slot); w.Write(clip); w.Write(dur);
+            SendFx(w);
+        }
+
+        void SendFxPop(Vector3 at, string en, string th, Color col, string sound, float vol, float pitch)
+        {
+            var w = Begin(); w.Write(FxPop); w.Write(at.x); w.Write(at.y); w.Write(at.z); w.Write(en ?? ""); w.Write(th ?? "");
+            w.Write(col.r); w.Write(col.g); w.Write(col.b); w.Write(sound ?? ""); w.Write(vol); w.Write(pitch);
+            SendFx(w);
+        }
+
+        void SendFx(BinaryWriter w)
+        {
+            if (State == Mode.Host) SendAll("mc/fx", w, NetworkDelivery.Reliable);
+            else if (State == Mode.Client) SendHost("mc/fx", w, NetworkDelivery.Reliable);
+        }
+
+        void OnFx(ulong sender, FastBufferReader reader)
+        {
+            var r = Read(reader); if (r == null) return;
+            byte kind = r.ReadByte();
+            byte[] raw = null;
+            if (kind == FxAnim)
+            {
+                int slot = r.ReadByte(); byte clip = r.ReadByte(); float dur = r.ReadSingle();
+                if (State == Mode.Host && slotOf.TryGetValue(sender, out int real)) slot = real;   // never trust the claimed slot
+                if (slot != mySlot && avatars.TryGetValue(slot, out var pc) && pc && pc.actions) { pc.actions.Play((KidActionAnimator.Clip)clip, dur); if (Debug.isDebugBuild) Debug.Log("[Fx] anim " + (KidActionAnimator.Clip)clip + " on " + pc.name); }
+                if (State == Mode.Host) { var w = Begin(); w.Write(FxAnim); w.Write((byte)slot); w.Write(clip); w.Write(dur); raw = null; Relay(sender, w); }
+            }
+            else if (kind == FxPop)
+            {
+                var at = new Vector3(r.ReadSingle(), r.ReadSingle(), r.ReadSingle()); string en = r.ReadString(), th = r.ReadString();
+                var col = new Color(r.ReadSingle(), r.ReadSingle(), r.ReadSingle()); string snd = r.ReadString(); float vol = r.ReadSingle(), pitch = r.ReadSingle();
+                NetGame.ShowPop(at, en, th, col, snd, Mathf.Clamp01(vol), Mathf.Clamp(pitch, 0.3f, 3f));
+                if (State == Mode.Host) { var w = Begin(); w.Write(FxPop); w.Write(at.x); w.Write(at.y); w.Write(at.z); w.Write(en); w.Write(th); w.Write(col.r); w.Write(col.g); w.Write(col.b); w.Write(snd); w.Write(vol); w.Write(pitch); Relay(sender, w); }
+            }
+        }
+
+        void Relay(ulong except, BinaryWriter w)
+        {
+            foreach (var kv in slotOf) if (kv.Key != except && kv.Key != nm.LocalClientId) Send("mc/fx", kv.Key, w, NetworkDelivery.Reliable);
         }
 
         void OnApplicationQuit() { if (nm && nm.IsListening) nm.Shutdown(); }

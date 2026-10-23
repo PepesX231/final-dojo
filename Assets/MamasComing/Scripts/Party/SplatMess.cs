@@ -37,12 +37,12 @@ namespace MamasComing
         public static Material MatFor(SplatKind k)
         {
             if (mats.TryGetValue(k, out var m) && m) return m;
-            foreach (var s in AllSplats) if (s && s.kind == k) { var r = s.GetComponent<Renderer>(); if (r && r.sharedMaterial) { mats[k] = r.sharedMaterial; return r.sharedMaterial; } }
+            foreach (var s in AllSplats) if (s && s.kind == k) { var r = s.GetComponent<Renderer>(); if (r && r.sharedMaterial && !r.sharedMaterial.name.StartsWith("Default")) { mats[k] = r.sharedMaterial; return r.sharedMaterial; } }
             var nm = new Material(Shader.Find("Universal Render Pipeline/Lit"));
             nm.color = k == SplatKind.Frosting ? new Color(1f, 0.82f, 0.89f) : k == SplatKind.Foam ? new Color(0.96f, 0.98f, 1f) : k == SplatKind.Soda ? new Color(0.45f, 0.22f, 0.08f) : new Color(1f, 0.44f, 0.71f);
             mats[k] = nm; return nm;
         }
-        public static void RememberMat(SplatKind k, Material m) { if (m) mats[k] = m; }
+        public static void RememberMat(SplatKind k, Material m) { if (m && !m.name.StartsWith("Default")) mats[k] = m; }
 
         public static int Count(SplatKind k) { int n = 0; foreach (var s in AllSplats) if (s && s.kind == k && s.amount > 0.1f) n++; return n; }
 

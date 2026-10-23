@@ -3,7 +3,9 @@ using UnityEngine;
 namespace MamasComing
 {
     /// Chaotic co-op slapstick: G / RB = shove the kid in front of you (they drop what they carry),
-    /// and two kids sprinting into each other bounce apart. Works online: the hit is sent to the victim's owner.
+    /// and two kids sprinting into each other bounce apart.
+    /// Online: the swing animation, the comic word and the sounds play on EVERY screen; the knock-back is applied
+    /// by the victim's own machine (which also decides whether they had already dodged).
     [RequireComponent(typeof(PlayerController))]
     public class KidRoughhouse : MonoBehaviour
     {
@@ -35,8 +37,7 @@ namespace MamasComing
         void Shove()
         {
             shoveCd = shoveCooldown;
-            if (me.actions) me.actions.Play(KidActionAnimator.Clip.Throw, 0.32f);
-            MamaAudio.Play("whoosh", transform.position, 0.45f, 1.6f);
+            if (me.actions) me.actions.Play(KidActionAnimator.Clip.Throw, 0.32f);   // relayed to every screen
             PlayerController best = null; float bestD = float.MaxValue;
             foreach (var o in PlayerController.AllPlayers)
             {
@@ -47,12 +48,12 @@ namespace MamasComing
                 if (dot < 0.35f) continue;
                 if (dist < bestD) { bestD = dist; best = o; }
             }
-            if (!best) return;
+            if (!best) { NetGame.Pop(transform.position + transform.forward * 0.6f + Vector3.up * 1.0f, null, null, Color.white, "whoosh", 0.45f, 1.6f); return; }
             Vector3 dir = best.transform.position - transform.position;
-            NetGame.Hit(best, dir, shoveForce, 0.9f, true);
-            MamaAudio.Play("slap", best.transform.position, 0.9f, Random.Range(0.85f, 1.15f));
-            Pop(best.transform.position + Vector3.up * 1.3f, PickPow(), new Color(1f, 0.85f, 0.2f));
-            if (Random.value < 0.35f && GameManager.I && GameManager.I.ui) { int i = Random.Range(0, Lines.Length); GameManager.I.ui.KidSay(Loc.Thai ? LinesTh[i] : Lines[i]); }
+            NetGame.Hit(best, dir, shoveForce, 0.9f, true, transform.position);
+            int i = Random.Range(0, PowEn.Length);
+            NetGame.Pop(best.transform.position + Vector3.up * 1.3f, PowEn[i], PowTh[i], new Color(1f, 0.85f, 0.2f), "slap", 0.9f, Random.Range(0.85f, 1.15f));
+            if (Random.value < 0.35f && GameManager.I && GameManager.I.ui) { int l = Random.Range(0, Lines.Length); GameManager.I.ui.KidSay(Loc.Thai ? LinesTh[l] : Lines[l]); }
         }
 
         void Bump()
@@ -64,15 +65,15 @@ namespace MamasComing
                 Vector3 d = o.transform.position - transform.position; d.y = 0f;
                 float dist = d.magnitude; if (dist > 0.85f || dist < 0.01f) continue;
                 if (Vector3.Dot(v.normalized, d / dist) < 0.5f) continue;
+                // head-on, both sprinting: only ONE machine resolves the crash, so it never happens twice
+                if (o.PlanarSpeed > bumpSpeed * 0.8f && string.CompareOrdinal(NetGame.NameOf(me) ?? "", NetGame.NameOf(o) ?? "") > 0) continue;
                 bumpCd = 0.8f;
-                NetGame.Hit(o, d, 4.5f, 0.35f, false);   // them: boing
-                me.Bonk(-d, 3.5f, 0.25f, false);           // me: bounce back
-                Pop((transform.position + o.transform.position) * 0.5f + Vector3.up * 1.2f, Loc.Thai ? "ดึ๋ง!" : "BOING!", new Color(0.5f, 0.9f, 1f));
+                NetGame.Hit(o, d, 4.5f, 0.35f, false, transform.position);   // them: boing
+                me.Bonk(-d, 3.5f, 0.25f, false);                              // me: bounce back
+                NetGame.Pop((transform.position + o.transform.position) * 0.5f + Vector3.up * 1.2f, "BOING!", "ดึ๋ง!", new Color(0.5f, 0.9f, 1f), "thud", 0.8f, 1.3f);
                 return;
             }
         }
-
-        static string PickPow() { int i = Random.Range(0, PowEn.Length); return Loc.Thai ? PowTh[i] : PowEn[i]; }
 
         /// Comic-book word that pops, floats up and fades.
         public static void Pop(Vector3 at, string word, Color col)
