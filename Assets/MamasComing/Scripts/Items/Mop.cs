@@ -35,12 +35,6 @@ namespace MamasComing
                 mpb.SetColor("_BaseColor", Color.Lerp(DryCol, WetCol, load / capacity));
                 headRenderer.SetPropertyBlock(mpb);
             }
-            if (false)
-            {
-                float drip = 0.05f * Time.deltaTime;
-                load -= drip;
-                FloodSim.I.AddLiters(head.position, drip, 0.1f);
-            }
         }
 
         public override bool UseHeld(PlayerController p, float dt)

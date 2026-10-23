@@ -213,7 +213,7 @@ namespace MamasComing
                 if (MessRegistry.Visible(x)) Found(x, x.MomLine, x.Severity, x.Kind == MessKind.Evidence || x.Severity >= 3);
             }
 
-            if (FloodSim.I && HouseLayout.FloorOf(c) == 0)
+            if (FloodSim.I)
             {
                 float l = FloodSim.I.VisibleLitersIn(c, ip.radius, out float area);
                 string key = "flood:" + ip.name;
@@ -490,13 +490,17 @@ namespace MamasComing
         }
 
         // ------------------------------------------------------------------ room warnings + kid thoughts
-        public static string[] RoomNames => HouseLayout.RoomNames;
-        public static Rect[] RoomRects => HouseLayout.RoomRects;
+        public static readonly string[] RoomNames = { "Living room", "Laundry", "Dining room", "Hallway", "Bedroom", "Bathroom", "Kitchen", "Garage", "Game room" };
+        public static readonly Rect[] RoomRects = { new Rect(0, 0, 13, 6), new Rect(13, 0, 4, 6), new Rect(17, 0, 5, 6), new Rect(0, 6, 30, 2), new Rect(0, 8, 7, 6), new Rect(7, 8, 5, 6), new Rect(12, 8, 10, 6), new Rect(22, 0, 8, 6), new Rect(22, 8, 8, 6) };
         string lastThought; float thoughtT;
 
-        public static int RoomOf(Vector3 p) => HouseLayout.RoomOf(p);
+        public static int RoomOf(Vector3 p)
+        {
+            for (int i = 0; i < RoomRects.Length; i++) if (RoomRects[i].Contains(new Vector2(p.x, p.z))) return i;
+            return -1;
+        }
 
-        public static Vector3 RoomCenter(int i) => HouseLayout.RoomCenter(i);
+        public static Vector3 RoomCenter(int i) { var r = RoomRects[i]; return new Vector3(r.center.x, 2.3f, r.center.y); }
 
         public void KidSay(string s) { if (NetGame.ActingRemote(s)) return; if (ui) ui.KidSay(s); }
 
@@ -520,7 +524,7 @@ namespace MamasComing
             if (FloodSim.I && (roomWater == null || (roomScanT -= Time.deltaTime) <= 0f))
             {
                 roomScanT = 0.5f; if (roomWater == null) roomWater = new float[RoomRects.Length];
-                for (int r = 0; r < RoomRects.Length; r++) roomWater[r] = HouseLayout.RoomFloor[r] == 0 ? FloodSim.I.VisibleLitersInRect(RoomRects[r]) : 0f;   // water only ever pools downstairs
+                for (int r = 0; r < RoomRects.Length; r++) roomWater[r] = FloodSim.I.VisibleLitersInRect(RoomRects[r]);
             }
 
             string thought = null, key = null;
@@ -799,6 +803,6 @@ namespace MamasComing
             Cursor.visible = !l;
         }
 
-        // other floor = out of sight, however close it is on the plan`r`n        static float XZ(Vector3 a, Vector3 b) { if (!HouseLayout.SameFloor(a, b)) return float.MaxValue; a.y = 0f; b.y = 0f; return Vector3.Distance(a, b); }
+        static float XZ(Vector3 a, Vector3 b) { a.y = 0f; b.y = 0f; return Vector3.Distance(a, b); }
     }
 }

@@ -1,5 +1,12 @@
 # DREAM RUSH — The Apple Dream (Unity project: `final dojo`)
 
+## Active project override — 2026-10-24
+
+- The user's current game is **MAMA'S COMING!**. Keep only the former DreamRush assets/code that Mama uses; the user explicitly authorized removing unused DreamRush content.
+- Active game/source: `Assets/MamasComing/`; authored main scene: `Scenes/MamasKitchen.unity`. Reused apple model, player movement and shaders are retained under `Assets/MamasComing/Shared/AppleKid/`. Some retained types still use the `DreamRush` namespace; this does not mean the old campaign is needed.
+- The former `Assets/DreamRush/` campaign was removed. Do not regenerate or restore it to fix Mama. Preserve the existing authored Mama scene and its gameplay.
+- Historical DreamRush campaign instructions below apply only to archived campaign work, not the active Mama game. For Mama use `docs/MAMA_RECAST_IMPLEMENTATION.md` and current error/review evidence. Do not restore incomplete two-storey WIP layout values into the current single-storey scene.
+
 ## Current user decision — 2026-10-23
 - Remove the entire card system, including Dream Laws and Lucky Pillow rerolls. Select a Galaxy world and enter it directly. Do not regenerate card scripts/assets or restore card requirements from historic documents. Movement, environmental mechanisms, combat and manual seating remain.
 

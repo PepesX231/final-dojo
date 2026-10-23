@@ -8,7 +8,7 @@ namespace MamasComing
         public GameObject stream;
         float streamT;
 
-        public static KitchenSink Nearest(Vector3 p, float r)
+        public new static KitchenSink Nearest(Vector3 p, float r)
         {
             KitchenSink best = null; float bd = r;
             foreach (var d in AllDumps)

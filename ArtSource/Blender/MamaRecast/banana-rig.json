@@ -1,0 +1,127 @@
+{
+  "source": "ArtSource/Blender/ProvidedFamily/Banana_Sibling_v5_GoofyWalk.blend",
+  "fbx": "Assets/MamasComing/Art/Family/Banana/Banana_Rigged.fbx",
+  "height_m": 1.08,
+  "scale": 0.2300476277539697,
+  "bind_frame": 11,
+  "frames": [
+    1,
+    41
+  ],
+  "fps": 24,
+  "bones": {
+    "Root": {
+      "parent": null,
+      "length_m": 0.1
+    },
+    "Body": {
+      "parent": "Root",
+      "length_m": 0.25
+    },
+    "Face": {
+      "parent": "Body",
+      "length_m": 0.08
+    },
+    "Arm_L": {
+      "parent": "Root",
+      "length_m": 0.1922
+    },
+    "Arm_L_Lower": {
+      "parent": "Root",
+      "length_m": 0.1299
+    },
+    "Hand_L": {
+      "parent": "Arm_L_Lower",
+      "length_m": 0.08
+    },
+    "Arm_R": {
+      "parent": "Root",
+      "length_m": 0.1677
+    },
+    "Arm_R_Lower": {
+      "parent": "Root",
+      "length_m": 0.1139
+    },
+    "Hand_R": {
+      "parent": "Arm_R_Lower",
+      "length_m": 0.08
+    },
+    "Leg_L": {
+      "parent": "Root",
+      "length_m": 0.04
+    },
+    "Leg_L_Lower": {
+      "parent": "Root",
+      "length_m": 0.0405
+    },
+    "Foot_L": {
+      "parent": "Root",
+      "length_m": 0.08
+    },
+    "Leg_R": {
+      "parent": "Root",
+      "length_m": 0.0724
+    },
+    "Leg_R_Lower": {
+      "parent": "Root",
+      "length_m": 0.06
+    },
+    "Foot_R": {
+      "parent": "Root",
+      "length_m": 0.08
+    }
+  },
+  "limb_lengths_m": {
+    "Arm_L": 0.1922,
+    "Arm_L_Lower": 0.1299,
+    "Leg_L": 0.0352,
+    "Leg_L_Lower": 0.0405,
+    "Arm_R": 0.1677,
+    "Arm_R_Lower": 0.1139,
+    "Leg_R": 0.0724,
+    "Leg_R_Lower": 0.06
+  },
+  "triangles_source": 324198,
+  "triangles_runtime": 31786,
+  "materials": [
+    "Limbs \u2022 cartoon matte black",
+    "Tips / warm cocoa",
+    "Skin / ripe butter yellow",
+    "Skin / warm side panels",
+    "Skin / soft golden light",
+    "Expression / deep plum",
+    "Ivory / eye rims, gloves & soles",
+    "Eyes / cream catchlights",
+    "Gloves / warm white",
+    "Glove stitching / lilac grey",
+    "Peel seams / soft ochre",
+    "Smile / berry",
+    "Smile / coral tongue",
+    "Brows / warm cocoa plum",
+    "Sneakers / pale yellow piping",
+    "Sneakers & joints / lavender",
+    "Sneakers / tongue highlight",
+    "Stem / sage green"
+  ],
+  "fidelity_note": "max over sampled frames vs the authored shape-key/empty animation, metres at runtime scale",
+  "tube_mean_vertex_error_m": {
+    "Arm L \u2022 flexible cartoon": 0.0069,
+    "Arm R \u2022 flexible cartoon": 0.0073,
+    "Leg L \u2022 flexible cartoon": 0.0106,
+    "Leg R \u2022 flexible cartoon": 0.0156
+  },
+  "rigid_part_max_offset_m": {
+    "Glove R \u2022 stitch 2": 0.0131,
+    "Glove R \u2022 stitch 1": 0.0131,
+    "Glove R \u2022 mitten palm": 0.0131,
+    "Glove R \u2022 rounded finger 3": 0.013,
+    "Glove R \u2022 rolled cuff": 0.013,
+    "Glove R \u2022 curled thumb": 0.013,
+    "Glove R \u2022 rounded finger 2": 0.013,
+    "Glove R \u2022 rounded finger 1": 0.013,
+    "Glove L \u2022 curled thumb": 0.0107,
+    "Glove L \u2022 stitch 1": 0.0107,
+    "Glove L \u2022 rounded finger 3": 0.0107,
+    "Glove L \u2022 stitch 2": 0.0107
+  }
+}

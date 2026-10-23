@@ -1,0 +1,4 @@
+GameManager initialized=True
+Player ready=True
+Missing scripts=0
+Path=C:/Pepes/final dojo/Assets

@@ -18,7 +18,7 @@ namespace MamasComing.EditorTools
         const string MatDir = Root + "/Materials";
         const string TexDir = Root + "/Textures";
         const string ScenePath = Root + "/Scenes/MamasKitchen.unity";
-        const string PlayerPrefab = "Assets/DreamRush/Prefabs/Player/PF_Player.prefab";
+        const string PlayerPrefab = "Assets/MamasComing/Prefabs/Characters/PF_AppleKid.prefab";
         const float WallH = 2.8f, WallT = 0.15f, DoorH = 2.2f;
 
         static Dictionary<string, Material> mats;
@@ -1150,10 +1150,6 @@ namespace MamasComing.EditorTools
             PrefabUtility.UnpackPrefabInstance(go, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             go.name = "Kid (PF_Player)";
             go.transform.SetPositionAndRotation(V(4.4f, 0.02f, 3.0f), Quaternion.Euler(0, -90f, 0));
-            foreach (var n in new[] { "DreamRush.UI.PlayerUIBridge", "DreamRush.Interaction.InteractionSystem", "DreamRush.Presentation.PlayerFeelFX" })
-            {
-                foreach (var c in go.GetComponents<MonoBehaviour>()) if (c && c.GetType().FullName == n) Object.DestroyImmediate(c);
-            }
             var motor = go.GetComponent<DreamRush.Player.PlayerMotor3D>();
             string cfgPath = Root + "/KidMotorConfig.asset";
             var cfg = AssetDatabase.LoadAssetAtPath<DreamRush.Player.PlayerMotorConfig>(cfgPath);

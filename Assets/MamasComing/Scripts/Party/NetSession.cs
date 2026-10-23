@@ -824,13 +824,12 @@ namespace MamasComing
         {
             var r = Read(reader); if (r == null) return;
             byte kind = r.ReadByte();
-            byte[] raw = null;
             if (kind == FxAnim)
             {
                 int slot = r.ReadByte(); byte clip = r.ReadByte(); float dur = r.ReadSingle();
                 if (State == Mode.Host && slotOf.TryGetValue(sender, out int real)) slot = real;   // never trust the claimed slot
                 if (slot != mySlot && avatars.TryGetValue(slot, out var pc) && pc && pc.actions) { pc.actions.Play((KidActionAnimator.Clip)clip, dur); if (Debug.isDebugBuild) Debug.Log("[Fx] anim " + (KidActionAnimator.Clip)clip + " on " + pc.name); }
-                if (State == Mode.Host) { var w = Begin(); w.Write(FxAnim); w.Write((byte)slot); w.Write(clip); w.Write(dur); raw = null; Relay(sender, w); }
+                if (State == Mode.Host) { var w = Begin(); w.Write(FxAnim); w.Write((byte)slot); w.Write(clip); w.Write(dur); Relay(sender, w); }
             }
             else if (kind == FxPop)
             {

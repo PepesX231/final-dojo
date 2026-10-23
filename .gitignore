@@ -109,3 +109,8 @@ InitTestScene*.unity*
 # DREAM RUSH dev tooling output
 /DevBridge/
 /.tools/
+
+# Machine-local MCP endpoint and automatic Unity recovery scenes.
+/.mcp.json
+/Assets/_Recovery/
+/Assets/_Recovery.meta

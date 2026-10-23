@@ -1,0 +1,1 @@
+[('ArtSource/Blender/MamaRecast/Banana_Rigged.blend', True, 997649), ('Assets/MamasComing/Art/Family/Banana/Banana_Rigged.fbx', True, 1069404), ('docs/evidence/mama-recast/banana-rig-blender-walk.png', True, 700051)]

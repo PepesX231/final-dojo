@@ -40,7 +40,7 @@ namespace MamasComing
     /// Goal (questEn) -> obstacle (minigame / tool / co-op) -> outcome (fixed, or failure consequence).
     public abstract class Hazard : Interactable, IMess
     {
-        public static readonly List<Hazard> All = new List<Hazard>();
+        public new static readonly List<Hazard> All = new List<Hazard>();
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetAll() { All.Clear(); }
 

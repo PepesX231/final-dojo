@@ -59,7 +59,7 @@ namespace MamasComing.WitchTest.EditorTools
             hud.spellPages = AssetDatabase.LoadAssetAtPath<Texture2D>(Root + "/Textures/SpellPages.png");
 
             // Borrow the existing character art, keep a dedicated tiny-world motor config.
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DreamRush/Prefabs/Player/PF_Player.prefab");
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/MamasComing/Prefabs/Characters/PF_AppleKid.prefab");
             var player = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
             PrefabUtility.UnpackPrefabInstance(player, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             player.name = "Tiny Apple - 12cm";

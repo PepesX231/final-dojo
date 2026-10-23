@@ -31,7 +31,7 @@ namespace MamasComing.Editor
             }
             finally{UnityEngine.Object.DestroyImmediate(stage);}
         }
-        static void Render(string name,Vector3 eye,Vector3 target)
+        public static void Render(string name,Vector3 eye,Vector3 target)
         {
             Directory.CreateDirectory(Folder);
             var go=new GameObject("Temporary evidence camera");var camera=go.AddComponent<Camera>();

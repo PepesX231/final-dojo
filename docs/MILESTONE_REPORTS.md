@@ -881,6 +881,14 @@ Validation: Runtime/Editor 0 compile errors (four existing warnings). Expanded s
 
 Evidence and precise limits: docs/MAMA_VISUAL_POLISH.md and docs/evidence/mama-visual-polish/. This does not certify final art, human cooperative play, networking, a standalone build or target-hardware performance. Existing character rig/action animations retained.
 
+## 2026-10-24 — Mama compile recovery and Git cleanup validation
+
+Resolved 19 stash conflict blocks across KidBody/PlayerController while retaining selected-fruit startup, knock-down and recovery behavior. Restored the authored single-storey house's room logic after an incomplete two-storey WIP import referenced a missing HouseLayout and commented out XZ. Removed five compiler warnings without enabling disabled mop drips or changing field serialization. Runtime and Editor compilation: zero errors / zero warnings.
+
+Fresh staged reviews: Mama UX/input 62/62, Banana rig/carry 33/33. Scanned 2,005 serialized Mama files: no references to removed DreamRush GUIDs after allowing moved shared assets. Git LFS fsck and all three newly staged binary pointer/content hashes pass. User confirmed unused DreamRush content should be removed, retaining the reused apple/movement/shader subset under Mama/Shared. Conflict index resolved, local MCP/recovery additions excluded from staging with files preserved, and missing menu .meta files added. No commit or push performed.
+
+Rejected a Windows short-path workaround for the AI tooling's space-path advisory after it broke Unity's MonoScript class mapping, and restored the original project-opening path without saving the broken scene. Stopped the separate failed localhost AI Game Developer connection while retaining the plugin and working Coplay connection. The vendor path advisory is distinct from the verified compiler fixes. Exact changes, backups, Git recommendations and limits: `docs/MAMA_ERROR_RECOVERY_20261024.md`. These are Editor/staged checks, not human or real online-session certification.
+
 ## 2026-10-23 — Mama Recast research and asset pass
 
 Followed the user's revised saturated cartoon brief and supplied Pinterest/house/family references. Detailed primary-source research, alternate directions, fabric/material guidance and project-specific budgets are in `docs/MAMA_ART_RECAST_RESEARCH.md`. Authored 20 original prop models (46,912 triangles across the unique library), shared palette UVs and editable Blender source; integrated the prop replacements into the existing scene (30 replacements in the final reapply, with the already-mounted router retained). Imported supplied Mother Apple Kind/Angry as the mother. Banana's derived conversion is retained but does not yet replace a playable child because its original geometry deformation still needs proper rig conversion.
