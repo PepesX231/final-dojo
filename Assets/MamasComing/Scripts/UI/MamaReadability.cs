@@ -19,6 +19,8 @@ namespace MamasComing
 
         public static int RoomIndex(Vector3 p)
         {
+            if (p.x >= 22f && p.z < 6f) return 7;
+            if (p.x >= 22f && p.z >= 8f) return 8;
             if (p.z >= 8f) return p.x < 7f ? 4 : p.x < 12f ? 5 : 6;
             if (p.z >= 6f) return 3;
             return p.x < 13f ? 0 : p.x < 17f ? 1 : 2;
@@ -26,8 +28,8 @@ namespace MamasComing
 
         public static string Room(Vector3 p)
         {
-            string[] en = { "Living room", "Laundry", "Dining room", "Hallway", "Bedroom", "Bathroom", "Kitchen" };
-            string[] th = { "ห้องนั่งเล่น", "ห้องซักล้าง", "ห้องกินข้าว", "ทางเดิน", "ห้องนอน", "ห้องน้ำ", "ห้องครัว" };
+            string[] en = { "Living room", "Laundry", "Dining room", "Hallway", "Bedroom", "Bathroom", "Kitchen", "Garage", "Game room" };
+            string[] th = { "ห้องนั่งเล่น", "ห้องซักล้าง", "ห้องกินข้าว", "ทางเดิน", "ห้องนอน", "ห้องน้ำ", "ห้องครัว", "โรงรถ", "ห้องเล่นเกม" };
             return Loc.Thai ? th[RoomIndex(p)] : en[RoomIndex(p)];
         }
 

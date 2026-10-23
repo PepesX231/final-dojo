@@ -226,7 +226,7 @@ namespace MamasComing
             while (simAcc >= step && guard++ < 3)
             {
                 simAcc -= step;
-                for (int s = 0; s < substeps; s++) Step(step / substeps);
+                if (NetGame.IsAuthority) for (int s = 0; s < substeps; s++) Step(step / substeps);
             }
             if (mat) { mat.SetTextureOffset("_BumpMap", new Vector2(Time.time * 0.03f, Time.time * 0.021f)); mat.SetTextureOffset("_DetailAlbedoMap", new Vector2(Mathf.Sin(Time.time * 0.31f) * 0.08f + Time.time * 0.012f, Mathf.Cos(Time.time * 0.27f) * 0.08f)); }
             texAcc += Time.deltaTime;
@@ -354,6 +354,19 @@ namespace MamasComing
                     l += depth[i];
                 }
             return l * cellArea * 1000f;
+        }
+
+        // ---- network: depth field quantized to bytes (0..2.5 cm)
+        public byte[] PackDepth()
+        {
+            var b = new byte[depth.Length];
+            for (int i = 0; i < depth.Length; i++) b[i] = (byte)Mathf.Clamp(Mathf.RoundToInt(depth[i] / 0.025f * 255f), 0, 255);
+            return b;
+        }
+        public void UnpackDepth(byte[] b)
+        {
+            if (b == null || b.Length != depth.Length) return;
+            for (int i = 0; i < depth.Length; i++) depth[i] = b[i] * (0.025f / 255f);
         }
 
         public bool NearestWet(Vector3 from, float minDepth, bool visibleOnly, out Vector3 pos)

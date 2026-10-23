@@ -8,6 +8,7 @@ namespace MamasComing
     /// </summary>
     public class Bucket : MessyProp
     {
+        public override bool CanSettle => false;
         public float capacity = 10f;
         public float liters = 0f;
         public Transform waterVisual;

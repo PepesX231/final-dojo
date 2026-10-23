@@ -9,6 +9,7 @@ namespace MamasComing
     [RequireComponent(typeof(CoverObject))]
     public class Towel : MessyProp
     {
+        public override bool CanSettle => false;
         public FireSource ownFire;
         public Renderer[] cloth;
         CoverObject cover;

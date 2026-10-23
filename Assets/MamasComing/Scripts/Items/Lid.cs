@@ -5,6 +5,7 @@ namespace MamasComing
     /// <summary>Pot lid. The correct way to kill a pot grease fire.</summary>
     public class Lid : MessyProp
     {
+        public override bool CanSettle => false;
         CookPot onPot;
 
         public void AttachTo(Transform socket)

@@ -37,6 +37,7 @@ namespace MamasComing
 
         public static void CleanAt(Vector3 p, float r, float dt)
         {
+            SplatMess.CleanAt(p, r, dt);
             for (int i = all.Count - 1; i >= 0; i--)
             {
                 var x = all[i]; if (!x) continue;

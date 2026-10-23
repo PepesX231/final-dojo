@@ -104,6 +104,8 @@ namespace MamasComing
             "Bathroom FLOODING + kitchen SMOKING. Mom is on her way. GO GO GO!", "ห้องน้ำน้ำท่วม + ครัวควันโขมง แม่กำลังกลับ! ไป ไป ไป!",
             "PHONE - Mom: \"Hi sweetie~ I'm leaving the market now!\"", "โทรศัพท์ - แม่: \"จ้ะลูก~ แม่ออกจากตลาดแล้วนะ!\"",
             "PHONE - Mom: \"Traffic's good! Home in 3 minutes. Did you eat the curry?\"", "โทรศัพท์ - แม่: \"รถไม่ติด! อีก 3 นาทีถึง กินแกงหรือยังลูก?\"",
+            "PHONE - Mom: \"Hi sweetie~ Grandma's fine! I'm coming home EARLY tonight!\"", "โทรศัพท์ - แม่: \"จ้ะลูก~ ยายไม่เป็นไรแล้ว แม่จะกลับบ้านเร็วกว่าเดิมนะ!\"",
+            "PHONE - Mom: \"Traffic's good! Home in 3 minutes. Did you eat the curry I left?\"", "โทรศัพท์ - แม่: \"รถไม่ติด! อีก 3 นาทีถึง กินแกงที่แม่ทำไว้หรือยัง?\"",
             "*VROOM* ...Mom's car just turned into the street!", "*บรื้นน* ...รถแม่เลี้ยวเข้าซอยแล้ว!",
             "*jingle jingle*  KEYS AT THE FRONT DOOR!!", "*กรุ๊งกริ๊ง* เสียงกุญแจที่ประตูหน้า!!",
             "*CLICK* The door opens... MOM IS HOME! Act natural!", "*แกร๊ก* ประตูเปิด... แม่กลับมาแล้ว! ทำตัวปกติ!",
@@ -240,6 +242,7 @@ namespace MamasComing
         // ---------------------------------------------------------------- fragments (names, pieces of built-up lines)
         static readonly string[] F =
         {
+            "Game room", "ห้องเล่นเกม", "Garage", "โรงรถ", "Wrench", "ประแจ", "Plunger", "ที่ปั๊มส้วม", "Trash bag", "ถุงขยะ", "Party cup", "แก้วปาร์ตี้", "Pizza box", "กล่องพิซซ่า", "Glued vase", "แจกันที่ต่อแล้ว", "Goldfish", "ปลาทอง", "Hamster", "หนูแฮมสเตอร์",
             "Living room", "ห้องนั่งเล่น", "Laundry", "ห้องซักผ้า", "Dining room", "ห้องกินข้าว", "Hallway", "ทางเดิน", "Bedroom", "ห้องนอน", "Bathroom", "ห้องน้ำ", "Kitchen", "ห้องครัว",
             "Bath towel", "ผ้าเช็ดตัว", "Bathroom sink", "อ่างล้างหน้า", "Bathtub tap", "ก๊อกอ่างอาบน้ำ", "Bathtub", "อ่างอาบน้ำ", "Big towel", "ผ้าผืนใหญ่", "Bucket", "ถังน้ำ",
             "Bath mat", "พรมเช็ดเท้า", "BedroomRug", "พรมห้องนอน", "Desk chair", "เก้าอี้โต๊ะ", "Hallway runner", "พรมทางเดิน", "Living room carpet", "พรมห้องนั่งเล่น",
