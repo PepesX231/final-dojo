@@ -98,7 +98,13 @@ namespace MamasComing
             else body = null;
         }
 
-        Transform Find(string n) { foreach (var t in chr.GetComponentsInChildren<Transform>(true)) if (t.name == n) return t; return null; }
+        Transform Find(string n)
+        {
+            if (!chr) return null;
+            foreach (var t in chr.GetComponentsInChildren<Transform>(true))
+                if (t.name == n || n == "Body" && t.name.Contains("body waddle")) return t;
+            return null;
+        }
         Quaternion ToRig(Quaternion q) => basis * q * Quaternion.Inverse(basis);
         Vector3 ToRig(Vector3 v) => frame == chr ? v : frame.InverseTransformVector(chr.TransformVector(v));
         // Apple limbs rotate about their own axes; bone limbs rotate about the character's axes.
@@ -360,7 +366,7 @@ namespace MamasComing
             TransformAround(armLLo, extra, off); TransformAround(armRLo, extra, off);
 
             // 2) arm override
-            if (p.armW > 0.001f)
+            if (p.armW > 0.001f && body)
             {
                 Quaternion bodyDelta = body.localRotation * Quaternion.Inverse(bodyRR);
                 SetArm(armL, armLRP, armLRR, armLLo, armLLoRP, armLLoRR, bodyDelta, p.l, p.le, -1f, p.armW);

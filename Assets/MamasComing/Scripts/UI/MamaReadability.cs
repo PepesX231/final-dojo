@@ -111,9 +111,9 @@ namespace MamasComing
             if (item is Bucket bucket) return Text("Water: ", "น้ำ: ") + bucket.liters.ToString("0") + Text(" L. Q sets it down. Water makes oil fires flare up.", " ลิตร Q วางเบา ๆ น้ำทำให้ไฟน้ำมันปะทุ");
             if (item is Rug) return Text("Can cover a wet floor. Mom may feel the squish underfoot.", "บังพื้นเปียกได้ แต่แม่อาจเหยียบแล้วรู้สึกแฉะ");
             if (item is MessyProp teddy && teddy.displayName == "Teddy bear")
-                return Text("A bedroom friend. Its usual spot is on the bed, by the pillow.", "เพื่อนประจำห้องนอน ปกตินั่งอยู่บนเตียง ข้างหมอน");
+                return Text("Take it to the BEDROOM, follow HOME, then press Q by the pillow to return it.", "นำไปห้องนอน ตามหมุดปลายทาง แล้วกด Q วางบนเตียง ข้างหมอน");
             if (item is MessyProp mp && HasHomeCue(mp))
-                return Text("Usually kept in the ", "ปกติอยู่ที่") + Room(mp.homePosition) + Text(". Look for its faint outline nearby.", " ลองสังเกตเงาตำแหน่งเดิมเมื่อเข้าใกล้");
+                return Text("Return to ", "นำกลับไป") + Room(mp.homePosition) + Text(". Follow HOME, stand by the green outline, then Q to finish.", " ตามหมุดปลายทาง เข้าใกล้เงาสีเขียว แล้วกด Q วางให้จบงาน");
             return Text("Move it, place it, or find another use for it.", "ย้าย วาง หรือลองใช้แก้ปัญหารอบตัว");
         }
 
@@ -160,10 +160,8 @@ namespace MamasComing
             if (homeGhost) homeGhost.SetActive(sameRoom || help);
             float distance = Vector3.Distance(gm.player.transform.position, item.homePosition);
             Vector3 where = item.homePosition + Vector3.up * 0.5f;
-            // Room clue while far away; the exact spot only becomes explicit nearby or on request.
-            bool show = sameRoom || help;
-            if (show)
-                gm.ui.SetGuide(5, true, where, "Q", Text("Home spot", "ตำแหน่งเดิม") + " · " + Mathf.CeilToInt(distance) + Text(" m", " ม."), MamaUI.Teal);
+            // Keep a destination at the screen edge even before the player finds the room.
+            gm.ui.SetGuide(5, true, where, "Q", (sameRoom ? Text("RETURN HERE", "เก็บที่นี่") : Room(item.homePosition)) + " · " + Mathf.CeilToInt(distance) + Text(" m", " ม."), MamaUI.Teal);
             if (TrashBin.For(gm.player)) gm.ui.SetPrompt(Text("[Q] Throw ", "[Q] ทิ้ง") + Loc.T(item.displayName) + Text(" in the bin", "ลงถังขยะ"));
             else if (item.NearHome(gm.player)) gm.ui.SetPrompt(Text("[Q] Return ", "[Q] วาง ") + Loc.T(item.displayName) + Text(" to its spot", " กลับเข้าที่"));
         }

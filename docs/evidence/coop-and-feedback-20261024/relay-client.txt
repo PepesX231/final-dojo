@@ -1,0 +1,18 @@
+[CoopAudit] rendered 1 players=2
+[CoopAudit] rendered 2 players=2
+[CoopAudit] rendered 3 players=2
+[CoopAudit] rendered 4 players=2
+[CoopAudit] rendered 5 players=2
+[CoopAudit] rendered 6 players=2
+[Bot] asked host to close fridge
+[Bot] fridge fixed on my side = True water=150.3647 power=True
+[Bot] holding cup = True
+[Bot] dropped cup at (27.40, 0.12, 0.60) settled=True
+[Bot-near] mySlot=1 avatars=2 all=2 | 1: Kid (PF_Player) local=True active=True pos=(4.3, 0.0, 3.5) net=- rend=21 visible=0 | 0: Kid P1 (remote) local=False active=True pos=(4.3, 0.0, 3.0) net=(4.3, 0.0, 3.0) age=0.0 rend=23 visible=0
+[Bot] shoved
+[Fx] pop 'OOF!' sound=slap at (4.33, 1.34, 3.00)
+[Bot-after] mySlot=1 avatars=2 all=2 | 1: Kid (PF_Player) local=True active=True pos=(4.3, 0.0, 3.5) net=- rend=21 visible=0 | 0: Kid P1 (remote) local=False active=True pos=(4.3, 0.0, 1.2) net=(4.3, 0.0, 1.2) age=0.0 rend=23 visible=0
+[Bot] mySlot=1 avatars=2 all=2 | 1: Kid (PF_Player) local=True active=True pos=(4.3, 0.0, 3.5) net=- rend=21 visible=0 | 0: Kid P1 (remote) local=False active=True pos=(4.3, 0.0, 1.2) net=(4.3, 0.0, 1.2) age=2.7 rend=23 visible=0
+[Bot] t=483 state=Playing hazards active=7 water=169
+[Bot] mySlot=1 avatars=2 all=2 | 1: Kid (PF_Player) local=True active=True pos=(4.3, 0.0, 3.5) net=- rend=21 visible=0 | 0: Kid P1 (remote) local=False active=True pos=(4.3, 0.0, 1.2) net=(4.3, 0.0, 1.2) age=7.7 rend=23 visible=0
+[Bot] t=478 state=Playing hazards active=7 water=169

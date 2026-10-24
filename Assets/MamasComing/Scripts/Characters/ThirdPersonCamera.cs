@@ -73,7 +73,7 @@ namespace MamasComing
             if (!target) return;
             float dt = Time.deltaTime;
 
-            if (inputEnabled && Cursor.lockState == CursorLockMode.Locked)
+            if (inputEnabled && Cursor.lockState == CursorLockMode.Locked && !MamaHowToPlay.Open)
             {
                 Vector2 md = MamaInput.MouseDelta, st = MamaInput.StickLook;
                 yaw += md.x * mouseSensitivity + st.x * 150f * dt;

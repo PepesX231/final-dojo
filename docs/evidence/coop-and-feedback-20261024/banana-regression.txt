@@ -1,0 +1,128 @@
+FAILED passed=32 (staged offline puppet, not a human playthrough)
+PASS PF_Kid_Banana prefab exists
+PASS Banana uses one skinned mesh bound to the exported bones
+PASS bone Body present
+PASS bone Arm_L present
+PASS bone Arm_L_Lower present
+PASS bone Hand_L present
+PASS bone Arm_R present
+PASS bone Arm_R_Lower present
+PASS bone Hand_R present
+PASS bone Foot_L present
+PASS bone Foot_R present
+PASS limb bones share the body frame like the apple rig
+PASS glove follows the forearm
+PASS KidActionAnimator drives the Banana bones
+shoulder axis local=(0.367, 0.000, 0.000) face offset local=(-0.077, 0.363, 0.073)
+PASS Banana faces the kid's forward with Arm_R on its right
+standing bounds min=(15.577, -0.009, 10.666) max=(16.423, 1.147, 11.203)
+PASS Banana stands on the floor at kid height
+PASS moving puppet switches the Banana to its walk
+walking glove travel metres=0.128
+PASS walk swings the glove through the bones
+PASS Teddy bear has CarryGrip contacts
+PASS Teddy bear has a reach phase before lifting
+Teddy bear wrist target error metres L=0.000 R=0.000; glove bone to contact L=0.000 R=0.000
+PASS Teddy bear Banana wrists reach both authored contacts
+PASS Teddy bear Banana glove bones sit at the contacts
+Teddy bear held centre ahead of Body bone metres=0.425
+PASS Teddy bear is carried in front of the Banana
+PASS Teddy bear is hugged close to the Banana, not floating ahead of it
+Teddy bear after walking wrist error L=0.000 R=0.000
+PASS Teddy bear grip holds while the Banana walks
+PASS Hamster has CarryGrip contacts
+PASS Hamster has a reach phase before lifting
+Hamster wrist target error metres L=0.000 R=0.000; glove bone to contact L=0.000 R=0.000
+PASS Hamster Banana wrists reach both authored contacts
+PASS Hamster Banana glove bones sit at the contacts
+Hamster held centre ahead of Body bone metres=0.424
+PASS Hamster is carried in front of the Banana
+PASS Hamster is hugged close to the Banana, not floating ahead of it
+Hamster after walking wrist error L=0.000 R=0.000
+PASS Hamster grip holds while the Banana walks
+System.Exception: no exceptions during the Banana review
+  at MamasComing.Editor.MamaBananaReview.Assert (System.Boolean condition, System.String message) [0x0002b] in C:\Pepes\final dojo\Assets\MamasComing\Editor\MamaBananaReview.cs:79 
+  at MamasComing.Editor.MamaBananaReview+<Checks>d__15.MoveNext () [0x00d0b] in C:\Pepes\final dojo\Assets\MamasComing\Editor\MamaBananaReview.cs:153 
+  at MamasComing.Editor.MamaBananaReview.Tick () [0x0002d] in C:\Pepes\final dojo\Assets\MamasComing\Editor\MamaBananaReview.cs:69 
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+
+TLS Allocator ALLOC_TEMP_TLS, underlying allocator ALLOC_TEMP_MAIN has unfreed allocations, size 17093
+

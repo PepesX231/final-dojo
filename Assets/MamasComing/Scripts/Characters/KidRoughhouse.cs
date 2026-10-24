@@ -37,7 +37,7 @@ namespace MamasComing
                 KidLook.Apply(me, KidLook.Selected);
                 if (GameManager.I.ui) GameManager.I.Toast(Loc.Thai ? KidLook.NamesTh[KidLook.Selected] : KidLook.Names[KidLook.Selected]);
             }
-            if (!me.controlsEnabled || me.Stunned || (MiniGame.I && MiniGame.I.Active) || MamaSettings.Open) return;
+            if (!me.controlsEnabled || me.Stunned || (MiniGame.I && MiniGame.I.Active) || MamaSettings.Open || MamaHowToPlay.Open) return;
 
             bool punch = MamaInput.ShoveDown || MamaInput.ClickDown && me.Held == null && me.HoldProgress <= 0f;
             if (punch && shoveCd <= 0f) Shove();
@@ -96,8 +96,8 @@ namespace MamasComing
                 // head-on, both sprinting: only ONE machine resolves the crash, so it never happens twice
                 if (o.PlanarSpeed > bumpSpeed * 0.8f && string.CompareOrdinal(NetGame.NameOf(me) ?? "", NetGame.NameOf(o) ?? "") > 0) continue;
                 bumpCd = 0.8f;
-                NetGame.Hit(o, d, 4.5f, 0.35f, false, transform.position);   // them: boing
-                me.Bonk(-d, 3.5f, 0.25f, false);                              // me: bounce back
+                NetGame.Hit(o, d, 5.5f, 1.25f, true, transform.position);
+                me.Bonk(-d, 4.5f, 1.15f, true);
                 NetGame.Pop((transform.position + o.transform.position) * 0.5f + Vector3.up * 1.2f, "BOING!", "ดึ๋ง!", new Color(0.5f, 0.9f, 1f), "thud", 0.8f, 1.3f);
                 return;
             }

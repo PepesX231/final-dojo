@@ -111,7 +111,7 @@ namespace MamasComing
         {
             float dt = Time.deltaTime;
             bool running = Urgent && Powered;
-            if (loop) loop.volume = Mathf.MoveTowards(loop.volume, running ? loopVolume * MamaSettings.SfxVol : 0f, dt * 1.5f);
+            if (loop) { loop.mute = MamaSettings.SfxVol <= 0f; loop.volume = Mathf.MoveTowards(loop.volume, running ? loopVolume * MamaSettings.SfxVol : 0f, Time.unscaledDeltaTime * 1.5f); }
             if (!Urgent || !Sim) { VisualTick(dt, running); return; }
             ActiveTime += dt;
             if (Powered)

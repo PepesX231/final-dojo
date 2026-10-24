@@ -28,11 +28,11 @@ namespace MamasComing
             timerSub.fontSize = 17;
             MovePanel(h, "Problems", new Vector2(-28, -128), new Vector2(300, 248));
             h.Find("Problems").gameObject.SetActive(false);
-            MovePanel(h, "ContextCard", new Vector2(28, 26), new Vector2(420, 154));
+            MovePanel(h, "ContextCard", new Vector2(28, 26), new Vector2(470, 190));
             MovePanel(h, "ContextCard/Name", new Vector2(18, -8), new Vector2(-36, 34));
-            MovePanel(h, "ContextCard/Meaning", new Vector2(18, -45), new Vector2(-36, 66));
+            MovePanel(h, "ContextCard/Meaning", new Vector2(18, -47), new Vector2(-36, 103));
             MovePanel(h, "ContextCard/Keys", new Vector2(18, 8), new Vector2(-36, 28));
-            contextTitle.fontSize = 25; contextBody.fontSize = 21; contextKeys.fontSize = 17;
+            contextTitle.fontSize = 27; contextBody.fontSize = 24; contextKeys.fontSize = 20;
             contextGO.SetActive(false);
             MovePanel(h, "Prompt", new Vector2(0, 32), new Vector2(720, 52));
             promptText.fontSize = 24;
@@ -49,7 +49,7 @@ namespace MamasComing
                 text.resizeTextForBestFit = true; text.resizeTextMinSize = 21; text.resizeTextMaxSize = 24;
                 text.verticalOverflow = VerticalWrapMode.Truncate;
             }
-            notesKey = Txt(Rect("NotesKey", h, BR, BR, BR, new Vector2(-28, 28), new Vector2(230, 30)), "", 19, Color.white, TextAnchor.MiddleRight, 0, true);
+            notesKey = Txt(Rect("NotesKey", h, BR, BR, BR, new Vector2(-28, 28), new Vector2(420, 32)), "", 19, Color.white, TextAnchor.MiddleRight, 0, true);
             Shadowed(notesKey);
             foreach (var outline in h.GetComponentsInChildren<Outline>(true))
             {
@@ -78,8 +78,8 @@ namespace MamasComing
         void RefreshPolishedCopy()
         {
             if (!notesKey) return;
-            notesKey.text = MamaReadability.Text("TAB  House notes   ·   H  Help", "TAB  ภาพรวม   ·   H  คำใบ้");
-            goalSub.text = MamaReadability.Text("Fix it or hide it. Your call.", "เก็บจริงหรือซ่อน เลือกเองได้");
+            notesKey.text = MamaReadability.Text("TAB Notes · H Hint · F1 Guide", "TAB ภาพรวม · H คำใบ้ · F1 วิธีเล่น");
+            goalSub.text = MamaReadability.Text("Stop the cause → put away → Mom inspects", "ปิดต้นเหตุ → เก็บของ → รอแม่ตรวจ");
             var card = titleGO.transform.Find("Card");
             card.Find("Sub").GetComponentInChildren<Text>().text = MamaReadability.Text(
                 "The secret party is over. The house is a disaster.\nMom is on her way — leave no evidence!",

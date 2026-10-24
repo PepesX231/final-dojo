@@ -34,13 +34,17 @@ namespace MamasComing
 
         const float PopTime = 0.22f, HopTime = 0.28f;   // PopTime + HopTime == PlayerController.RecoverTime
 
-        struct Limb { public Transform t; public Vector3 srcPos, srcScale, wrotePos, wroteScale; public bool wrote; }
+        struct Limb { public Transform t; public Vector3 srcPos, srcScale, wrotePos, wroteScale; public bool wrote; public Renderer[] renderers; public bool[] visible; }
         readonly List<Limb> limbs = new List<Limb>();
         Transform pivot, chr;
         float height = 1f, sizeK = 1f;
         float phase, moveW, curl, tip, recoverT = -1f, downT, rollDir = 1f;
         bool wasDown;
         Vector3 lastPos;
+        Vector3 coreLocal = new Vector3(0, .6f, 0);
+        float rollRadius = .3f;
+        Quaternion tumble = Quaternion.identity, recoverRotation = Quaternion.identity;
+        public float RolledDegrees { get; private set; }
 
         public bool Recovering => recoverT >= 0f;
         public float LimbsOut { get; private set; } = 1f;
@@ -50,13 +54,13 @@ namespace MamasComing
             switch (s)
             {
                 // goofy, gangly noodle walk: big sway, hip swing, uneven rhythm and a constant jiggle
-                case Style.Banana:     return new Gait { stride = 0.95f, bounce = 0.05f,  roll = 15f, pitch = 7f, twist = 16f, lean = -4f, limp = 0.35f, wobble = 5f };
+                case Style.Banana:     return new Gait { stride = 1.5f, bounce = 0.025f, roll = 6f, pitch = 3f, twist = 5f, lean = -2f, limp = 0.12f, wobble = 0f };
                 // proud waddle, chest out
-                case Style.Orange:     return new Gait { stride = 0.8f,  bounce = 0.03f,  roll = 9f,  pitch = 2f, twist = 6f,  lean = -6f, limp = 0f,    wobble = 0f };
+                case Style.Orange:     return new Gait { stride = 1.4f, bounce = 0.022f, roll = 4f, pitch = 2f, twist = 3f, lean = -2f, limp = 0f, wobble = 0f };
                 // heavy stomp, leaning into each step
-                case Style.Watermelon: return new Gait { stride = 1.1f,  bounce = 0.06f,  roll = 6f,  pitch = 5f, twist = 4f,  lean = 6f,  limp = 0.1f,  wobble = 0f };
+                case Style.Watermelon: return new Gait { stride = 1.6f, bounce = 0.03f, roll = 3f, pitch = 2.5f, twist = 3f, lean = 3f, limp = .05f, wobble = 0f };
                 // dainty quick prance
-                case Style.WaxApple:   return new Gait { stride = 0.6f,  bounce = 0.035f, roll = 4f,  pitch = 3f, twist = 10f, lean = 2f,  limp = 0f,    wobble = 1.5f };
+                case Style.WaxApple:   return new Gait { stride = 1.3f, bounce = 0.025f, roll = 3f, pitch = 2f, twist = 4f, lean = 2f, limp = 0f, wobble = 0f };
                 // apple: bouncy skip
                 default:               return new Gait { stride = 0.85f, bounce = 0.045f, roll = 4f,  pitch = 3f, twist = 3f,  lean = 3f,  limp = 0f,    wobble = 0f };
             }
@@ -88,6 +92,21 @@ namespace MamasComing
             height = h > 0.2f ? h : TargetHeight;
             sizeK = Mathf.Clamp(TargetHeight / height, 0.6f, 1.6f);
             pivot.localScale = Vector3.one * sizeK;
+            // Rotate around the fruit's centre rather than its feet. Limbs are
+            // excluded where possible so a long glove does not become its radius.
+            Bounds bounds = new Bounds(transform.position + Vector3.up * .6f, Vector3.one * .5f);
+            bool haveBounds = false;
+            if (chr) foreach (var renderer in chr.GetComponentsInChildren<Renderer>())
+            {
+                if (renderer is ParticleSystemRenderer || !renderer.enabled) continue;
+                bool limb = false;
+                for (var p = renderer.transform; p && p != chr; p = p.parent) if (IsLimb(p.name)) { limb = true; break; }
+                if (limb) continue;
+                if (!haveBounds) { bounds = renderer.bounds; haveBounds = true; } else bounds.Encapsulate(renderer.bounds);
+            }
+            coreLocal = pivot.InverseTransformPoint(bounds.center);
+            rollRadius = Mathf.Clamp(Mathf.Min(bounds.extents.x, bounds.extents.z), .2f, .5f);
+            tumble = Quaternion.identity; RolledDegrees = 0f;
         }
 
         public static Style StyleOf(string chrName)
@@ -122,7 +141,12 @@ namespace MamasComing
         {
             foreach (Transform c in root)
             {
-                if (IsLimb(c.name)) { limbs.Add(new Limb { t = c }); continue; }   // its children follow it
+                if (IsLimb(c.name))
+                {
+                    var renderers = c.GetComponentsInChildren<Renderer>(true); var visible = new bool[renderers.Length];
+                    for (int i = 0; i < visible.Length; i++) visible[i] = renderers[i].enabled;
+                    limbs.Add(new Limb { t = c, renderers = renderers, visible = visible }); continue;
+                }
                 CollectLimbs(c);
             }
         }
@@ -138,6 +162,7 @@ namespace MamasComing
             for (int i = 0; i < limbs.Count; i++)
             {
                 var l = limbs[i]; if (!l.t || !l.wrote) continue;
+                for (int r = 0; r < l.renderers.Length; r++) if (l.renderers[r]) l.renderers[r].enabled = l.visible[r];
                 if (l.t.localPosition == l.wrotePos) l.t.localPosition = l.srcPos;
                 if (l.t.localScale == l.wroteScale) l.t.localScale = l.srcScale;
                 l.wrote = false; limbs[i] = l;
@@ -151,7 +176,7 @@ namespace MamasComing
             float dt = Time.deltaTime; if (dt <= 0f) return;
 
             bool down = player.KnockedDown;
-            if (down && !wasDown) { downT = 0f; recoverT = -1f; rollDir = Random.value < 0.5f ? -1f : 1f; }
+            if (down && !wasDown) { downT = 0f; recoverT = -1f; tumble = Quaternion.identity; RolledDegrees = 0f; rollDir = 1f; }
             if (!down && wasDown) recoverT = 0f;
             wasDown = down;
 
@@ -199,6 +224,12 @@ namespace MamasComing
 
             // ---- walk style (only while upright)
             Vector3 p0 = transform.position; Vector3 dv = p0 - lastPos; dv.y = 0f; lastPos = p0;
+            if (down && dv.sqrMagnitude > .000001f && dv.magnitude < 2f)
+            {
+                float angle = dv.magnitude / rollRadius * Mathf.Rad2Deg;
+                Vector3 axis = transform.InverseTransformDirection(Vector3.Cross(Vector3.up, dv.normalized));
+                tumble = Quaternion.AngleAxis(angle, axis) * tumble; RolledDegrees += angle;
+            }
             float speed = Mathf.Min(dv.magnitude / dt, 12f);
             bool grounded = !player.isLocal || !player.Motor || player.Motor.IsGrounded;
             float want = speed > 0.25f && grounded && !down && recoverT < 0f ? Mathf.Clamp01(speed / 3f) : 0f;
@@ -235,10 +266,13 @@ namespace MamasComing
                 if (recoverT >= 0f && recoverT < PopTime) rock += Mathf.Sin(recoverT * 60f) * 6f;   // shiver before springing up
             }
             float tipEase = tip * tip * (3f - 2f * tip);
-            Quaternion rot = Quaternion.Euler(gaitEuler) * Quaternion.Euler(-82f * tipEase, 0f, rock * tipEase);
-            float r = height * sizeK * 0.42f;   // about the fruit's radius
+            Quaternion rot = Quaternion.Euler(gaitEuler);
+            if (down) { rot = Quaternion.Slerp(Quaternion.identity, tumble * Quaternion.Euler(-82f, 0f, rock), tipEase); recoverRotation = rot; }
+            else if (recoverT >= 0f) rot = Quaternion.Slerp(Quaternion.identity, recoverRotation, tipEase);
             pivot.localRotation = rot;
-            pivot.localPosition = gaitPos + new Vector3(0f, hop + r * 0.35f * tipEase, -r * 0.55f * tipEase);
+            Vector3 centre = coreLocal * sizeK;
+            Vector3 turnOffset = tipEase > 0f ? centre - rot * centre + Vector3.up * (rollRadius + .04f - centre.y) * tipEase : Vector3.zero;
+            pivot.localPosition = gaitPos + Vector3.up * hop + turnOffset;
             float sy = 1f - squash, sxz = 1f + squash * 0.6f;
             pivot.localScale = new Vector3(sxz, sy, sxz) * sizeK;
 
@@ -252,6 +286,7 @@ namespace MamasComing
             for (int i = 0; i < limbs.Count; i++)
             {
                 var l = limbs[i]; if (!l.t) continue;
+                for (int r = 0; r < l.renderers.Length; r++) if (l.renderers[r]) l.renderers[r].enabled = l.visible[r] && k > .06f;
                 // this frame's animated pose is the source, unless nobody touched what we wrote last frame
                 Vector3 cp = l.t.localPosition, cs = l.t.localScale;
                 if (!l.wrote || cp != l.wrotePos) l.srcPos = cp;

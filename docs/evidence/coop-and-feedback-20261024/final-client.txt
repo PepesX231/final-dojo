@@ -1,0 +1,10 @@
+[Bot] asked host to close fridge
+[Bot] fridge fixed on my side = True water=108.4823 power=True
+[Bot] holding cup = True
+[Bot] dropped cup at (27.40, 0.12, 0.60) settled=True
+[Bot-near] mySlot=1 avatars=2 all=2 | 1: Kid (PF_Player) local=True active=True pos=(4.3, 0.0, 3.5) net=- rend=21 visible=0 | 0: Kid P1 (remote) local=False active=True pos=(4.3, 0.0, 3.0) net=(4.3, 0.0, 3.0) age=0.0 rend=23 visible=0
+[Bot] shoved
+[Fx] pop 'OOF!' sound=slap at (4.33, 1.34, 3.00)
+[Bot-after] mySlot=1 avatars=2 all=2 | 1: Kid (PF_Player) local=True active=True pos=(4.3, 0.0, 3.5) net=- rend=21 visible=0 | 0: Kid P1 (remote) local=False active=True pos=(4.3, 0.0, 1.2) net=(4.3, 0.0, 1.2) age=0.0 rend=23 visible=0
+[Bot] mySlot=1 avatars=2 all=2 | 1: Kid (PF_Player) local=True active=True pos=(4.3, 0.0, 3.5) net=- rend=21 visible=0 | 0: Kid P1 (remote) local=False active=True pos=(4.3, 0.0, 1.2) net=(4.3, 0.0, 1.2) age=0.0 rend=23 visible=0
+[Bot] t=520 state=Playing hazards active=5 water=123

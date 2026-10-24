@@ -67,6 +67,7 @@ namespace MamasComing
             ui.Build();
             MamaAudio.Ensure();
             MamaSettings.Ensure();
+            if (!GetComponent<MamaHowToPlay>()) gameObject.AddComponent<MamaHowToPlay>();
             if (!GetComponent<MamaReadability>()) gameObject.AddComponent<MamaReadability>();
             if (!GetComponent<MiniGame>()) gameObject.AddComponent<MiniGame>().ui = ui;
             if (!GetComponent<QuestDirector>()) gameObject.AddComponent<QuestDirector>();
@@ -90,7 +91,7 @@ namespace MamasComing
             {
                 case State.Title:
                     if (MamaInput.EscDown) MamaSettings.Toggle();
-                    if (MamaInput.AnyStart && !MamaSettings.BlockStart && NetGame.IsAuthority)
+                    if (MamaInput.AnyStart && !MamaSettings.BlockStart && !MamaHowToPlay.BlockStart && NetGame.IsAuthority)
                     {
                         StartRound();
                         NetGame.Broadcast(NetGame.Msg.Start, null, null, 0);
@@ -133,7 +134,7 @@ namespace MamasComing
             if (state == State.Playing || state == State.MomHome)
             {
                 if (MamaInput.EscDown) MamaSettings.Toggle();
-                else if (!MamaSettings.Open && !(MiniGame.I && MiniGame.I.Active) && Cursor.lockState != CursorLockMode.Locked && MamaInput.ClickDown && !MamaSettings.BlockStart) LockCursor(true);
+                else if (!MamaSettings.Open && !MamaHowToPlay.Open && !(MiniGame.I && MiniGame.I.Active) && Cursor.lockState != CursorLockMode.Locked && MamaInput.ClickDown && !MamaSettings.BlockStart) LockCursor(true);
             }
 
             if (Live) RefreshHUD();

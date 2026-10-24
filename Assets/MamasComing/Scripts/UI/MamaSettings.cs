@@ -185,11 +185,11 @@ namespace MamasComing
             if (open)
             {
                 s.prevLock = Cursor.lockState == CursorLockMode.Locked;
-                Time.timeScale = 0f; Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
+                Time.timeScale = NetGame.Online ? 1f : 0f; Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
             }
             else
             {
-                Time.timeScale = 1f; s.closedAt = Time.unscaledTime;
+                Time.timeScale = MamaHowToPlay.Open && !NetGame.Online ? 0f : 1f; s.closedAt = Time.unscaledTime;
                 if (s.prevLock) { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
             }
             s.panel.SetActive(open);

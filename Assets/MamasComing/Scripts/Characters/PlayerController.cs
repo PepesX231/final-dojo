@@ -146,7 +146,7 @@ namespace MamasComing
             if (actionLock > 0f) actionLock -= dt;
 
             bool inMini = MiniGame.I && MiniGame.I.Active;
-            bool canMove = controlsEnabled && !Stunned && !inMini && !MamaSettings.Open;
+            bool canMove = controlsEnabled && !Stunned && !inMini && !MamaSettings.Open && !MamaHowToPlay.Open;
             bool holdingAction = HoldProgress > 0f;
             Motor.InputEnabled = canMove;
             Motor.AllowJump = canMove && Held == null;
@@ -399,7 +399,8 @@ namespace MamasComing
                 if (rb == null || rb.isKinematic || rb.transform.IsChildOf(transform)) continue;
                 rb.AddExplosionForce(3f, transform.position, 2f, 0.8f, ForceMode.VelocityChange);
             }
-            Motor.Launch(fwd * 3.2f + Vector3.up * 1.2f);
+            // Keep momentum: a running slip sends the whole curled fruit skidding.
+            Motor.Launch(fwd * Mathf.Clamp(PlanarSpeed * 1.15f, 4f, 7f) + Vector3.up * 1.4f);
             if (FloodSim.I) FloodSim.I.Splash(transform.position, 2.5f);
             MamaAudio.Play("splash", transform.position, 1f, 0.85f); MamaAudio.Play("thud", transform.position, 0.9f);
             if (GameManager.I) GameManager.I.OnPlayerSlipped(reason);

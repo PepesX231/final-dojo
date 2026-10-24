@@ -98,8 +98,9 @@ namespace MamasComing
             if (drains == null) drains = FindObjectsByType<Drain>(FindObjectsSortMode.None);
             if (fs != null) foreach (var dr in drains) if (dr && !dr.clogged && fs.DepthAround(dr.transform.position, 0.8f) > 0.0008f) Gurgle(dr.transform.position);
             hissT -= Time.deltaTime; drainT -= Time.deltaTime;
-            hissLoop.volume = Mathf.MoveTowards(hissLoop.volume, hissT > 0 ? 0.35f * MamaSettings.SfxVol : 0f, Time.deltaTime * 6f);
-            drainLoop.volume = Mathf.MoveTowards(drainLoop.volume, drainT > 0 ? 0.4f * MamaSettings.SfxVol : 0f, Time.deltaTime * 2f);
+            hissLoop.volume = Mathf.MoveTowards(hissLoop.volume, hissT > 0 ? 0.35f * MamaSettings.SfxVol : 0f, Time.unscaledDeltaTime * 6f);
+            drainLoop.volume = Mathf.MoveTowards(drainLoop.volume, drainT > 0 ? 0.4f * MamaSettings.SfxVol : 0f, Time.unscaledDeltaTime * 2f);
+            foreach (var source in pool) source.mute = MamaSettings.SfxVol <= 0f;
             bool focus=GameManager.I && GameManager.I.ui && GameManager.I.ui.ImportantMessage;
             float targetMusic=musicVolume*MamaSettings.MusicVol*(focus?.48f:.85f);
             music.volume=Mathf.Lerp(music.volume,targetMusic,Time.unscaledDeltaTime*(focus?12f:2f));

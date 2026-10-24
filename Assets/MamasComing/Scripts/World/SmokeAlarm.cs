@@ -25,6 +25,7 @@ namespace MamasComing
         void Update()
         {
             float dt = Time.deltaTime;
+            if (beep) beep.mute = MamaSettings.SfxVol <= 0f;
             if (hush > 0f) hush -= dt;
             bool was = Beeping;
             Beeping = !BatteryOut && hush <= 0f && Smoke > threshold && (GameManager.I == null || GameManager.I.Live);
