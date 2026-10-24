@@ -1,0 +1,3 @@
+scene=Assets/MamasComing/Scenes/MamasKitchen.unity
+hazards=36 (gadgets 22)
+images=exterior.png, plan-ground.png, plan-upper.png, view-living.png, view-staircase.png, view-bedroom.png, view-loft.png, view-kitchen.png, view-garage.png

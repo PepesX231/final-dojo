@@ -4,20 +4,20 @@ namespace MamasComing
 {
     /// <summary>
     /// The two-storey house plan shared by the level builder and runtime systems: fruit-scale rooms
-    /// (1.6x the original human-scale plan) and an upper floor over the west half.
+    /// (2x the original human-scale 30 x 14 m plan) and an upper floor over the west half.
     /// </summary>
     public static class HouseLayout
     {
-        /// Fruit-scale factor applied to the original 30 x 14 m plan.
-        public const float Scale = 1.6f;
+        /// Fruit-scale factor applied to the original plan (furniture included: the fruit kids are small).
+        public const float Scale = 2f;
         /// Ground-floor wall height.
         public const float WallH = 2.8f * Scale;
         /// Walkable height of the upper floor (top of the floor slab).
-        public const float UpperY = 4.7f;
+        public const float UpperY = WallH + 0.25f;
         /// Anything at least this high is treated as being on the upper floor.
-        public const float UpperThreshold = UpperY - 1.2f;
-        /// The upper floor covers x 0..UpperMaxX, z 0..22.4.
-        public const float UpperMaxX = 24f, UpperMaxZ = 22.4f;
+        public const float UpperThreshold = UpperY - 1.4f;
+        /// The upper floor covers x 0..UpperMaxX, z 0..UpperMaxZ.
+        public const float UpperMaxX = 30f, UpperMaxZ = 28f;
 
         public static readonly string[] RoomNames =
         {
@@ -26,10 +26,10 @@ namespace MamasComing
         };
         public static readonly Rect[] RoomRects =
         {
-            new Rect(0f, 0f, 20.8f, 9.6f), new Rect(20.8f, 0f, 6.4f, 9.6f), new Rect(27.2f, 0f, 8f, 9.6f), new Rect(0f, 9.6f, 48f, 3.2f),
-            new Rect(0f, 0f, 11.2f, 9.6f), new Rect(11.2f, 12.8f, 8f, 9.6f), new Rect(19.2f, 12.8f, 16f, 9.6f), new Rect(35.2f, 0f, 12.8f, 9.6f),
-            new Rect(35.2f, 12.8f, 12.8f, 9.6f), new Rect(0f, 12.8f, 11.2f, 9.6f), new Rect(0f, 9.6f, 24f, 3.2f), new Rect(11.2f, 0f, 12.8f, 9.6f),
-            new Rect(11.2f, 12.8f, 12.8f, 9.6f), new Rect(0f, 12.8f, 11.2f, 9.6f),
+            new Rect(0f, 0f, 26f, 12f), new Rect(26f, 0f, 8f, 12f), new Rect(34f, 0f, 10f, 12f), new Rect(0f, 12f, 60f, 4f),
+            new Rect(0f, 0f, 14f, 12f), new Rect(14f, 16f, 10f, 12f), new Rect(24f, 16f, 20f, 12f), new Rect(44f, 0f, 16f, 12f),
+            new Rect(44f, 16f, 16f, 12f), new Rect(0f, 16f, 14f, 12f), new Rect(0f, 12f, 30f, 4f), new Rect(14f, 0f, 16f, 12f),
+            new Rect(14f, 16f, 16f, 12f), new Rect(0f, 16f, 14f, 12f),
         };
         /// 0 = ground floor, 1 = upper floor.
         public static readonly int[] RoomFloor = { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1 };

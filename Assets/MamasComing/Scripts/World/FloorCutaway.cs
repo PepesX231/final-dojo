@@ -21,10 +21,14 @@ namespace MamasComing
         void Start()
         {
             cam = GetComponent<ThirdPersonCamera>();
+            // the roof is only for the outside view: in play the camera always looks into the rooms
+            var roof = GameObject.Find("House/Roof");
+            if (roof) foreach (var rr in roof.GetComponentsInChildren<Renderer>()) rr.enabled = false;
             foreach (var r in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
             {
                 if (!r || r is ParticleSystemRenderer) continue;
                 if (r.GetComponentInParent<PlayerController>() || r.GetComponentInParent<MomController>()) continue;
+                if (roof && r.transform.IsChildOf(roof.transform)) continue;
                 if (r.GetComponentInParent<Pickup>()) { movers.Add(r); continue; }
                 Bounds b = r.bounds;
                 bool overUpperPlan = b.min.x >= -0.4f && b.max.x <= HouseLayout.UpperMaxX + 0.4f && b.min.z >= -0.4f && b.max.z <= HouseLayout.UpperMaxZ + 0.4f;

@@ -1,0 +1,123 @@
+PASSED (117 checks passed) 2569-10-24 10:12:24
+PASS level loads with a player
+PASS kid starts in the living room
+     kid height 1.16 m, sofa back 2.11 m
+PASS fruit-scale: the sofa back is well above the kid's head
+PASS upper floor is hidden while the kid is downstairs
+     after stairs: (13.39, 5.89, 26.10)
+PASS walking right climbs the stairs to the landing
+PASS kid is on the upper floor
+PASS upper floor renders again once the kid is upstairs
+     after bedroom walk: (11.27, 5.89, 7.69)
+PASS walked through the door into the upstairs bedroom
+PASS nothing upstairs is targeted from the living room below
+PASS chute is open before its jam starts
+     after chute: (28.97, 0.16, 14.00)
+PASS dropping through the chute lands in the ground hallway
+PASS Mom's route goes upstairs
+PASS route point 'Entrance' is on a floor
+PASS route point 'Living room' is on a floor
+PASS route point 'Hallway' is on a floor
+PASS route point 'Hall middle' is on a floor
+PASS route point 'Bathroom' is on a floor
+PASS route point 'BathBack' is on a floor
+PASS route point 'Hall east' is on a floor
+PASS route point 'Kitchen' is on a floor
+PASS route point 'Stove' is on a floor
+PASS route point 'KitchenOut' is on a floor
+PASS route point 'Laundry' is on a floor
+PASS route point 'LaundryOut' is on a floor
+PASS route point 'Dining' is on a floor
+PASS route point 'DiningOut' is on a floor
+PASS route point 'Hall far east' is on a floor
+PASS route point 'Game room' is on a floor
+PASS route point 'GameOut' is on a floor
+PASS route point 'Garage' is on a floor
+PASS route point 'GarageOut' is on a floor
+PASS route point 'Staircase door' is on a floor
+PASS route point 'Staircase' is on a floor
+PASS route point 'Stair foot' is on a floor
+PASS route point 'Stair top' is on a floor
+PASS route point 'Landing' is on a floor
+PASS route point 'Upstairs hall' is on a floor
+PASS route point 'BedDoor' is on a floor
+PASS route point 'Bedroom' is on a floor
+PASS route point 'BedDoorBack' is on a floor
+PASS route point 'MomDoor' is on a floor
+PASS route point 'Mom's room' is on a floor
+PASS route point 'MomDoorBack' is on a floor
+PASS route point 'LoftDoor' is on a floor
+PASS route point 'Party loft' is on a floor
+PASS route point 'LoftBack' is on a floor
+PASS route point 'Down: hall' is on a floor
+PASS route point 'Down: landing' is on a floor
+PASS route point 'Down: top' is on a floor
+PASS route point 'Down: foot' is on a floor
+PASS route point 'Down: staircase' is on a floor
+PASS route point 'Back to hall' is on a floor
+PASS route point 'Sofa' is on a floor
+PASS Mom inspects the Bedroom
+PASS Mom inspects the Mom's room
+PASS Mom inspects the Party loft
+PASS Mom inspects the Kitchen
+PASS Mom inspects the Game room
+PASS Mom inspects the Garage
+PASS hamster network spans both floors
+PASS hamster cage is upstairs in the bedroom
+     hazards 36, gadgets 22
+PASS 22 new gadget problems exist
+PASS every gadget is a different problem
+PASS at least 10 new problems are upstairs
+PASS Glitter bomb is inside a room
+PASS Glitter bomb has Thai and English quests
+PASS Foam cannon is inside a room
+PASS Foam cannon has Thai and English quests
+PASS Dryer is inside a room
+PASS Dryer has Thai and English quests
+PASS Popcorn machine is inside a room
+PASS Popcorn machine has Thai and English quests
+PASS Hoverboard is inside a room
+PASS Hoverboard has Thai and English quests
+PASS Pillow fort is inside a room
+PASS Pillow fort has Thai and English quests
+PASS Escaped slime is inside a room
+PASS Escaped slime has Thai and English quests
+PASS Chute jam is inside a room
+PASS Chute jam has Thai and English quests
+PASS Lava lamp is inside a room
+PASS Lava lamp has Thai and English quests
+PASS Garage door is inside a room
+PASS Garage door has Thai and English quests
+PASS Bubble machine is inside a room
+PASS Bubble machine has Thai and English quests
+PASS Blender is inside a room
+PASS Blender has Thai and English quests
+PASS Karaoke machine is inside a room
+PASS Karaoke machine has Thai and English quests
+PASS Garbage disposal is inside a room
+PASS Garbage disposal has Thai and English quests
+PASS Ice maker is inside a room
+PASS Ice maker has Thai and English quests
+PASS Telescope is inside a room
+PASS Telescope has Thai and English quests
+PASS Streamers is inside a room
+PASS Streamers has Thai and English quests
+PASS Parrot is inside a room
+PASS Parrot has Thai and English quests
+PASS Treadmill is inside a room
+PASS Treadmill has Thai and English quests
+PASS Smart speaker is inside a room
+PASS Smart speaker has Thai and English quests
+PASS Grandfather clock is inside a room
+PASS Grandfather clock has Thai and English quests
+PASS Robot vacuum is inside a room
+PASS Robot vacuum has Thai and English quests
+PASS foam cannon can't be fixed with the power on
+PASS foam cannon is fixed once the power is cut
+PASS blender refuses an empty-handed fix
+PASS blender prompt asks for a lid
+PASS garage door itself is not a one-person fix
+PASS one garage button alone does nothing
+PASS both garage buttons together stop the door
+PASS Dusty the robot vacuum roams
+PASS the slime can't be scooped without a bucket

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2153a6d28ced7634891d9cf0b5a50bd5, type: 3}
   m_Name: KidMotorConfig
   m_EditorClassIdentifier: DreamRush.Runtime::DreamRush.Player.PlayerMotorConfig
-  walkSpeed: 3.2
-  sprintSpeed: 5.6
+  walkSpeed: 4.2
+  sprintSpeed: 7
   groundAcceleration: 28
   groundDeceleration: 35
   turnaroundDeceleration: 55
@@ -21,7 +21,7 @@ MonoBehaviour:
   airAcceleration: 13
   airDeceleration: 4
   airRotationSpeedDegrees: 420
-  jumpHeight: 0.8
+  jumpHeight: 1
   gravity: 24
   fallGravityMultiplier: 1.35
   jumpCutGravityMultiplier: 2.6
