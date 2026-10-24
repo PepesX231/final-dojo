@@ -19,13 +19,20 @@ namespace MamasComing
 
         public static string Text(string english, string thai) => Loc.Thai ? thai : english;
 
-        public static int RoomIndex(Vector3 p) => Mathf.Max(0, HouseLayout.RoomOf(p));
+        public static int RoomIndex(Vector3 p)
+        {
+            if (p.x >= 22f && p.z < 6f) return 7;
+            if (p.x >= 22f && p.z >= 8f) return 8;
+            if (p.z >= 8f) return p.x < 7f ? 4 : p.x < 12f ? 5 : 6;
+            if (p.z >= 6f) return 3;
+            return p.x < 13f ? 0 : p.x < 17f ? 1 : 2;
+        }
 
         public static string Room(Vector3 p)
         {
-            string[] th = { "ห้องนั่งเล่น", "ห้องซักล้าง", "ห้องกินข้าว", "ทางเดิน", "ห้องนอน", "ห้องน้ำ", "ห้องครัว", "โรงรถ", "ห้องเล่นเกม", "โถงบันได", "ทางเดินชั้นบน", "ห้องนอนแม่", "ลอฟต์ปาร์ตี้", "ชานพักบันได" };
-            int i = RoomIndex(p);
-            return Loc.Thai ? th[i] : HouseLayout.RoomNames[i];
+            string[] en = { "Living room", "Laundry", "Dining room", "Hallway", "Bedroom", "Bathroom", "Kitchen", "Garage", "Game room" };
+            string[] th = { "ห้องนั่งเล่น", "ห้องซักล้าง", "ห้องกินข้าว", "ทางเดิน", "ห้องนอน", "ห้องน้ำ", "ห้องครัว", "โรงรถ", "ห้องเล่นเกม" };
+            return Loc.Thai ? th[RoomIndex(p)] : en[RoomIndex(p)];
         }
 
         public static bool HasHomeCue(MessyProp p) => p && p.homeSet && (p.tool == ToolType.Prop || p.tool == ToolType.Chair);
@@ -73,23 +80,17 @@ namespace MamasComing
                 title = Text("OIL FIRE", "ไฟน้ำมัน");
                 body = Text("Water makes it flare up. Look for a lid or a fire extinguisher.", "โดนน้ำแล้วไฟจะปะทุ ลองมองหาฝาหม้อ หรือถังดับเพลิง");
             }
-            else if (p.OnWet)
-            {
-                title = Text("WET FLOOR — WATER", "พื้นเปียก — น้ำ");
-                body = Text("Walk slowly. Running can make you slip! Stop the leak, then use a mop.", "เดินช้า ๆ วิ่งแล้วอาจลื่น! ปิดน้ำที่รั่ว แล้วใช้ไม้ถูพื้น");
-            }
             else
             {
                 title = Text("Take a look around", "ลองสังเกตรอบตัว");
                 body = Text("Water, smoke, things out of place. What will Mom notice?", "น้ำ ควัน ของผิดที่... แม่จะเห็นอะไรบ้าง?");
             }
             string keys = held ? Text("Q place  •  RMB throw  •  hold H: idea", "Q วาง  •  คลิกขวา ขว้าง  •  H ค้าง: คำใบ้") : Text("E interact  •  TAB notes  •  hold H: idea", "E ใช้ / หยิบ  •  TAB ภาพรวม  •  H ค้าง: คำใบ้");
-            if (!held && !p.Target) keys = Text("E pick up  •  click: punch  •  hold click: grab  •  ESC menu", "E หยิบ  •  คลิก: ต่อย  •  คลิกค้าง: จับเพื่อน  •  ESC เมนู");
             if (pad != null && k == null) keys = held ? "B place  •  Y throw  •  D-pad up: idea" : "A interact  •  View notes  •  D-pad up: idea";
             gm.ui.SetContext(title, body, keys, Room(p.transform.position));
             Idea(held, p.Target, out string ideaTitle, out string ideaBody);
             gm.ui.SetReadabilityPanels(overview && !MamaSettings.Open && !mini, help, ideaTitle, ideaBody);
-            gm.ui.SetContextVisible(!MamaSettings.Open && !mini && !help && !overview && (held || p.Target || NearOilFire() || p.OnWet || Time.timeSinceLevelLoad < 25f));
+            gm.ui.SetContextVisible(!MamaSettings.Open && !mini && !help && !overview && (held || p.Target || NearOilFire()));
             UpdateHome(held as MessyProp, help);
             UpdateFocus(p.Target, help);
             if (!mini && !held && !p.Target && Time.time >= thoughtAt && Time.timeSinceLevelLoad < 18f)

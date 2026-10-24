@@ -1,4 +1,0 @@
-7.15  Bag  <Beanbag>  trigger=False
-0.12  CrashMat  <Rooms>  trigger=False
-0.00  FloorCollider  <House>  trigger=False
--0.50  Ground  <Outside>  trigger=False

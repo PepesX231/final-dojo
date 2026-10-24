@@ -1,7 +1,5 @@
 # M7 Visual Reconstruction — Audit, Visual Target, Plan
 
-> **Note 2026-10-23:** the DREAM RUSH card system (card draw/selection, active cards, Dream Laws, Lucky Pillow rerolls) has been removed. Card mentions below are historical records of earlier milestones, not the current game. See `docs/CARD_REMOVAL_REPORT.md`.
-
 > Trigger: user review 2026-10-17 — the art direction scored 2/10. It reads as a graybox prototype with no
 > Applebook identity. Reconstruct the visuals, keep the gameplay, and lock an **Art Target Scene** first before expanding.
 > Engine: Unity 6000.3 / URP 17.3 (Forward+). Assets: Blender (bpy scripts) → FBX; textures painted by Python scripts.

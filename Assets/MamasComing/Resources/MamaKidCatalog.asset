@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MamaKidCatalog
   m_EditorClassIdentifier: 
   kids:
-  - {fileID: 2359183926830906503, guid: bb2a69a7fd2e7cc4e9243a396380c4c3, type: 3}
+  - {fileID: 0}
   - {fileID: 7232270990876552252, guid: d12da5e6e45901e4c98e06f1f022a195, type: 3}
   - {fileID: 37827002664569983, guid: 770715b4a8814ff4690a9bcd4d605d0d, type: 3}
   - {fileID: 507723578152171034, guid: 2cfdc6c40b47f8e4a85f12267a1f3744, type: 3}

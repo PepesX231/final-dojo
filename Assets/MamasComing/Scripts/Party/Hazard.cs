@@ -65,8 +65,6 @@ namespace MamasComing
         public string loopClip; public float loopVolume = 0.35f;
 
         public bool Active { get; protected set; }
-        public bool RoundEnabled { get; private set; } = true;
-        public void SetRoundEnabled(bool value) { RoundEnabled = value; }
         public bool Fixed { get; protected set; }
         public bool Failed { get; protected set; }
         public float Progress { get; protected set; }
@@ -89,7 +87,7 @@ namespace MamasComing
                 loop.minDistance = 2f; loop.maxDistance = 16f; loop.volume = 0f; loop.dopplerLevel = 0f;
                 if (loop.clip) loop.Play();
             }
-            // Round selection happens when the host starts, after the lobby roster is known.
+            if (startActive) { Active = true; OnActivated(); }
             RefreshVisuals();
         }
 
@@ -98,7 +96,7 @@ namespace MamasComing
 
         public void Activate(string whyEn = null, string whyTh = null)
         {
-            if (!RoundEnabled || Active || Fixed) return;
+            if (Active || Fixed) return;
             Active = true; Progress = 0f; ActiveTime = 0f;
             OnActivated();
             RefreshVisuals();

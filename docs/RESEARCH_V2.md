@@ -1,7 +1,5 @@
 # Research v2 — Presentation Overhaul (2026-10-17)
 
-> **Note 2026-10-23:** the DREAM RUSH card system (card draw/selection, active cards, Dream Laws, Lucky Pillow rerolls) has been removed. Card mentions below are historical records of earlier milestones, not the current game. See `docs/CARD_REMOVAL_REPORT.md`.
-
 > Trigger: the user rejected the Art Target ("ยังกาก") and supplied references: a glossy illustrated card-select concept,
 > Octopath HD-2D golden light, an Eiyuden village, Mario Galaxy floating paths, and the Astro Bot galaxy level select.
 > They asked for: a much bigger and better first level, a close third-person camera, goofy movement, a cheeky sleep

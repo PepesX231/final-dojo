@@ -49,7 +49,7 @@ First, create a production-quality Vertical Slice containing:
 3. Environmental menu interactions.
 4. A bed used as the entrance to the dream.
 5. A dream transition.
-6. A three-card selection system. *(removed 2026-10-23)*
+6. A three-card selection system.
 7. One polished platforming/tutorial level.
 8. A chase encounter against a living chair.
 9. Multiple ways to defeat that chair.
@@ -117,7 +117,7 @@ The ship must reach its destination.
 
 The book must reach its final page.
 
-The player enters each dream with randomized cards that can change abilities, create objects, transform the player, or modify the rules of the dream itself. *(removed 2026-10-23)*
+The player enters each dream with randomized cards that can change abilities, create objects, transform the player, or modify the rules of the dream itself.
 
 When the player loses, his apple mother wakes him up.
 
@@ -146,8 +146,6 @@ Running and jumping must feel satisfying independently of objectives.
 Bosses are mechanical puzzles with personality, rather than ordinary HP targets.
 
 ### C. Three Cards, Many Possibilities
-
-> **Removed 2026-10-23:** the card system was removed by user decision (see the override at the top). This section is historical; do not rebuild it.
 
 Randomness generates creative choices.
 
@@ -1204,7 +1202,7 @@ Space      Jump
 Shift      Sprint
 E          Interact
 Left Click Contextual basic action
-Q          Active Card (removed 2026-10-23)
+Q          Active Card
 R          Secondary ability / selected tool
 1 / 2      Object Slots
 Tab        Objective / Dream Guide
@@ -1423,7 +1421,7 @@ Players should immediately understand that:
 
 - Bosses have unusual objectives.
 - Movement skills matter.
-- Cards create alternative solutions. *(removed 2026-10-23)*
+- Cards create alternative solutions.
 - Objects have consistent properties.
 - Clever decisions are rewarded.
 
@@ -1549,8 +1547,6 @@ The player encounters animated furniture.
 
 ### SECTION D — FIRST CARD INTERACTION
 
-> **Removed 2026-10-23:** the card system was removed by user decision (see the override at the top). This section is historical; do not rebuild it.
-
 The player experiments with the selected card.
 
 ### SECTION E — CHAIR BOSS ARENA
@@ -1566,7 +1562,7 @@ BEDROOM
 FALL ASLEEP
    |
    v
-THREE-CARD CHOICE (removed 2026-10-23)
+THREE-CARD CHOICE
    |
    v
 ARRIVAL PLATFORM
@@ -1578,7 +1574,7 @@ MOVEMENT TUTORIAL
 MOVING FURNITURE
    |
    v
-CARD EXPERIMENT AREA (removed 2026-10-23)
+CARD EXPERIMENT AREA
    |
    v
 CHAIR BOSS REVEAL
@@ -1644,8 +1640,6 @@ The player learns:
 This is the first introduction to the chair's main mechanic.
 
 ## 13.6 Card Experiment Area
-
-> **Removed 2026-10-23:** the card system was removed by user decision (see the override at the top). This section is historical; do not rebuild it.
 
 Provide an object compatible with the selected starting card.
 
@@ -2004,8 +1998,6 @@ This method must work without requiring a specific card.
 
 ## 16.2 Super Glue
 
-> **Removed 2026-10-23:** the card system was removed by user decision (see the override at the top). This section is historical; do not rebuild it.
-
 The player uses Super Glue on the chair.
 
 The chair becomes rooted.
@@ -2020,8 +2012,6 @@ The glue must be subject to target range and effect duration.
 
 ## 16.3 Camera Flash
 
-> **Removed 2026-10-23:** the card system was removed by user decision (see the override at the top). This section is historical; do not rebuild it.
-
 The player positions the chair in front of the camera.
 
 Activate the ability.
@@ -2034,8 +2024,6 @@ Victory.
 
 ## 16.4 Fishing Rod
 
-> **Removed 2026-10-23:** the card system was removed by user decision (see the override at the top). This section is historical; do not rebuild it.
-
 The player uses Fishing Rod to pull the chair toward a reachable area.
 
 The chair may resist before being reeled in.
@@ -2043,8 +2031,6 @@ The chair may resist before being reeled in.
 The player must approach and sit during the recovery window.
 
 ## 16.5 Be a Grandpa
-
-> **Removed 2026-10-23:** the card system was removed by user decision (see the override at the top). This section is historical; do not rebuild it.
 
 The player transforms into an elderly apple.
 
@@ -2080,9 +2066,7 @@ The chair panics, becomes briefly vulnerable, and can be sat on.
 
 ## 16.8 Secret Method: Become a Chair
 
-> **Removed 2026-10-23:** the card system was removed by user decision (see the override at the top). This section is historical; do not rebuild it.
-
-This is an optional future-card interaction. *(removed 2026-10-23)*
+This is an optional future-card interaction.
 
 The player transforms into a chair.
 
@@ -2111,8 +2095,6 @@ Reward creative discovery, but do not require all methods to complete the level.
 ---
 
 # 17 — THREE-CARD SYSTEM FOR THE FIRST LEVEL
-
-> **Removed 2026-10-23:** the card system was removed by user decision (see the override at the top). This section is historical; do not rebuild it.
 
 ## 17.1 Core Requirement
 
@@ -2220,7 +2202,7 @@ Description
 
 First playable:
 
-- One equipped active card *(removed 2026-10-23)*
+- One equipped active card
 - One optional carried object
 - Basic interaction independent of cards
 
@@ -2229,7 +2211,7 @@ Later versions:
 - Two active ability slots
 - Two object slots
 - Passive effects
-- One Dream Law slot *(removed 2026-10-23)*
+- One Dream Law slot
 
 ---
 
@@ -2252,8 +2234,6 @@ BossEntity
 ```
 
 ## 18.3 Example Card Actions
-
-> **Removed 2026-10-23:** the card system was removed by user decision (see the override at the top). This section is historical; do not rebuild it.
 
 ```text
 Root
@@ -2526,7 +2506,7 @@ Improves starting loadout flexibility.
 
 ### Night Lamp
 
-Provides extra card reroll opportunities. *(removed 2026-10-23)*
+Provides extra card reroll opportunities.
 
 ### Dreamcatcher
 
@@ -2540,9 +2520,9 @@ Only implement three upgrades initially.
 
 +1 maximum Sleep Stability per upgrade level, capped by a defined limit.
 
-**Lucky Pillow** *(removed 2026-10-23)*
+**Lucky Pillow**
 
-One additional card reroll opportunity per run at its first meaningful level. *(removed 2026-10-23)*
+One additional card reroll opportunity per run at its first meaningful level.
 
 **Comfort Blanket**
 
@@ -2600,7 +2580,7 @@ Sequence:
 6. Ambient sound becomes quieter.
 7. Camera moves toward the pillow.
 8. Room transforms into a stylized dream transition.
-9. Card selection appears. *(removed 2026-10-23)*
+9. Card selection appears.
 10. Dream level begins.
 
 ## 22.2 Dream Transition Art
@@ -2676,7 +2656,7 @@ Do not show a large permanent main menu.
 Required:
 
 - Sleep Stability
-- Active Card *(removed 2026-10-23)*
+- Active Card
 - Cooldown
 - Objective
 - Optional directional indicator
@@ -3331,8 +3311,6 @@ Player can catch and sit on the chair through the baseline method.
 
 ## PHASE F — CARD SYSTEM
 
-> **Removed 2026-10-23:** the card system was removed by user decision (see the override at the top). This section is historical; do not rebuild it.
-
 1. Create card definitions.
 2. Create three-choice UI.
 3. Implement inventory.
@@ -3407,8 +3385,6 @@ The game has a coherent and distinctive visual identity.
 
 ## Cards
 
-> **Removed 2026-10-23:** the card system was removed by user decision (see the override at the top). This section is historical; do not rebuild it.
-
 - Exactly three distinct starter cards appear.
 - Player chooses one.
 - Selected card enters inventory.
@@ -3465,7 +3441,7 @@ Ask the tester to:
 
 1. Explore the bedroom.
 2. Discover how to start the dream.
-3. Select a card. *(removed 2026-10-23)*
+3. Select a card.
 4. Learn movement.
 5. Complete the tutorial.
 6. Face the chair.
@@ -3482,7 +3458,7 @@ Track:
 - Time to learn jumping
 - Number of missed landings
 - Number of camera corrections
-- Chosen card *(removed 2026-10-23)*
+- Chosen card
 - Card use frequency
 - Chair chase duration
 - Number of successful seating attempts
@@ -3774,7 +3750,7 @@ Then build the Chair Stage Graybox.
 
 Then implement the Chair Boss behavior and baseline victory method.
 
-Then implement the three-card system and alternative chair solutions. *(removed 2026-10-23)*
+Then implement the three-card system and alternative chair solutions.
 
 Then perform the art pass, animation polish, and sound design.
 
@@ -3790,7 +3766,7 @@ It should make a chair feel like a memorable boss.
 
 It should make an apple feel like a real character.
 
-It should make random cards feel like opportunities for invention. *(removed 2026-10-23)*
+It should make random cards feel like opportunities for invention.
 
 And it should make the player want to enter the next dream.
 

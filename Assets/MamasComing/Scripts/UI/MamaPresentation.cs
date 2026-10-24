@@ -30,23 +30,11 @@ namespace MamasComing
                 if (runtimeProfile.TryGet<Bloom>(out var bloom)) bloom.intensity.Override(0.18f);
                 if (runtimeProfile.TryGet<ColorAdjustments>(out var colors))
                 {
-                    colors.saturation.Override(16f); colors.contrast.Override(4f); colors.postExposure.Override(.3f);
+                    colors.saturation.Override(10f); colors.contrast.Override(12f); colors.postExposure.Override(-.08f);
                 }
                 if(runtimeProfile.TryGet<Tonemapping>(out var tone))tone.mode.Override(TonemappingMode.Neutral);
-                if(runtimeProfile.TryGet<Vignette>(out var vignette))vignette.intensity.Override(.025f);
-                if(runtimeProfile.TryGet<ChromaticAberration>(out var chroma))chroma.intensity.Override(0f);
-                if (runtimeProfile.TryGet<MamasComing.Style.MamaToonStyle>(out var style))
-                {
-                    style.shadowLift.Override(.22f); style.ambientBoost.Override(.25f);
-                    style.grime.Override(0f); style.halftoneStrength.Override(.12f);
-                    style.shadowTint.Override(new Color(.72f, .68f, .9f)); style.shadowTintAmount.Override(.6f);
-                }
+                if(runtimeProfile.TryGet<Vignette>(out var vignette))vignette.intensity.Override(.12f);
             }
-            RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(.78f, .85f, 1f);
-            RenderSettings.ambientEquatorColor = new Color(.68f, .73f, .83f);
-            RenderSettings.ambientGroundColor = new Color(.52f, .48f, .64f);
-            if (gm.cam) gm.cam.baseFog = .0015f;
             if (!gm.stove) return;
             oilLabel = new GameObject("Oil warning", typeof(RectTransform), typeof(Canvas));
             var canvas = oilLabel.GetComponent<Canvas>(); canvas.renderMode = RenderMode.WorldSpace;

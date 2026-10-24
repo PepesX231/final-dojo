@@ -103,7 +103,7 @@ namespace MamasComing.EditorTools
             var lever = G("Lever", bp, V(22.26f, 1.25f, 2.0f));
             L(PrimitiveType.Cube, "Base", lever, V(0.0f, 0, 0), V(0.03f, 0.08f, 0.14f), dark);
             L(PrimitiveType.Cube, "Handle", lever, V(0.06f, 0.06f, 0), V(0.12f, 0.03f, 0.05f), M("RedPlastic", C("FF5A5A")));
-            var bl = new GameObject("PanelLight").AddComponent<Light>(); bl.transform.SetParent(bp, false); bl.transform.position = P(V(22.5f, 1.85f, 2.0f));
+            var bl = new GameObject("PanelLight").AddComponent<Light>(); bl.transform.SetParent(bp, false); bl.transform.position = V(22.5f, 1.85f, 2.0f);
             bl.type = LightType.Point; bl.range = 1.4f; bl.intensity = 1.0f;
             Sph("LED", bp, V(22.25f, 1.78f, 2.22f), Vector3.one * 0.035f, ME("LEDGreen", C("44FF66"), new Color(0.3f, 2f, 0.4f)));
             Cube("FloorMat", bp, V(22.8f, 0.006f, 2.0f), V(0.9f, 0.012f, 0.8f), M("RubberMat", C("2F3238")));
@@ -188,7 +188,7 @@ namespace MamasComing.EditorTools
             Cube("Window", ov, V(21.21f, 1.08f, 10.05f), V(0.01f, 0.2f, 0.4f), ME("OvenOrange", C("FF9A3A"), new Color(1.6f, 0.6f, 0.15f)));
             Cyl("Dial", ov, V(21.21f, 1.08f, 10.33f), V(0.06f, 0.01f, 0.06f), M("Black", C("1A1A1F"), 0.8f), false, V(0, 0, 90));
             var ovSmoke = MakeSmokeColumn(ov, V(21.45f, 1.3f, 10.1f));
-            var glow = new GameObject("OvenGlow").AddComponent<Light>(); glow.transform.SetParent(ov, false); glow.transform.position = P(V(21.0f, 1.1f, 10.1f));
+            var glow = new GameObject("OvenGlow").AddComponent<Light>(); glow.transform.SetParent(ov, false); glow.transform.position = V(21.0f, 1.1f, 10.1f);
             glow.type = LightType.Point; glow.color = C("FF8A3A"); glow.range = 1.6f; glow.enabled = false;
             var ovFire = MakeFire("Toaster oven", V(21.45f, 1.28f, 10.1f), FireType.Ordinary, 0.2f, 0.7f, ov, 0.8f);
             ovFire.growth = 0.012f; ovFire.smokeRate = 1.3f;
@@ -271,7 +271,7 @@ namespace MamasComing.EditorTools
             for (int i = 0; i < 3; i++)
             {
                 var home = G("FishHome" + i, body, V(29.25f, 1.05f, 9.2f + i * 0.4f));
-                var f = Prop<Fish>("Goldfish", V(29.25f, 1.05f, 9.2f + i * 0.4f), 0.15f, "Goldfish");
+                var f = Prop<Fish>("Goldfish", home.position, 0.15f, "Goldfish");
                 var fb = L(PrimitiveType.Sphere, "Body", f.transform, V(0, 0, 0), V(0.08f, 0.07f, 0.14f), M("Fish" + i, fc[i], 0.6f));
                 L(PrimitiveType.Cube, "Tail", f.transform, V(0, 0, -0.09f), V(0.01f, 0.07f, 0.05f), M("Fish" + i, fc[i], 0.6f), false, V(45, 0, 0));
                 BoxCol(f.gameObject, Vector3.zero, V(0.09f, 0.08f, 0.16f));
@@ -282,7 +282,6 @@ namespace MamasComing.EditorTools
             tankHz.fish = fishList.ToArray();
 
             // ---------------------------------------------------------- GAME ROOM: speakers / DJ desk
-            forced = LoftDJ;   // the DJ rig lives in the upstairs party loft
             var dj = G("DJ desk", gParty, V(26f, 0f, 13.35f));
             Cube("Desk", dj, V(26f, 0.45f, 13.35f), V(1.6f, 0.9f, 0.6f), M("DJBlack", C("232330")), true);
             Cube("Mixer", dj, V(26f, 0.93f, 13.3f), V(0.6f, 0.05f, 0.35f), M("MixerGrey", C("5A5F6A"), 0.5f));
@@ -306,7 +305,7 @@ namespace MamasComing.EditorTools
             for (int i = 0; i < 3; i++)
             {
                 var dl = new GameObject("Disco" + i).AddComponent<Light>(); dl.transform.SetParent(dj, false);
-                dl.transform.position = P(V(23.5f + i * 2.5f, 2.5f, 10.5f)); dl.type = LightType.Point; dl.range = 4.5f * S; dl.intensity = 2.2f; dl.color = dcs[i];
+                dl.transform.position = V(23.5f + i * 2.5f, 2.5f, 10.5f); dl.type = LightType.Point; dl.range = 4.5f; dl.intensity = 2.2f; dl.color = dcs[i];
                 discos.Add(dl);
             }
             var spk = dj.gameObject.AddComponent<SpeakerHazard>();
@@ -317,7 +316,6 @@ namespace MamasComing.EditorTools
             spk.failEn = "The speakers OVERLOADED the circuit!"; spk.failTh = "ลำโพงดึงไฟเกิน!";
             spk.doneEn = "Silence... sweet silence."; spk.doneTh = "เงียบแล้ว... สบายหู";
             spk.momEn = "Why are there DJ speakers in my house?!"; spk.momTh = "ทำไมมีลำโพงดีเจในบ้าน?!";
-            forced = null;
             spk.startActive = true; spk.escalateTime = 120f; spk.needsPower = true; spk.severity = 2; spk.loopClip = "party"; spk.loopVolume = 0.32f;
 
             // ---------------------------------------------------------- LAUNDRY: soap-foam washer
@@ -392,34 +390,28 @@ namespace MamasComing.EditorTools
             L(PrimitiveType.Sphere, "EarL", ham.transform, V(-0.04f, 0.11f, 0.05f), Vector3.one * 0.03f, M("HamsterEar", C("FF9FB1")));
             L(PrimitiveType.Sphere, "EarR", ham.transform, V(0.04f, 0.11f, 0.05f), Vector3.one * 0.03f, M("HamsterEar", C("FF9FB1")));
             BoxCol(ham.gameObject, V(0, 0.06f, 0), V(0.14f, 0.12f, 0.18f));
-            ham.homePosition = P(V(0.6f, 0.1f, 8.75f)); ham.homeRotation = Quaternion.identity; ham.homeSet = true; ham.snapDistance = 1.2f;
+            ham.homePosition = V(0.6f, 0.1f, 8.75f); ham.homeRotation = Quaternion.identity; ham.homeSet = true; ham.snapDistance = 1.2f;
             ham.holdOffset = V(0, 0.1f, 0.05f);
-            // run network on the final two-storey plan: it can take the stairs (the height follows each leg)
-            float U = UpY;
             ham.nodes = new[]
             {
-                V(6f, U, 5f), V(10f, U, 3f), V(4f, U, 9f), V(10.4f, U, 10.4f), V(10.8f, U, 14f), V(13.6f, U, 14f), V(13.6f, U, 21f), V(13.2f, U, 26.1f),
-                V(1.2f, 0, 26.1f), V(1.2f, 0, 22f), V(6f, 0, 20f), V(6f, 0, 14f),
-                V(10f, 0, 14f), V(19f, 0, 14f), V(30f, 0, 14f), V(39f, 0, 14f), V(48f, 0, 14f), V(57f, 0, 14f),
-                V(10f, 0, 10.4f), V(4f, 0, 3f), V(18f, 0, 4f), V(23f, 0, 8.4f),
-                V(19f, 0, 17.2f), V(19.2f, 0, 20.6f),
-                V(32f, 0, 17.2f), V(28f, 0, 21f), V(38f, 0, 23.2f),
-                V(30f, 0, 10.8f), V(30.4f, 0, 6.4f),
-                V(39f, 0, 10.8f), V(42.4f, 0, 9f),
-                V(47.8f, 0, 10.6f), V(51f, 0, 5.2f), V(56.6f, 0, 7f),
-                V(49f, 0, 17.4f), V(53f, 0, 21.2f), V(56.4f, 0, 24.6f),
-                V(22.2f, U, 14f), V(22.2f, U, 8f), V(18f, U, 4f), V(26f, U, 4f),
-                V(19.2f, U, 18f), V(22f, U, 22f), V(27f, U, 25f), V(19.2f, U, 14f),
+                V(3f, 0, 10.5f), V(1.6f, 0, 12.2f), V(3f, 0, 8.6f),
+                V(3f, 0, 7f), V(5f, 0, 7f), V(9.5f, 0, 7f), V(15f, 0, 7f), V(19.5f, 0, 7f), V(24f, 0, 7f), V(28.5f, 0, 7f),
+                V(5f, 0, 5.2f), V(2f, 0, 1.5f), V(9f, 0, 2f), V(11.5f, 0, 4.2f),
+                V(9.5f, 0, 8.6f), V(9.6f, 0, 10.3f),
+                V(16f, 0, 8.6f), V(14f, 0, 10.5f), V(19f, 0, 11.6f),
+                V(15f, 0, 5.4f), V(15.2f, 0, 3.2f),
+                V(19.5f, 0, 5.4f), V(21.2f, 0, 4.5f),
+                V(23.9f, 0, 5.3f), V(25.5f, 0, 2.6f), V(28.3f, 0, 3.5f),
+                V(24.5f, 0, 8.7f), V(26.5f, 0, 10.6f), V(28.2f, 0, 12.3f),
             };
-            int[,] hl =
+            ham.links = new[]
             {
-                {0,1},{0,2},{0,3},{3,4},{4,5},{5,6},{6,7},{7,8},{8,9},{9,10},{10,11},{11,12},{12,13},{13,14},{14,15},{15,16},{16,17},
-                {12,18},{18,19},{18,20},{19,20},{20,21},{13,22},{22,23},{14,24},{24,25},{24,26},{14,27},{27,28},{15,29},{29,30},
-                {16,31},{31,32},{32,33},{16,34},{34,35},{35,36},
-                {5,44},{44,37},{37,38},{38,39},{38,40},{44,41},{41,42},{42,43},
+                new Vector2Int(0,1), new Vector2Int(0,2), new Vector2Int(2,3), new Vector2Int(3,4), new Vector2Int(4,5), new Vector2Int(5,6), new Vector2Int(6,7), new Vector2Int(7,8), new Vector2Int(8,9),
+                new Vector2Int(4,10), new Vector2Int(10,11), new Vector2Int(10,12), new Vector2Int(12,13), new Vector2Int(11,12),
+                new Vector2Int(5,14), new Vector2Int(14,15), new Vector2Int(6,16), new Vector2Int(16,17), new Vector2Int(16,18),
+                new Vector2Int(6,19), new Vector2Int(19,20), new Vector2Int(7,21), new Vector2Int(21,22),
+                new Vector2Int(8,23), new Vector2Int(23,24), new Vector2Int(24,25), new Vector2Int(8,26), new Vector2Int(26,27), new Vector2Int(27,28),
             };
-            ham.links = new Vector2Int[hl.GetLength(0)];
-            for (int i = 0; i < hl.GetLength(0); i++) ham.links[i] = new Vector2Int(hl[i, 0], hl[i, 1]);
             ham.momLine = "Why is the HAMSTER running loose in my house?!";
 
             // ---------------------------------------------------------- LIVING ROOM: cake on the ceiling fan
@@ -434,7 +426,7 @@ namespace MamasComing.EditorTools
             Cube("Plate", sw, V(6.45f, 1.2f, 5.92f), V(0.1f, 0.14f, 0.01f), M("White", C("FFFFFF")));
             var tvs = Cube("TVSplat", gParty, V(0.43f, 1.1f, 3.0f), V(0.02f, 0.45f, 0.7f), M("Frosting", C("FFD1E3"), 0.4f)); tvs.SetActive(false);
             var fan = cf.gameObject.AddComponent<CeilingFanHazard>();
-            fan.displayName = "Ceiling fan switch"; fan.blades = blades; fan.cakeBlob = blob; fan.frostingMat = frostingMat; fan.tvSplat = tvs.transform; fan.area = new Rect(1f * S, 0.6f * S, 10f * S, 5f * S);
+            fan.displayName = "Ceiling fan switch"; fan.blades = blades; fan.cakeBlob = blob; fan.frostingMat = frostingMat; fan.tvSplat = tvs.transform; fan.area = new Rect(1f, 0.6f, 10f, 5f);
             fan.interactAnchor = G("Anchor", sw, V(6.45f, 0, 5.3f)); fan.interactRadius = 1.2f;
             fan.questEn = "Switch off the ceiling fan (cake is flying!)"; fan.questTh = "ปิดพัดลมเพดาน (เค้กปลิวว่อน!)";
             fan.failEn = "SPLAT! The whole cake flew off - right onto the TV!"; fan.failTh = "แปะ! เค้กทั้งก้อนปลิวไปติดจอทีวี!";
@@ -466,7 +458,7 @@ namespace MamasComing.EditorTools
             var sofaT = gRooms.Find("LivingRoom/Sofa");
             var sf = G("Flipped sofa", gParty, V(5.6f, 0, 3.0f));
             var sofa = sf.gameObject.AddComponent<SofaHazard>();
-            sofa.displayName = "Sofa"; sofa.sofa = sofaT; sofa.flippedOffset *= S; sofa.interactAnchor = G("Anchor", sf, V(4.6f, 0, 3.0f)); sofa.interactRadius = 2.0f;
+            sofa.displayName = "Sofa"; sofa.sofa = sofaT; sofa.interactAnchor = G("Anchor", sf, V(4.6f, 0, 3.0f)); sofa.interactRadius = 2.0f;
             sofa.questEn = "Flip the sofa back (lift it together!)"; sofa.questTh = "พลิกโซฟากลับ (ช่วยกันยก!)";
             sofa.doneEn = "Heave-ho! Sofa's back."; sofa.doneTh = "ฮึบ! โซฟาเข้าที่แล้ว";
             sofa.momEn = "Why is my sofa UPSIDE DOWN?!"; sofa.momTh = "ทำไมโซฟาคว่ำ?!";
@@ -559,7 +551,7 @@ namespace MamasComing.EditorTools
 
         static void Label3D(Transform parent, string text, Vector3 pos, Quaternion rot, float size, Color col)
         {
-            var go = new GameObject("Text"); go.transform.SetParent(parent, false); go.transform.SetPositionAndRotation(P(pos), Rq(pos, rot)); if (!raw) size *= S;
+            var go = new GameObject("Text"); go.transform.SetParent(parent, false); go.transform.SetPositionAndRotation(pos, rot);
             var tm = go.AddComponent<TextMesh>(); tm.text = text; tm.fontSize = 64; tm.characterSize = size * 0.15f; tm.anchor = TextAnchor.MiddleCenter; tm.alignment = TextAlignment.Center; tm.color = col; tm.fontStyle = FontStyle.Bold;
             tm.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); go.GetComponent<MeshRenderer>().sharedMaterial = TextMat(tm.font);
         }
@@ -629,7 +621,7 @@ namespace MamasComing.EditorTools
                 var lp = V(-2f + i * 11f, -0.25f, -8.4f);
                 Cyl("LampPost", o, lp + V(0, 1.6f, 0), V(0.08f, 1.6f, 0.08f), M("LampPole", C("2F3238"), 0.5f, 0.4f), true);
                 Sph("LampHead", o, lp + V(0, 3.25f, 0), V(0.35f, 0.25f, 0.35f), ME("StreetLamp", C("FFE2A8"), new Color(2.2f, 1.6f, 0.9f)));
-                var l = new GameObject("StreetLight").AddComponent<Light>(); l.transform.SetParent(o, false); l.transform.position = P(lp + V(0, 3.0f, 0));
+                var l = new GameObject("StreetLight").AddComponent<Light>(); l.transform.SetParent(o, false); l.transform.position = lp + V(0, 3.0f, 0);
                 l.type = LightType.Point; l.range = 8f; l.intensity = 1.6f; l.color = C("FFC98A");
             }
             Color[] hc = { C("F2B8A0"), C("A8D8E8"), C("F5DE9A"), C("C9B8E8") };

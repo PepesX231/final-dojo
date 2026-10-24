@@ -9,7 +9,7 @@ description: Audit, playtest and improve this DREAM RUSH Unity project across Be
 
 - Unity 6000.3.11f1, URP 17.3.0, Input System 1.19.0, AI Navigation 2.0.11, Test Framework 1.6.0.
 - Runtime: `Assets/DreamRush/Scripts/Runtime`; builders: `Scripts/Editor`; tests: `Assets/DreamRush/Tests`.
-- Current Galaxy worlds with playable scene targets: `Dream_World1`, `Dream_MidnightPalace`, `Dream_ToyBoxMoon`, `Dream_BubbleBathSea`, `Dream_MidnightTeacup`; `Dream_Openworld` is legacy, not a third current campaign world. Loop: `BedroomHub` → `DreamGalaxy` → world → bedroom (no card step; card system removed 2026-10-23).
+- Current Galaxy worlds with playable scene targets: `Dream_World1`, `Dream_MidnightPalace`, `Dream_ToyBoxMoon`, `Dream_BubbleBathSea`, `Dream_MidnightTeacup`; `Dream_Openworld` is legacy, not a third current campaign world. Loop: `BedroomHub` → `DreamGalaxy` → cards → world → bedroom.
 - `Dream_Chair` is the preserved P0 prototype. `Test_MovementGym` and `Test_BossMidnight` are test scenes. `Art_Target` and `SampleScene` are not shipped levels.
 - Recheck `ProjectSettings/ProjectVersion.txt`, `Packages/manifest.json`, build settings and scene routing before relying on these facts in a later version.
 
@@ -24,11 +24,11 @@ Use Unity MCP only after `mcpforunity://instances` confirms the intended project
 ## Audit pass
 
 1. Follow the user’s 2026-10-21 scope: gameplay tests in the five actual used world scenes, BedroomHub and DreamGalaxy only. Do not run unused maps, legacy Dream_Openworld, Test_MovementGym or Test_BossMidnight, or broad content-inventory suites. Archive focused PlayMode results before changing gameplay. Wait for the final completion entry; a `RUNNING` marker is not a result. Preserve current editor scene and do not open scenes while tests are running.
-2. Cover the real hub/bed/settings/pause, sequential Galaxy world selection, World 1 chapters and chair, Palace puzzles/interiors/Count Midnight, Moon launches/timing, Sea valves/boat, Teacup bells/finale/credits, and return-to-hub persistence.
+2. Cover the real hub/bed/settings/pause, sequential Galaxy/card selection, World 1 chapters and chair, Palace puzzles/interiors/Count Midnight, Moon launches/timing, Sea valves/boat, Teacup bells/finale/credits, and return-to-hub persistence.
 3. Label each observation: code inspection, automated simulation, rendered image, keyboard play, or human subjective playtest. Teleporting through chapters does not prove the traversal path is playable.
 4. Use `playtest-qa` for bug priority and repro steps. For a gameplay bug, add a focused behavioural test, observe its failure on the baseline, then fix the narrow cause and retest it plus affected suites.
 5. Check static state and event subscriptions across scene reloads; collectible totals and duplicate awards; overlapping region/checkpoint triggers; camera state after teleport; pause/cutscene input; and per-level save attribution.
-6. Use `game-design-review` before adding mechanics. Make replay goals optional; retain the existing movement envelope, environmental property/status interactions, manual sit requirement, enemy telegraphs and accessibility settings. Avoid increasing rewards or difficulty without a measured reason.
+6. Use `game-design-review` before adding mechanics. Make replay goals optional; retain the existing movement envelope, card property/status interactions, manual sit requirement, enemy telegraphs and accessibility settings. Avoid increasing rewards or difficulty without a measured reason.
 7. Capture the same scene, pose and resolution for visual comparisons. Frame-time samples from an unfocused Editor include editor overhead and throttling: label them accordingly, report sample count/p50/p95, and never claim GPU or release-build performance from those numbers.
 
 ## Deliverable

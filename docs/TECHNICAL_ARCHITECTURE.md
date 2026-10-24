@@ -18,19 +18,20 @@ DreamRush.Player      PlayerMotor3D, JumpAssist, MovementMath, JumpMath, PlayerM
 DreamRush.CameraSystem ThirdPersonCameraController, StageCameraController, CameraModeDirector, MenuFocusCamera
 DreamRush.Interaction IInteractable, InteractionSystem, InteractionPrompt
 DreamRush.Dream       DreamTransitionController, DreamLevelManager, SleepStability
+DreamRush.Cards       CardDefinition(SO), CardDrawManager, CardInventory, CardEffectResolver, DreamLaw
 DreamRush.DreamLogic  DreamProperty flags, IEffectReceiver, StatusEffectSystem
 DreamRush.Boss        BossChairController(FSM), ChairFatigue, EscapeDestinationSelector, ChairSeatInteraction,
                       IBossWinCondition, BossWinConditionEvaluator
 DreamRush.Progression BedUpgradeManager, DreamDiary
-DreamRush.UI          UIManager, prompt, HUD, settings, pause
+DreamRush.UI          UIManager, prompt, card select, HUD, settings, pause
 DreamRush.Presentation BlobShadow, VFX, AudioManager
 ```
 
 ## หลักการ
 1. **แยกความรับผิดชอบ** (GDD §25.4): input → `PlayerCommand` struct → motor; motor ไม่รู้จัก Input System; animation อ่านสถานะ motor ผ่าน event/property; กล้องไม่ขยับผู้เล่น
 2. **Deterministic stepping**: `PlayerMotor3D.Step(dt, command)` เรียกจาก Update ปกติ แต่ test เรียกตรงด้วย dt คงที่ → test ซ้ำได้
-3. **Data-driven**: ค่า tuning อยู่ใน ScriptableObject (`PlayerMotorConfig`, `ChairAIConfig`) — runtime state แยกจาก definition
-4. **Effects ผ่าน properties** (GDD §18): `EffectContext` → `IEffectReceiver.CanReceive` (เช็ค `DreamProperty`) → status → boss reaction → win evaluator. ห้าม hard-code ชนะ. หมายเหตุ 2026-10-23: ระบบการ์ดถูกนำออกแล้ว receiver (`ChairEffectReceiver`, `ToyEffectReceiver`, `StoryMechanism`, `StoryPulseHazard`) ยังอยู่ในโค้ด แต่ตอนนี้ไม่มีระบบใดใน runtime ส่ง effect เข้ามา
+3. **Data-driven**: ค่า tuning อยู่ใน ScriptableObject (`PlayerMotorConfig`, `ChairAIConfig`, `CardDefinition`) — runtime state แยกจาก definition
+4. **Effects ผ่าน properties** (GDD §18): การ์ด → `EffectContext` → `IEffectReceiver.CanReceive` (เช็ค `DreamProperty`) → status → boss reaction → win evaluator. ห้าม hard-code ชนะ
 5. **Physics queries ไม่ใช้ layer พิเศษ**: กรอง self ด้วย `transform.IsChildOf` เพื่อไม่ต้องแก้ TagManager (ลดความเปราะ)
 6. **Graybox จากโค้ด**: Editor builders สร้าง scene/prefab/material → ลบแล้วสร้างใหม่ได้เสมอ, review ใน diff ได้
 

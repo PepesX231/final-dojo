@@ -63,9 +63,6 @@ namespace MamasComing
             (Gamepad.current != null && Gamepad.current.rightShoulder.wasPressedThisFrame);
 
         public static bool ClickDown => Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
-        public static bool PunchHeld => (Mouse.current != null && Mouse.current.leftButton.isPressed) ||
-            (Keyboard.current != null && Keyboard.current.gKey.isPressed) ||
-            (Gamepad.current != null && Gamepad.current.rightShoulder.isPressed);
 
         public static Vector2 MouseDelta => Mouse.current != null ? Mouse.current.delta.ReadValue() : Vector2.zero;
         public static Vector2 StickLook => Gamepad.current != null ? Gamepad.current.rightStick.ReadValue() : Vector2.zero;
@@ -81,21 +78,6 @@ namespace MamasComing
         /// <summary>Dev shortcut: F5 makes Mom arrive almost immediately.</summary>
         /// <summary>Dev shortcut: F6 switches your kid to the next fruit (until the lobby picker sets it).</summary>
         public static bool DevNextKid => Keyboard.current != null && Keyboard.current.f6Key.wasPressedThisFrame;
-        public static bool DevPreviousKid => Keyboard.current != null && Keyboard.current.f7Key.wasPressedThisFrame;
-        public static bool DevSlip => Keyboard.current != null && Keyboard.current.f8Key.wasPressedThisFrame;
-        public static int FruitPressed
-        {
-            get
-            {
-                var k = Keyboard.current; if (k == null) return -1;
-                if (k.digit1Key.wasPressedThisFrame) return KidLook.Apple;
-                if (k.digit2Key.wasPressedThisFrame) return KidLook.Banana;
-                if (k.digit3Key.wasPressedThisFrame) return KidLook.Orange;
-                if (k.digit4Key.wasPressedThisFrame) return KidLook.Watermelon;
-                if (k.digit5Key.wasPressedThisFrame) return KidLook.WaxApple;
-                return -1;
-            }
-        }
         public static bool DevSkip => Keyboard.current != null && Keyboard.current.f5Key.wasPressedThisFrame;
     }
 }

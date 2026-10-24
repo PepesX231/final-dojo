@@ -23,7 +23,6 @@ namespace MamasComing
 
         static KidCatalog catalog; static bool loaded;
         static KidCatalog Catalog { get { if (!loaded) { loaded = true; catalog = Resources.Load<KidCatalog>("MamaKidCatalog"); } return catalog; } }
-        public static GameObject Prefab(int id) => Catalog ? Catalog.Prefab(Mathf.Clamp(id, 0, Count - 1)) : null;
 
         static GameObject appleTemplate;   // inactive copy of the scene kid's original apple model
 
@@ -69,15 +68,13 @@ namespace MamasComing
             var visual = Visual(pc); var old = Chr(pc);
             if (!visual || !old) return false;
             id = Mathf.Clamp(id, 0, Count - 1);
-            // a catalog apple (the sculpted kids) replaces the scene's own apple too
-            var catalogApple = id == Apple && Catalog && Catalog.Prefab(Apple) ? Catalog.Prefab(Apple) : null;
+            if (IdOf(old.name) == id) return true;
 
             RememberApple(pc);
             GameObject src = null; Transform srcRoot = null;
-            if (id == Apple && !catalogApple) src = appleTemplate;
+            if (id == Apple) src = appleTemplate;
             else if (Catalog && Catalog.Prefab(id)) { srcRoot = Catalog.Prefab(id).transform; foreach (var t in srcRoot.GetComponentsInChildren<Transform>(true)) if (t.name.StartsWith("CHR_")) { src = t.gameObject; break; } }
             if (!src) return false;
-            if (old.name == src.name) return true;
 
             Vector3 lp = src == appleTemplate ? old.localPosition : src.transform.localPosition;
             Quaternion lr = src == appleTemplate ? old.localRotation : src.transform.localRotation;

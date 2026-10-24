@@ -11,7 +11,7 @@ description: Find, reproduce, prioritise and retest DREAM RUSH bugs, balance pro
 ## Procedure
 1. **Automated**: run EditMode then PlayMode (DevBridge `tests EditMode` / `tests PlayMode`). Paste real totals (passed/failed/skipped) and failing test names. Never summarise as "all pass" without the file.
 2. **Console audit**: scan `out/console.log` for errors/warnings/exceptions during play; each one becomes an issue or is justified.
-3. **Seeded runs**: for random systems (chair AI) run fixed seed lists; record seed with every bug.
+3. **Seeded runs**: for random systems (card draw, chair AI) run fixed seed lists; record seed with every bug.
 4. **Manual play** following the milestone's manual cases; capture screenshots for each bug.
 5. **Prioritise**:
    - P0 crash/softlock/progress blocker/data loss
