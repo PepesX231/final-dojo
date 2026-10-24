@@ -18,6 +18,7 @@ namespace MamasComing
         }
 
         void OnEnable() { walking = false; if (anim) anim.Play("Idle", 0, 0f); }
+        void Start() { if (!GetComponent<ReadableFruitGait>()) gameObject.AddComponent<ReadableFruitGait>(); }
 
         void Update()
         {

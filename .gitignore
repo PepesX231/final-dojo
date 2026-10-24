@@ -114,3 +114,8 @@ InitTestScene*.unity*
 /.mcp.json
 /Assets/_Recovery/
 /Assets/_Recovery.meta
+
+# Python bytecode and intermediate audio renders (ArtSource scripts)
+__pycache__/
+*.pyc
+/ArtSource/Audio/_wav/

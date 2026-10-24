@@ -79,6 +79,7 @@ namespace MamasComing
                 body = Text("Water, smoke, things out of place. What will Mom notice?", "น้ำ ควัน ของผิดที่... แม่จะเห็นอะไรบ้าง?");
             }
             string keys = held ? Text("Q place  •  RMB throw  •  hold H: idea", "Q วาง  •  คลิกขวา ขว้าง  •  H ค้าง: คำใบ้") : Text("E interact  •  TAB notes  •  hold H: idea", "E ใช้ / หยิบ  •  TAB ภาพรวม  •  H ค้าง: คำใบ้");
+            if (Debug.isDebugBuild && !held && !p.Target) keys = Text("1–5 fruit  •  F6/F7 cycle  •  F8 tumble", "1–5 เลือกผลไม้  •  F6/F7 สลับ  •  F8 ลองลื่น");
             if (pad != null && k == null) keys = held ? "B place  •  Y throw  •  D-pad up: idea" : "A interact  •  View notes  •  D-pad up: idea";
             gm.ui.SetContext(title, body, keys, Room(p.transform.position));
             Idea(held, p.Target, out string ideaTitle, out string ideaBody);

@@ -4,7 +4,7 @@
 ## 1. ระดับการทดสอบ
 | ระดับ | เครื่องมือ | ใช้กับ |
 |---|---|---|
-| Unit (EditMode) | Unity Test Framework, `Assets/DreamRush/Tests/EditMode` | logic บริสุทธิ์: JumpAssist, MovementMath, JumpMath, card draw, escape scoring, fatigue, save versioning |
+| Unit (EditMode) | Unity Test Framework, `Assets/DreamRush/Tests/EditMode` | logic บริสุทธิ์: JumpAssist, MovementMath, JumpMath, escape scoring, fatigue, save versioning |
 | Simulation (PlayMode) | `Assets/DreamRush/Tests/PlayMode` — step motor ด้วย dt คงที่ + scripted input | jump height จริง, coyote/buffer กับ collider จริง, ติดผนัง/ขอบ, chair AI ไม่ออก arena (หลาย seed), victory ครั้งเดียว |
 | Manual Play | Play Mode ใน Editor (ผ่าน computer-use + ผู้ใช้) | feel, กล้อง, ความอ่านง่าย |
 | Playtest | ผู้ทดสอบ 8–12 คนที่ไม่รู้ทางแก้ | §31 |
@@ -31,14 +31,13 @@
 
 ## 3. M2–M6 (ร่าง — ขยายเมื่อถึง milestone)
 - HUB-01..: interaction prompt ใกล้สุด, เปิด/ปิดเมนูคืน control, Pause→Settings, กลับจาก dream ที่ spawn ถูก
-- FLOW-01: Hub→Dream→Hub ×5 ไม่มี state รั่ว (card/boss/status reset)
+- FLOW-01: Hub→Dream→Hub ×5 ไม่มี state รั่ว (boss/status reset)
 - CHAIR-01..: notice/flee/อยู่ใน NavMesh เสมอ/exhaust reachable/anti-softlock/seat 2s ต่อเนื่อง/victory once — รัน bot 50 seeds ✅ (`BossChairPlayModeTests`, `BossRevealPlayModeTests`)
-- CARD-01..: 3 ใบไม่ซ้ำ, cooldown, invalid target ไม่ trigger, ≥3 alt victory ✅ (`CardLogicTests`, `CardSystemPlayModeTests`: Rooted/Frozen/Pulled/Grandpa = 4 วิธีชนะที่ไม่ใช่ Exhaustion, decoy, cushion, Dream Law ห้าม→คืนค่า, UI เลือกการ์ดเก็บค่าลง run)
-- CARD-M1 (manual): เล่นจริงใน Dream_Chair ใช้การ์ดครบ 6 ใบกับเก้าอี้จริง → `docs/evidence/M5_M6/m6_use_*.png` ✅
-- CARD-M2 (manual, M8): ผู้เล่นจริงค้นพบวิธีชนะอย่างน้อย 2 วิธีโดยไม่บอก — ยังไม่ได้ทำ
+- ~~CARD-01 / CARD-M1 / CARD-M2~~: นำออก 2026-10-23 พร้อมระบบการ์ด (`CardLogicTests`, `CardSystemPlayModeTests` ถูกลบแล้ว) ดู `docs/CARD_REMOVAL_REPORT.md`
+- CARDFREE-01: Hub→sleep→Galaxy→World 1→wake ไม่มีขั้นเลือกการ์ด, โหลดทั้งห้าโลก, ไม่มี missing script, save เก่าที่มี `pillowLevel` ซื้อ upgrade ที่ถูกลบไม่ได้ (`CardFreeCampaignPlayTests`)
+- WIN-M2 (manual, M8): ผู้เล่นจริงค้นพบวิธีชนะเก้าอี้อย่างน้อย 2 วิธีจากสภาพแวดล้อม/การเคลื่อนไหวโดยไม่บอก — ยังไม่ได้ทำ
 - SAVE-01..: versioned JSON, upgrade หักเงินครั้งเดียว, โหลดหลังรีสตาร์ท ✅ (`BedUpgradeTests`, `ProgressionPlayModeTests`)
 - AUD-01: ทุก Sfx/Music enum มีไฟล์จริง ✅ (`AudioAssetTests`) · AUD-M1 (manual): ผู้ใช้ฟังเสียงจริง — **ยังไม่ได้ทำ**
-- FX-01: การ์ดทุกใบมี feedback ภาพ+เสียง, screen flash จางหายเอง ✅ (`CardFeedback_VisualAndAudio`)
 - HAZ-01: รถของเล่นชน = -1 moon + กระเด็น, กระโดดข้ามปลอดภัย, ไม่ชนซ้ำ ✅
 
 ## 4. Bug Report Format

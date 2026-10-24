@@ -31,13 +31,19 @@ namespace MamasComing
             if (!me || !me.isLocal) return;
             shoveCd -= Time.deltaTime; bumpCd -= Time.deltaTime;
             if (swingT > 0f) { swingT -= Time.deltaTime; if (swingT <= 0f) Land(); }
-            if (Debug.isDebugBuild && MamaInput.DevNextKid && GameManager.I && GameManager.I.player == me)
-            {
-                KidLook.Selected = (KidLook.Selected + 1) % KidLook.Count;
-                KidLook.Apply(me, KidLook.Selected);
-                if (GameManager.I.ui) GameManager.I.Toast(Loc.Thai ? KidLook.NamesTh[KidLook.Selected] : KidLook.Names[KidLook.Selected]);
-            }
             if (!me.controlsEnabled || me.Stunned || (MiniGame.I && MiniGame.I.Active) || MamaSettings.Open) return;
+            if (Debug.isDebugBuild)
+            {
+                int fruit = MamaInput.FruitPressed;
+                if (MamaInput.DevNextKid) fruit = (KidLook.Of(me) + 1) % KidLook.Count;
+                if (MamaInput.DevPreviousKid) fruit = (KidLook.Of(me) + KidLook.Count - 1) % KidLook.Count;
+                if (fruit >= 0 && !me.Held && me.HoldProgress <= 0f && KidLook.Apply(me, fruit))
+                {
+                    KidLook.Selected = fruit;
+                    if (GameManager.I && GameManager.I.ui) GameManager.I.Toast(Loc.Thai ? KidLook.NamesTh[fruit] : KidLook.Names[fruit]);
+                }
+                if (MamaInput.DevSlip) me.Slip(null);
+            }
 
             bool punch = MamaInput.ShoveDown || MamaInput.ClickDown && me.Held == null && me.HoldProgress <= 0f;
             if (punch && shoveCd <= 0f) Shove();

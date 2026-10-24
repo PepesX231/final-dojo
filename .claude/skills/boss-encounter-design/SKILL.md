@@ -22,12 +22,12 @@ Every transition has: trigger condition, minimum dwell time, animation/VFX/SFX c
 4. Anti-softlock: out of arena / off NavMesh / stuck / no path → visible dreamlike reposition (never a silent teleport in front of the player).
 5. Seat validation: correct boss, range, sit-compatible state, reachable seat, player not stunned, sit anim started, **2.0 s continuous**.
 6. Victory triggers exactly once; no state leaks into the next run.
-7. Card effects act through `DreamProperty` + statuses; the player must still approach and sit.
+7. Environmental effects act through `DreamProperty` + statuses; the player must still approach and sit. There is no card system (removed 2026-10-23).
 
 ## Validation procedure
 1. EditMode: escape scoring (unreachable rejected, recency penalty works), fatigue accumulation/decay, seat timer.
 2. PlayMode bot test: ≥50 seeds × 90 s simulated chase → assert chair always on NavMesh & inside arena bounds, ≥1 reachable opening per 30 s, no exceptions, victory once when bot sits.
-3. Manual: win by baseline (no card) + each implemented card method; note time-to-win.
+3. Manual: win by baseline + each implemented environmental/movement method; note time-to-win.
 4. Humour check: does each state read from body language alone?
 
 ## Output

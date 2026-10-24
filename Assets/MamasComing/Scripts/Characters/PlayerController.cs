@@ -150,7 +150,7 @@ namespace MamasComing
             bool holdingAction = HoldProgress > 0f;
             Motor.InputEnabled = canMove;
             Motor.AllowJump = canMove && Held == null;
-            Motor.GroundGripScale = OnWet ? Mathf.Lerp(1f, wetGrip, Mathf.InverseLerp(0.0009f, 0.003f, WaterDepth)) : 1f;
+            Motor.GroundGripScale = KnockedDown ? 0.075f : OnWet ? Mathf.Lerp(1f, wetGrip, Mathf.InverseLerp(0.0009f, 0.003f, WaterDepth)) : 1f;
             float mult = Held ? Held.SpeedMultiplier : 1f;
             if (scrubbedLastFrame) mult *= Held && Held.tool == ToolType.Mop ? 0.75f : 0.6f;
             if (actionLock > 0f) mult *= 0.25f;
@@ -318,7 +318,8 @@ namespace MamasComing
                 if (Held != null && ReferenceEquals(it, Held)) continue;
                 if (!it.CanInteract(this)) continue;
                 Vector3 d = it.InteractPoint - pos;
-                if (Mathf.Abs(d.y) > 3f) continue;   // on the other floor
+                // the other floor (5.85 m up); fruit-scale counter tops sit at ~1.9 m, so the gate can't be lower
+                if (Mathf.Abs(d.y) > 3f) continue;
                 d.y = 0f;
                 float dist = d.magnitude;
                 if (dist > it.interactRadius) continue;
@@ -382,7 +383,7 @@ namespace MamasComing
         public void Slip(string reason)
         {
             if (Stunned) return;
-            KnockDown(1.8f);
+            KnockDown(2.3f);
             fallAnim = 1f;
             Falls++;
             HoldProgress = 0f;
@@ -401,7 +402,8 @@ namespace MamasComing
                 if (rb == null || rb.isKinematic || rb.transform.IsChildOf(transform)) continue;
                 rb.AddExplosionForce(3f, transform.position, 2f, 0.8f, ForceMode.VelocityChange);
             }
-            Motor.Launch(fwd * 3.2f + Vector3.up * 1.2f);
+            Motor.GroundGripScale = 0.075f;
+            Motor.Launch(fwd * Mathf.Clamp(PlanarSpeed, 4.2f, 6.5f) + Vector3.up * 1.2f);
             if (FloodSim.I) FloodSim.I.Splash(transform.position, 2.5f);
             MamaAudio.Play("splash", transform.position, 1f, 0.85f); MamaAudio.Play("thud", transform.position, 0.9f);
             if (GameManager.I) GameManager.I.OnPlayerSlipped(reason);

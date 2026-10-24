@@ -6,8 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/MamasComing/Menu/Scenes/MC_MainMenu.unity
+    guid: df75c4fd158fd74499967ffe31f01378
+  - enabled: 1
+    path: Assets/MamasComing/Menu/Scenes/MC_Lobby.unity
+    guid: d75103b62feccde438a51c803a6b40ba
+  - enabled: 1
     path: Assets/MamasComing/Scenes/MamasKitchen.unity
     guid: 4301dd3b9748e54488039c1ebc8b9705
+  - enabled: 1
+    path: Assets/MamasComing/WitchTest/Scenes/AppleWitch_Test.unity
+    guid: 8062726721f120a4d8596aa3c53bd745
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05

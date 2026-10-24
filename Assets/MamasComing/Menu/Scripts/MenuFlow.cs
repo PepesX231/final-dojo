@@ -35,8 +35,8 @@ namespace MamasComing.Menu
         public static string LevelBlurb(int i) => Loc.Thai ? Levels[i].blurbTh : Levels[i].blurbEn;
 
         // ------------------------------------------------------------ dress-up catalogue
-        public static readonly string[] FruitEn = { "Orange", "Banana", "Watermelon", "Wax Apple" };
-        public static readonly string[] FruitTh = { "ส้ม", "กล้วย", "แตงโม", "ชมพู่" };
+        public static string[] FruitEn => KidLook.Names;
+        public static string[] FruitTh => KidLook.NamesTh;
         public static readonly string[] HatEn = { "No hat", "Party cone", "Top hat", "Crown", "Chef hat", "Propeller", "Big bow" };
         public static readonly string[] HatTh = { "ไม่ใส่หมวก", "หมวกปาร์ตี้", "หมวกทรงสูง", "มงกุฎ", "หมวกเชฟ", "หมวกใบพัด", "โบว์ยักษ์" };
         public static readonly string[] FaceEn = { "Nothing", "Cool shades", "Star glasses", "Mustache" };
@@ -53,18 +53,21 @@ namespace MamasComing.Menu
         {
             get => new Cosmetic
             {
-                fruit = (byte)Mathf.Clamp(PlayerPrefs.GetInt("mc_look_fruit", 0), 0, FruitEn.Length - 1),
+                fruit = (byte)KidLook.Selected,
                 hat = (byte)Mathf.Clamp(PlayerPrefs.GetInt("mc_look_hat", 1), 0, HatEn.Length - 1),
                 face = (byte)Mathf.Clamp(PlayerPrefs.GetInt("mc_look_face", 0), 0, FaceEn.Length - 1),
                 color = (byte)Mathf.Clamp(PlayerPrefs.GetInt("mc_look_color", 0), 0, Colors.Length - 1),
             };
             set
             {
-                PlayerPrefs.SetInt("mc_look_fruit", value.fruit); PlayerPrefs.SetInt("mc_look_hat", value.hat);
+                KidLook.Selected = value.fruit; PlayerPrefs.SetInt("mc_look_hat", value.hat);
                 PlayerPrefs.SetInt("mc_look_face", value.face); PlayerPrefs.SetInt("mc_look_color", value.color);
                 PlayerPrefs.Save();
             }
         }
+
+        /// The in-level kid wears the fruit picked in the lobby (KidLook is shared with the co-op gameplay).
+        public static void PushFruitToGame(int fruit) { KidLook.Selected = fruit; }
     }
 
     [System.Serializable]

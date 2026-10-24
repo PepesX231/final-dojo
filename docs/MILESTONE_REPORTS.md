@@ -1,5 +1,7 @@
 # Milestone Reports — P0
 
+> **Note 2026-10-23:** the DREAM RUSH card system (card draw/selection, active cards, Dream Laws, Lucky Pillow rerolls) has been removed. Card mentions below are historical records of earlier milestones, not the current game. See `docs/CARD_REMOVAL_REPORT.md`.
+
 ## 2026-10-23 — MAMA'S COMING! readability pass (current game)
 
 - Replaced the competing always-on checklist/markers with a compact goal, contextual item descriptions, optional held-H ideas and a Tab overview. Teddy names its bedroom/bed/pillow and gains a matching home silhouette nearby; off-screen optional destination labels stay visible. Oil fire offers environmental clues and alternative tools. New text switches between Thai/English. Reduced bloom/saturation in a cloned runtime profile and improved UI contrast.
@@ -896,3 +898,17 @@ Followed the user's revised saturated cartoon brief and supplied Pinterest/house
 Added carry contact/cradle profiles, real hollow disposal bins with a hinged lid and bag acceptance, ten licensed CC0 foley overrides, revised 108 bpm procedural music and callout ducking, warm lifetime fire gradients, and corrected the live-clone blink material bug exposed by the expanded review. Authoring preserves the existing house and rules; the upright teddy and hollow-bin colliders are documented exceptions to collider preservation.
 
 Final staged virtual-input review **63/63 passed**, zero compile errors/four existing warnings. Includes actual E/Q interactions, hand-contact and torso-clearance samples, bin deposit, mother moods, foley loading, fire resolution, bilingual compact HUD and three offline avatars deliberately cloned during a source blink. Independent staged art views accompany normal game screenshots in `docs/evidence/mama-recast/`. Full implementation, recovery history and remaining work are in `docs/MAMA_RECAST_IMPLEMENTATION.md`. No human/online playtest or final-art/performance certification is claimed.
+
+
+## 2026-10-24 — Fruit kids: sculpted models, tumbling knock-downs, test keys, locked camera zoom
+
+- Committed the Codex fruit-kid work from the shared editor folder: sculpted kid models/prefabs (Art/Sculpted, Prefabs/Characters/Sculpted, MamaSculptKids, SculptKidMotion) now used by Resources/MamaKidCatalog; ReadableFruitGait foot/glove walk layer; KidBody rolls the curled fruit in the direction it travels; dev keys 1–5 / F6 / F7 pick fruit, F8 tests a slip; quiet debug hint.
+- ThirdPersonCamera: orbit unchanged, mouse-wheel zoom locked (allowZoom off). MamaFightReview added (staged Play-mode check).
+- Tests run in the shared editor: Assembly-CSharp and Assembly-CSharp-Editor compile with 0 errors; MamaFightReview 24/24 (fruit swap + heights 1.07–1.14 m, distinct walk sway, punch knock-back 1.9 m + drop, curl/pop-up recovery, slip); MamaUxReview 62/62. Branch compiled again on top of latest main (menu/lobby) with 0 errors.
+- Not covered: human playtest, two-machine online test, lobby picker -> KidLook.Selected hand-off at runtime. House-study files remain uncommitted (owned by the house-redesign work).
+
+## Sculpted fruit kids, comic VFX, chiptune soundtrack — 2026-10-24
+- Features: five clay-sculpted fruit kids (Apple, Banana, Orange, Watermelon, WaxApple) with rig + 8 clips, now in the kid catalog (apple too); SculptKidMotion state→clip; ComicFx (POW starburst/halftone, speed lines, ink puffs, dizzy stars, splash) wired to PowPop, jumps, landings, stuns; four original chiptune tracks (in-level loop replaces the procedural music); six decor props; skills `blender-sculpt-modeling`, `animation`. Details: docs/MAMA_SCULPTED_KIDS.md.
+- Tests run: Blender rebuild of all kids/props/textures/music; Unity compile 0 errors; prefab/catalog/material/prop builders; off-screen Unity line-up renders (docs/evidence/sculpted-kids/unity_lineup_*.png).
+- Not tested: human play session with the new kids, online play, music heard in context, comic FX in a live level.
+- Known issues: mushroom stool spots mostly missed the cap; punch reads best side-on; KidActionAnimator overrides arms during chores.
