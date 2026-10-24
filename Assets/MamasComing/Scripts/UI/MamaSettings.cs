@@ -40,8 +40,8 @@ namespace MamasComing
             I = this;
             Loc.Load();
             MasterVol = PlayerPrefs.GetFloat("mama_master", 1f); MusicVol = PlayerPrefs.GetFloat("mama_music", 0.8f); SfxVol = PlayerPrefs.GetFloat("mama_sfx", 0.8f);
-            baseFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            thaiFont = Font.CreateDynamicFontFromOSFont(new[] { "Leelawadee UI", "Leelawadee", "Tahoma", "Arial Unicode MS" }, 32);
+            baseFont = MamaTheme.Body;
+            thaiFont = MamaTheme.Body;
             if (!FindFirstObjectByType<EventSystem>())
             {
                 var es = new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
@@ -86,7 +86,8 @@ namespace MamasComing
 
             gear = R("Gear", root, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -14), new Vector2(74, 74));
             Im(gear, Paper, true); var gb = gear.gameObject.AddComponent<Button>(); gb.onClick.AddListener(() => { MamaAudio.Play("click", null, 0.7f); Toggle(); });
-            Tx(R("G", gear, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero), "⚙", 48, Edge).font = thaiFont ? thaiFont : baseFont;
+            if (MamaTheme.GearS) { var gi = gear.GetComponent<Image>(); MamaTheme.Skin(gi, MamaTheme.GearS, MamaTheme.Mustard); }
+            else Tx(R("G", gear, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero), "⚙", 48, Edge);
 
             var dim = R("Settings", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
             Im(dim, new Color(0, 0, 0, 0.45f)); panel = dim.gameObject;
@@ -95,12 +96,12 @@ namespace MamasComing
             var band = R("Band", p, new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), new Vector2(0, -20), new Vector2(-60, 86)); Im(band, Pink);
             title = Tx(R("T", band, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero), "", 46, Color.white);
 
-            langLbl = Tx(R("LangL", p, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 300), new Vector2(600, 40)), "", 30, Ink);
-            Btn(p, new Vector2(-130, 245), new Vector2(230, 64), Paper, "English", () => Loc.SetThai(false), out _, out btnEN);
-            Btn(p, new Vector2(130, 245), new Vector2(230, 64), Paper, "ภาษาไทย", () => Loc.SetThai(true), out var thLbl, out btnTH);
+            langLbl = Tx(R("LangL", p, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 205), new Vector2(600, 40)), "", 30, Ink);
+            Btn(p, new Vector2(-130, 150), new Vector2(230, 64), Paper, "English", () => Loc.SetThai(false), out _, out btnEN);
+            Btn(p, new Vector2(130, 150), new Vector2(230, 64), Paper, "ภาษาไทย", () => Loc.SetThai(true), out var thLbl, out btnTH);
             thLbl.font = thaiFont ? thaiFont : baseFont;
 
-            masterLbl = VolRow(p, 160, 0); musicLbl = VolRow(p, 95, 1); sfxLbl = VolRow(p, 30, 2);
+            masterLbl = VolRow(p, 70, 0); musicLbl = VolRow(p, 5, 1); sfxLbl = VolRow(p, -60, 2);
 
             // ---- co-op
             coopLbl = Tx(R("CoopL", p, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, -40), new Vector2(680, 40)), "", 30, Ink);
@@ -118,11 +119,39 @@ namespace MamasComing
             netStatus = Tx(R("NetStatus", p, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, -225), new Vector2(700, 40)), "", 22, Edge);
             netStatus.horizontalOverflow = HorizontalWrapMode.Wrap;
 
-            Btn(p, new Vector2(0, -320), new Vector2(260, 70), Teal, "", Toggle, out closeLbl, out _);
+            // rooms are created / joined in the lobby scene now: settings keeps only "leave room" while online
+            foreach (var t in new Text[] { coopLbl, hostLbl, lanLbl, joinLbl, netStatus }) if (t) (t.transform.parent.GetComponent<Button>() ? t.transform.parent.gameObject : t.gameObject).SetActive(false);
+            inRT.gameObject.SetActive(false);
+            leaveBtn = leaveLbl.transform.parent as RectTransform; leaveBtn.anchoredPosition = new Vector2(-150, -150); leaveBtn.sizeDelta = new Vector2(260, 58);
+            Btn(p, new Vector2(0, -150), new Vector2(260, 70), Teal, "", Toggle, out closeLbl, out _);
+            closeBtn = closeLbl.transform.parent as RectTransform;
             closeLbl.color = Color.white;
             hint = Tx(R("Hint", p, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0, 12), new Vector2(600, 30)), "", 20, Edge);
             panel.SetActive(false);
             RefreshLabels();
+            Theme(p, band);
+        }
+
+        /// Wood board + sage plate with bolts, slot sliders and painted buttons (craft UI set).
+        void Theme(RectTransform p, RectTransform band)
+        {
+            if (!MamaTheme.Ready) return;
+            p.sizeDelta = new Vector2(860, 760);
+            MamaTheme.Skin(p.GetComponent<Image>(), MamaTheme.BoardS, Color.white, 110f);
+            MamaTheme.Skin(band.GetComponent<Image>(), MamaTheme.PlankS, Color.white, 30f);
+            band.sizeDelta = new Vector2(-160, 96); band.anchoredPosition = new Vector2(0, 30); band.localRotation = Quaternion.Euler(0, 0, 1.5f);
+            MamaTheme.MakeHeading(title); title.color = MamaTheme.Cream;
+            var tsh = title.gameObject.AddComponent<Outline>(); tsh.effectColor = MamaTheme.WoodInk; tsh.effectDistance = new Vector2(3, -3);
+            foreach (var im in p.GetComponentsInChildren<Image>(true))
+            {
+                if (im.rectTransform == p || im.rectTransform == band) continue;
+                if (im.name == "Track") { MamaTheme.Skin(im, MamaTheme.SlotS, Color.white, 14f); continue; }
+                if (im.name == "Fill" || im.type == Image.Type.Filled) continue;
+                if (im.name == "Code") { MamaTheme.Skin(im, MamaTheme.PaintS, Color.white, 14f); continue; }
+                if (im.GetComponent<Button>()) { var sz = im.rectTransform.sizeDelta; MamaTheme.Skin(im, sz.x <= 60f ? MamaTheme.HexS : MamaTheme.PaintS, null, 16f); }
+            }
+            foreach (var b in bars) if (b) { b.rectTransform.offsetMin = new Vector2(10, 7); b.rectTransform.offsetMax = new Vector2(-10, -7); }
+            hint.color = MamaTheme.Cream; hint.rectTransform.anchoredPosition = new Vector2(0, 8);
         }
 
         Text VolRow(RectTransform p, float y, int idx)
@@ -154,7 +183,7 @@ namespace MamasComing
             bars[0].fillAmount = MasterVol; bars[1].fillAmount = MusicVol; bars[2].fillAmount = SfxVol;
         }
 
-        Text coopLbl, hostLbl, lanLbl, leaveLbl, joinLbl, netStatus, placeholder; InputField codeField;
+        Text coopLbl, hostLbl, lanLbl, leaveLbl, joinLbl, netStatus, placeholder; InputField codeField; RectTransform leaveBtn, closeBtn;
 
         void RefreshLabels()
         {
@@ -162,7 +191,7 @@ namespace MamasComing
             coopLbl.text = th ? "เล่นกับเพื่อน (2-3 คน)" : "CO-OP  (2-3 players)";
             hostLbl.text = th ? "สร้างห้องออนไลน์" : "Host online";
             lanLbl.text = th ? "สร้างห้อง LAN" : "Host LAN";
-            leaveLbl.text = th ? "ออก" : "Leave";
+            leaveLbl.text = th ? "ออกจากห้อง" : "Leave room";
             joinLbl.text = th ? "เข้าร่วม" : "Join";
             placeholder.text = th ? "รหัสห้อง หรือ IP ของเพื่อน" : "Room code or friend's IP";
             foreach (var t in new[] { coopLbl, hostLbl, lanLbl, leaveLbl, joinLbl, netStatus, placeholder, codeField.textComponent }) t.font = th ? thaiFont : baseFont;
@@ -198,18 +227,21 @@ namespace MamasComing
         // ------------------------------------------------------------------ translation pass
         void LateUpdate()
         {
-            if (gear) gear.gameObject.SetActive(!Open && Cursor.lockState != CursorLockMode.Locked);
+            if (gear) gear.gameObject.SetActive(!Open && Cursor.lockState != CursorLockMode.Locked && !MamaFrontEnd.Active);
+            if (leaveBtn) leaveBtn.gameObject.SetActive(NetGame.Online);
+            if (closeBtn) closeBtn.anchoredPosition = new Vector2(NetGame.Online ? 150 : 0, -150);
             if (Open && netStatus) netStatus.text = NetSession.I ? NetSession.I.Status : (Loc.Thai ? "เล่นคนเดียว - เพื่อนกดเข้าร่วมด้วยรหัสห้องได้" : "Solo - host a room and give friends the code");
             rescan -= Time.unscaledDeltaTime;
             if (rescan <= 0f) { rescan = 1f; all = FindObjectsByType<Text>(FindObjectsInactive.Include, FindObjectsSortMode.None); }
             bool th = Loc.Thai;
             foreach (var t in all)
             {
-                if (!t || t.transform.IsChildOf(transform)) continue;
-                if (!seen.TryGetValue(t, out var st)) { st = new[] { t.text, null, null }; seen[t] = st; st[2] = t.font ? t.font.name : ""; st[1] = "\u0001"; }
+                if (!t) continue;
+                if (!seen.TryGetValue(t, out var st)) { st = new[] { t.text, null, null }; seen[t] = st; st[2] = t.GetComponentInParent<MamaThemeSkip>(true) || t.GetComponent<MamaLocText>() ? "skip" : t.transform.IsChildOf(transform) ? "own" : ""; st[1] = "\u0001"; }
+                if (st[2] == "skip") continue;
+                MamaTheme.Apply(t);
+                if (st[2] == "own") continue;
                 if (t.text != st[1]) { st[0] = t.text; st[1] = Loc.T(st[0]); if (t.text != st[1]) t.text = st[1]; }
-                var want = th ? thaiFont : baseFont;
-                if (want && t.font != want && t.text != "⚙") t.font = want;
             }
         }
 

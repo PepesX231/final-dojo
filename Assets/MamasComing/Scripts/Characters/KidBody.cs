@@ -54,13 +54,13 @@ namespace MamasComing
             switch (s)
             {
                 // goofy, gangly noodle walk: big sway, hip swing, uneven rhythm and a constant jiggle
-                case Style.Banana:     return new Gait { stride = 1.5f, bounce = 0.025f, roll = 6f, pitch = 3f, twist = 5f, lean = -2f, limp = 0.12f, wobble = 0f };
+                case Style.Banana:     return new Gait { stride = 1.5f, bounce = 0.006f, roll = 1.5f, pitch = 1f, twist = 1f, lean = -2f, limp = 0f, wobble = 0f };   // FruitLimbs + AppleProceduralAnimator animate the limbs
                 // proud waddle, chest out
-                case Style.Orange:     return new Gait { stride = 1.4f, bounce = 0.022f, roll = 4f, pitch = 2f, twist = 3f, lean = -2f, limp = 0f, wobble = 0f };
+                case Style.Orange:     return new Gait { stride = 1.4f, bounce = 0.006f, roll = 1f, pitch = 1f, twist = 1f, lean = -2f, limp = 0f, wobble = 0f };
                 // heavy stomp, leaning into each step
-                case Style.Watermelon: return new Gait { stride = 1.6f, bounce = 0.03f, roll = 3f, pitch = 2.5f, twist = 3f, lean = 3f, limp = .05f, wobble = 0f };
+                case Style.Watermelon: return new Gait { stride = 1.6f, bounce = 0.008f, roll = 1f, pitch = 1f, twist = 1f, lean = 3f, limp = 0f, wobble = 0f };
                 // dainty quick prance
-                case Style.WaxApple:   return new Gait { stride = 1.3f, bounce = 0.025f, roll = 3f, pitch = 2f, twist = 4f, lean = 2f, limp = 0f, wobble = 0f };
+                case Style.WaxApple:   return new Gait { stride = 1.3f, bounce = 0.006f, roll = 1f, pitch = 1f, twist = 1f, lean = 2f, limp = 0f, wobble = 0f };
                 // apple: bouncy skip
                 default:               return new Gait { stride = 0.85f, bounce = 0.045f, roll = 4f,  pitch = 3f, twist = 3f,  lean = 3f,  limp = 0f,    wobble = 0f };
             }

@@ -52,6 +52,21 @@ namespace MamasComing
         float sendT, worldT, fieldT;
         readonly List<(string n, Vector3 p, float v, float pi)> sounds = new List<(string, Vector3, float, float)>();
 
+        /// Lobby: the player sitting in seat `slot` (0 = host), or null.
+        public PlayerController AvatarAt(int slot) => avatars.TryGetValue(slot, out var p) ? p : null;
+        public int MySlot => mySlot;
+        /// Lobby: is someone in this seat (works before the house scene is loaded).
+        public bool SlotTaken(int slot) => (State == Mode.Host || State == Mode.Client) && (slot == mySlot || slotOf.ContainsValue(slot));
+        /// The fruit a player picked, once their kid has streamed it (fallback otherwise).
+        public int KidOfSlot(int slot, int fallback) => remote.TryGetValue(slot, out var rs) && rs.kid >= 0 ? rs.kid : fallback;
+
+        /// Host: everyone (host + connected clients) loads `scene` - used by the lobby's START.
+        public void LoadLevelForAll(string scene)
+        {
+            if (State == Mode.Host) SendEvent((byte)NetGame.Msg.LoadLevel, scene, null, 0, null);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(scene);
+        }
+
         public static void Ensure() { if (!I) { var go = new GameObject("NetSession"); DontDestroyOnLoad(go); go.AddComponent<NetSession>(); } }
 
         void Awake()
@@ -176,6 +191,9 @@ namespace MamasComing
             if (State == Mode.Host || State == Mode.Client) foreach (var kv in slotOf) if (kv.Value != mySlot) SpawnPuppet(kv.Value);
             if (State == Mode.Client) ApplyClientMode();
             if (localKid && State != Mode.Offline) PlaceAtSpawn(localKid, mySlot);
+            // client arriving in the house (START from the lobby, or a late join): say hi again so the host re-sends
+            // the roster and, if the round is already running, the Start event that fired while we were loading
+            if (State == Mode.Client && localKid && nm && nm.IsConnectedClient) SendHost("mc/ready", Begin(), NetworkDelivery.ReliableSequenced);
         }
 
         static string PathOf(Transform t) { var s = t.name + "#" + t.GetSiblingIndex(); while (t.parent) { t = t.parent; s = t.name + "#" + t.GetSiblingIndex() + "/" + s; } return s; }
@@ -282,6 +300,7 @@ namespace MamasComing
             cm.RegisterNamedMessageHandler("mc/snd", OnSound);
             cm.RegisterNamedMessageHandler("mc/hit", OnHit);
             cm.RegisterNamedMessageHandler("mc/fx", OnFx);
+            cm.RegisterNamedMessageHandler("mc/pick", OnPick);
         }
 
         public async void HostOnline()
@@ -441,6 +460,7 @@ namespace MamasComing
 
             sendT -= dt;
             if (sendT <= 0f && localKid) { sendT = 0.05f; SendMyState(); }
+            else if (sendT <= 0f) { sendT = 0.4f; SendPick(); }   // lobby: no kid yet, but friends should see the fruit we picked
 
             if (State == Mode.Host)
             {
@@ -485,6 +505,30 @@ namespace MamasComing
             {
                 var w = Begin(); w.Write((byte)slot); w.Write(rs.pos.x); w.Write(rs.pos.y); w.Write(rs.pos.z); w.Write(rs.yaw); w.Write(rs.speed); w.Write(f); w.Write((short)rs.holdTarget); if (rs.kid >= 0) w.Write((byte)rs.kid);
                 foreach (var kv in slotOf) if (kv.Key != sender && kv.Key != nm.LocalClientId) Send("mc/state", kv.Key, w, NetworkDelivery.UnreliableSequenced);
+            }
+        }
+
+        /// Lobby fruit pick (before the house scene exists): slot + fruit id, relayed by the host.
+        void SendPick()
+        {
+            var w = Begin(); w.Write((byte)mySlot); w.Write((byte)KidLook.Selected);
+            if (State == Mode.Host) SendAll("mc/pick", w, NetworkDelivery.UnreliableSequenced);
+            else SendHost("mc/pick", w, NetworkDelivery.UnreliableSequenced);
+        }
+
+        void OnPick(ulong sender, FastBufferReader reader)
+        {
+            if (State == Mode.Client && !rosterReady) return;
+            var r = Read(reader); if (r == null) return;
+            int slot = r.ReadByte(); int kid = r.ReadByte();
+            if (State == Mode.Host) { if (!slotOf.TryGetValue(sender, out int s)) return; slot = s; }   // never trust the claimed slot
+            if (slot == mySlot || kid >= KidLook.Count) return;
+            if (!remote.TryGetValue(slot, out var rs)) { rs = new RemoteState(); remote[slot] = rs; }
+            rs.kid = kid;
+            if (State == Mode.Host)
+            {
+                var w = Begin(); w.Write((byte)slot); w.Write((byte)kid);
+                foreach (var kv in slotOf) if (kv.Key != sender && kv.Key != nm.LocalClientId) Send("mc/pick", kv.Key, w, NetworkDelivery.UnreliableSequenced);
             }
         }
 
@@ -735,6 +779,7 @@ namespace MamasComing
             if (State != Mode.Client) return;
             var r = Read(reader); if (r == null) return;
             var kind = (NetGame.Msg)r.ReadByte(); string en = r.ReadString(), th = r.ReadString(); int level = r.ReadInt32();
+            if (kind == NetGame.Msg.LoadLevel) { MamaLaunch.FromMenu = true; if (SceneManager.GetActiveScene().name != en && Application.CanStreamedLevelBeLoaded(en)) SceneManager.LoadScene(en); return; }
             var gm = GameManager.I; if (!gm) return;
             string txt = Loc.Thai && th.Length > 0 && kind != NetGame.Msg.Ending ? th : en;
             switch (kind)
@@ -756,6 +801,9 @@ namespace MamasComing
         {
             if (State != Mode.Host || !slotOf.ContainsKey(sender)) return;
             SendRoster(sender);
+            // a friend who joined while the host is already in the house (late join) is pulled in from the lobby
+            if (SceneManager.GetActiveScene().name == MamaLaunch.GameScene)
+                SendEvent((byte)NetGame.Msg.LoadLevel, MamaLaunch.GameScene, null, 0, sender);
             if (GameManager.I && GameManager.I.state != GameManager.State.Title)
                 SendEvent((byte)NetGame.Msg.Start, null, null, 0, sender);
         }

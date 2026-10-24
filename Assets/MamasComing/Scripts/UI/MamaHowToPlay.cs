@@ -8,6 +8,10 @@ namespace MamasComing
     public class MamaHowToPlay : MonoBehaviour
     {
         static MamaHowToPlay instance;
+        public static MamaHowToPlay I => instance;
+        static bool shownOnce;
+        bool startOnClose = true;
+        RectTransform helpButton;
         public static bool Open => instance && instance.panel && instance.panel.activeSelf;
         public static bool BlockStart => Open || instance && Time.unscaledTime - instance.closedAt < .3f;
         GameManager gm;
@@ -24,8 +28,8 @@ namespace MamasComing
         void Awake()
         {
             instance = this; gm = GetComponent<GameManager>();
-            english = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            thai = Font.CreateDynamicFontFromOSFont(new[] { "Leelawadee UI", "Tahoma" }, 32);
+            english = MamaTheme.Body;
+            thai = MamaTheme.Body;
             var canvas = new GameObject("How to play", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             canvas.transform.SetParent(transform, false);
             canvas.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
@@ -33,7 +37,7 @@ namespace MamasComing
             var scaler = canvas.GetComponent<CanvasScaler>(); scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080); scaler.matchWidthOrHeight = .5f;
             var help = Box("Help", canvas.transform, new Vector2(1, 1), new Vector2(-225, -28), new Vector2(180, 60), MamaUI.Paper);
-            help.pivot = Vector2.one;
+            help.pivot = Vector2.one; helpButton = help;
             helpLabel = Label(help, "", 24, Vector2.zero, new Vector2(172, 54), TextAnchor.MiddleCenter);
             help.gameObject.AddComponent<Button>().onClick.AddListener(Show);
             var dim = Box("Instructions", canvas.transform, Vector2.one * .5f, Vector2.zero, new Vector2(1920, 1080), new Color(.06f, .1f, .12f, .78f));
@@ -61,6 +65,28 @@ namespace MamasComing
             startLabel = Label(start, "", 28, Vector2.zero, new Vector2(510, 55), TextAnchor.MiddleCenter);
             start.gameObject.AddComponent<Button>().onClick.AddListener(Close);
             panel.SetActive(false); Refresh();
+            Theme(paper, settings, start);
+        }
+
+        void Theme(RectTransform paper, RectTransform settings, RectTransform start)
+        {
+            if (!MamaTheme.Ready) return;
+            MamaTheme.Skin(paper.GetComponent<Image>(), MamaTheme.PaperS, Color.white, 46f);
+            MamaTheme.Tape(paper, new Vector2(0.04f, 1f), new Vector2(10, -34), 32f, 150f);
+            MamaTheme.Tape(paper, new Vector2(0.96f, 1f), new Vector2(-10, -34), -28f, 150f);
+            for (int i = 0; i < 3; i++)
+            {
+                var card = (RectTransform)paper.Find("Step " + (i + 1));
+                MamaTheme.Skin(card.GetComponent<Image>(), MamaTheme.PaintS, new Color(1f, .98f, .93f), 24f);
+                card.localRotation = Quaternion.Euler(0, 0, (i - 1) * -1.2f);
+                MamaTheme.Tape(card, new Vector2(.5f, 1f), new Vector2(0, -4), (i - 1) * 6f, 140f);
+            }
+            MamaTheme.Skin(settings.GetComponent<Image>(), MamaTheme.PlankS, Color.white, 22f);
+            MamaTheme.Skin(start.GetComponent<Image>(), MamaTheme.PaintS, MamaTheme.Teal, 22f);
+            MamaTheme.Skin(helpButton.GetComponent<Image>(), MamaTheme.PaintS, MamaUI.Paper, 18f);
+            settingsLabel.color = MamaTheme.Cream; startLabel.color = Color.white;
+            MamaTheme.MakeHeading(heading); heading.fontSize = 52; heading.color = MamaTheme.Brick;
+            foreach (var tl in titles) MamaTheme.MakeHeading(tl);
         }
 
         RectTransform Box(string name, Transform parent, Vector2 anchor, Vector2 at, Vector2 size, Color color)
@@ -81,16 +107,20 @@ namespace MamasComing
         {
             var args = System.Environment.GetCommandLineArgs();
             bool bot = Debug.isDebugBuild && (System.Array.IndexOf(args, "-mamabot") >= 0 || System.Array.IndexOf(args, "-mamaautostart") >= 0 || System.Array.IndexOf(args, "-mamaautostartsolo") >= 0);
-            if (!bot && gm && gm.state == GameManager.State.Title) Show();
+            // from the menu: show the guide on the first round of this session only, then just start
+            if (!bot && gm && gm.state == GameManager.State.Title && !MamaFrontEnd.I && !(MamaLaunch.FromMenu && shownOnce)) { shownOnce = true; Show(); }
         }
-        public void Show()
+        public void Show() => Show(true);
+        /// startRound: closing the guide on the title starts the round (PLAY); false = just look at it.
+        public void Show(bool startRound)
         {
             if (Open) return;
+            startOnClose = startRound;
             cursorLocked = Cursor.lockState == CursorLockMode.Locked;
             savedScale = Time.timeScale;
             pausedHere = !NetGame.Online;
             if (pausedHere) Time.timeScale = 0f;
-            panel.SetActive(true); gm.ui.ShowTitle(false); Refresh();
+            panel.SetActive(true); if (gm && gm.ui) gm.ui.ShowTitle(false); Refresh();
             Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
         }
         public void Close()
@@ -99,26 +129,27 @@ namespace MamasComing
             panel.SetActive(false); closedAt = Time.unscaledTime;
             if (pausedHere) Time.timeScale = savedScale;
             pausedHere = false;
-            if (gm.state == GameManager.State.Title)
+            if (!gm) { }
+            else if (gm.state == GameManager.State.Title && !startOnClose) { }
+            else if (gm.state == GameManager.State.Title)
             {
                 if (NetGame.IsAuthority) { gm.StartRound(); NetGame.Broadcast(NetGame.Msg.Start, null, null, 0); }
                 else gm.ui.ShowTitle(true);
             }
-            else if ((cursorLocked || gm.Live) && !MamaSettings.Open) { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
+            else if (gm && (cursorLocked || gm.Live) && !MamaSettings.Open) { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
         }
         void Update()
         {
             if (Keyboard.current != null && Keyboard.current.f1Key.wasPressedThisFrame && !MamaSettings.Open)
             { if (Open) Close(); else Show(); }
             if (language != Loc.Thai) Refresh();
+            if (helpButton) helpButton.gameObject.SetActive(!MamaFrontEnd.Active);
             if (Open && NetGame.Online && pausedHere) { Time.timeScale = savedScale > 0f ? savedScale : 1f; pausedHere = false; }
         }
         void LateUpdate() { if (Open) { Cursor.lockState = CursorLockMode.None; Cursor.visible = true; } }
         void Refresh()
         {
             language = Loc.Thai;
-            foreach (var label in panel.GetComponentsInChildren<Text>(true)) label.font = Loc.Thai && thai ? thai : english;
-            helpLabel.font = Loc.Thai && thai ? thai : english;
             helpLabel.text = T("F1  How to play", "F1  วิธีเล่น");
             heading.text = T("Mom is coming! Leave no evidence.", "แม่กำลังกลับ! เก็บบ้านก่อนแม่จับได้");
             subtitle.text = T("Stop the disaster → pick things up → return them or hide them. Picking up alone does not finish the job.", "หยุดต้นเหตุ → หยิบของ → เก็บเข้าที่หรือซ่อนให้พ้นตา แค่หยิบขึ้นมายังไม่จบงานนะ!");
@@ -131,7 +162,7 @@ namespace MamasComing
             solo.text = T("Solo: stove → tap → one room at a time. With friends: share the jobs, then make some trouble!", "คนเดียว: เริ่มปิดเตา → ปิดก๊อก → เก็บทีละห้อง   |   กับเพื่อน: แบ่งหน้าที่ แล้วค่อยแกล้งกัน!");
             keys.text = T("WASD move · Shift run · E use / pick up · Q place · RMB throw · LMB / G punch · TAB notes", "WASD เดิน · Shift วิ่ง · E ใช้ / หยิบ · Q วาง · คลิกขวา ขว้าง · คลิกซ้าย / G ต่อย · TAB ภาพรวม");
             settingsLabel.text = T("ESC  Co-op / sound settings", "ESC  ชวนเพื่อน / ปรับเสียง");
-            startLabel.text = T("Got it — let's clean up!", "เข้าใจแล้ว ไปเก็บบ้านกัน!");
+            startLabel.text = gm && gm.state == GameManager.State.Title && !startOnClose ? T("Got it!", "เข้าใจแล้ว!") : T("Got it — let's clean up!", "เข้าใจแล้ว ไปเก็บบ้านกัน!");
         }
         void OnDestroy() { if (pausedHere) Time.timeScale = savedScale; if (instance == this) instance = null; }
     }

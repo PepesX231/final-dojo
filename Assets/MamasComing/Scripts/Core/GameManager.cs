@@ -83,6 +83,21 @@ namespace MamasComing
                 foreach (var s in floodSeeds) FloodSim.I.Seed(s, floodSeedRadius, floodSeedDepth);
             if (stove) stove.heat = startHeat;
             if (SmokeSim.I && stove) SmokeSim.I.Add(stove.burner.position, startSmoke);
+            if (MamaLaunch.FromMenu) StartCoroutine(StartFromMenu());
+        }
+
+        /// Entered from MC_MainMenu / MC_Lobby: no "press any key" title - the host starts once the guide is closed
+        /// (first round only) and friends have had a moment to load the house.
+        System.Collections.IEnumerator StartFromMenu()
+        {
+            ui.ShowTitle(false);
+            yield return null;
+            if (!NetGame.IsAuthority) yield break;          // clients follow the host's Start / world state
+            float wait = NetGame.Online ? 3f : 0.4f;
+            while (wait > 0f || MamaHowToPlay.Open) { wait -= Time.unscaledDeltaTime; if (state != State.Title) yield break; yield return null; }
+            if (state != State.Title) yield break;
+            StartRound();
+            NetGame.Broadcast(NetGame.Msg.Start, null, null, 0);
         }
 
         void Update()
@@ -90,6 +105,7 @@ namespace MamasComing
             switch (state)
             {
                 case State.Title:
+                    if (MamaFrontEnd.Active) break;   // the authored title / lobby screens handle input
                     if (MamaInput.EscDown) MamaSettings.Toggle();
                     if (MamaInput.AnyStart && !MamaSettings.BlockStart && !MamaHowToPlay.BlockStart && NetGame.IsAuthority)
                     {
@@ -128,6 +144,8 @@ namespace MamasComing
                 case State.Ending:
                     endShownT += Time.deltaTime;
                     if (MamaInput.RestartDown && endShownT > 0.5f && NetGame.IsAuthority) { NetGame.Broadcast(NetGame.Msg.Restart, null, null, 0); Restart(); }
+                    else if (endShownT > 0.5f && UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.mKey.wasPressedThisFrame && MamaLaunch.InBuild(MamaLaunch.MenuScene))
+                    { if (NetSession.I && NetGame.Online) NetSession.I.Leave(); MamaLaunch.ToMenu(); }
                     break;
             }
 
@@ -138,6 +156,7 @@ namespace MamasComing
             }
 
             if (Live) RefreshHUD();
+            else if (state == State.Title && ui) ui.SetTimer(TimeLeft, false);   // show the real round length (was a "5:00" placeholder)
             trackT -= Time.deltaTime;
             if (trackT <= 0f) { trackT = 0.5f; TrackProblems(); }
         }

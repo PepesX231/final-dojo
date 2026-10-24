@@ -78,7 +78,7 @@ namespace MamasComing
             timerDisc = Img(tbadge, Paper, circleSprite, false, Edge, 4);
             var tinner = Rect("Inner", tbadge, CC, CC, CC, Vector2.zero, new Vector2(160, 160));
             Img(tinner, Teal, circleSprite, false);
-            timerText = Txt(Rect("Time", tinner, CC, CC, CC, new Vector2(0, -12), new Vector2(160, 80)), "5:00", 54, Color.white, TextAnchor.MiddleCenter, 0, true);
+            timerText = Txt(Rect("Time", tinner, CC, CC, CC, new Vector2(0, -12), new Vector2(160, 80)), "9:00", 54, Color.white, TextAnchor.MiddleCenter, 0, true);
             timerSub = Txt(Rect("Sub", tinner, CC, CC, CC, new Vector2(0, 32), new Vector2(160, 40)), "MOM IN", 22, Color.white, TextAnchor.MiddleCenter, 0, true);
             Shadowed(timerText);
 
@@ -162,6 +162,23 @@ namespace MamasComing
             BuildTitle();
             BuildEnd();
             BuildReadability(H);
+            StartCoroutine(ThemePass());
+        }
+
+        System.Collections.IEnumerator ThemePass()
+        {
+            // other screens (quest board, guide, settings) build their canvases during Start
+            yield return null; yield return null;
+            MamaTheme.RestyleAll(roundSprite, circleSprite);
+            if (MamaTheme.Ready)
+            {
+                MamaTheme.Skin(endBand, MamaTheme.BurstS);
+                MamaTheme.Skin(endGO.transform.Find("Card").GetComponent<Image>(), MamaTheme.PaperS, Color.white, 40f);
+                MamaTheme.MakeHeading(endTitle);
+                MamaTheme.MakeHeading(timerText);
+            }
+            yield return new WaitForSeconds(1f);
+            MamaTheme.RestyleAll(roundSprite, circleSprite);
         }
 
         // ------------------------------------------------------------------ mini game panel
@@ -478,12 +495,19 @@ namespace MamasComing
             var go = Rect("Again", card, BC, BC, BC, new Vector2(0, 40), new Vector2(520, 80));
             Img(go, Teal, roundSprite, true, Edge, 3);
             Shadowed(Txt(go, "Press R to try again", 36, Color.white, TextAnchor.MiddleCenter, 0, true));
+            if (MamaLaunch.InBuild(MamaLaunch.MenuScene))
+                Txt(Rect("MenuHint", card, BC, BC, BC, new Vector2(0, 4), new Vector2(520, 36)), MamaReadability.Text("M  back to the main menu", "M  กลับเมนูหลัก"), 24, Edge, TextAnchor.MiddleCenter, 0, true);
             endGO = full.gameObject;
             endGO.SetActive(false);
         }
 
         // ------------------------------------------------------------------ API
-        public void ShowTitle(bool on) { titleGO.SetActive(on); hud.SetActive(!on); }
+        public void ShowTitle(bool on)
+        {
+            bool fe = MamaFrontEnd.Active;
+            titleGO.SetActive(on && !fe);
+            hud.SetActive(!on && !fe);
+        }
 
         public void SetObjectives(string main, string count, IList<string> rest)
         {

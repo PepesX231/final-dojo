@@ -70,10 +70,16 @@ namespace DreamRush.Player
             float dt = Time.deltaTime;
             if (dt <= 0f) return;
 
-            // Damped spring back to 1.
-            float force = -springStiffness * (_scaleY - 1f) - springDamping * _scaleVel;
-            _scaleVel += force * dt;
-            _scaleY += _scaleVel * dt;
+            // Damped spring back to 1 (sub-stepped: a stiff spring integrated with one big step
+            // goes unstable at low frame rates and pins the kid at the 0.6 / 1.4 clamps).
+            int steps = Mathf.Clamp(Mathf.CeilToInt(dt / 0.008f), 1, 20);
+            float h = dt / steps;
+            for (int i = 0; i < steps; i++)
+            {
+                float force = -springStiffness * (_scaleY - 1f) - springDamping * _scaleVel;
+                _scaleVel += force * h;
+                _scaleY += _scaleVel * h;
+            }
             _scaleY = Mathf.Clamp(_scaleY, 0.6f, 1.4f);
 
             // Lean from planar acceleration in local space.

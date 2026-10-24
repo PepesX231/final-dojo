@@ -6,7 +6,7 @@ namespace MamasComing
     /// Online (see NetSession): the host owns the world simulation; clients send their actions to the host.
     public static partial class NetGame
     {
-        public enum Msg { Call = 0, Toast = 1, Sound = 2, KidSay = 3, Start = 4, Restart = 5, MomSay = 6, Ending = 7 }
+        public enum Msg { Call = 0, Toast = 1, Sound = 2, KidSay = 3, Start = 4, Restart = 5, MomSay = 6, Ending = 7, LoadLevel = 8 }
         public static PlayerController Acting; public static ulong ActingClient;
         public static System.Action<string, Vector3?, float, float> SoundHook;
 

@@ -11,6 +11,22 @@ namespace MamasComing
         bool walking; Vector3 baseScale; float phase, speed, clipSeconds = 1.6f;
         Vector3 lastPosition;
 
+        DreamRush.Player.AppleProceduralAnimator rigAnim;
+
+        /// Fruits are rebuilt with the apple's rig and animated by the same AppleProceduralAnimator (walk, run, idle).
+        void EnsureRig()
+        {
+            if (rigAnim) return;
+            var rig = FruitLimbs.Convert(transform);
+            if (!rig) return;
+            rigAnim = rig.GetComponent<DreamRush.Player.AppleProceduralAnimator>();
+            if (!rigAnim) rigAnim = rig.gameObject.AddComponent<DreamRush.Player.AppleProceduralAnimator>();
+            var pc = player ? player : GetComponentInParent<PlayerController>();
+            rigAnim.motor = pc ? pc.Motor : GetComponentInParent<DreamRush.Player.PlayerMotor3D>();
+            rigAnim.Bind();
+            if (pc) pc.anim = rigAnim;
+        }
+
         void Awake()
         {
             if (!anim) anim = GetComponentInChildren<Animator>();
@@ -21,10 +37,17 @@ namespace MamasComing
             lastPosition = player ? player.transform.position : transform.position;
         }
 
-        void OnEnable() { walking = false; if (anim) anim.Play("Idle", 0, 0f); }
+        void OnEnable() { walking = false; EnsureRig(); if (rigAnim) { var pc = player ? player : GetComponentInParent<PlayerController>(); if (pc) pc.anim = rigAnim; return; } if (anim) anim.Play("Idle", 0, 0f); }
 
         void Update()
         {
+            if (rigAnim)
+            {
+                if (!player) player = GetComponentInParent<PlayerController>();
+                if (!rigAnim.motor) rigAnim.motor = player && player.Motor ? player.Motor : GetComponentInParent<DreamRush.Player.PlayerMotor3D>();
+                if (player && player.anim != rigAnim) player.anim = rigAnim;
+                return;
+            }
             if (!anim || !player) return;
             float dt = Time.deltaTime; if (dt <= 0f) return;
             Vector3 delta = player.transform.position - lastPosition; delta.y = 0; lastPosition = player.transform.position;

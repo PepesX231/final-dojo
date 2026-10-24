@@ -69,6 +69,8 @@ namespace MamasComing
 
         public bool Busy => oneShot != Clip.None && oneT < oneDur * 0.6f;
         public Clip Current => oneShot != Clip.None ? oneShot : holdClip;
+        /// 0..1 through the current one-shot clip, or -1 when none is playing.
+        public float OneShotProgress => oneShot != Clip.None ? Mathf.Clamp01(oneT / Mathf.Max(0.01f, oneDur)) : -1f;
 
         void Awake()
         {

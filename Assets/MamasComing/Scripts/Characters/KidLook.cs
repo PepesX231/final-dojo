@@ -25,6 +25,7 @@ namespace MamasComing
         static KidCatalog Catalog { get { if (!loaded) { loaded = true; catalog = Resources.Load<KidCatalog>("MamaKidCatalog"); } return catalog; } }
 
         static GameObject appleTemplate;   // inactive copy of the scene kid's original apple model
+        public static GameObject AppleTemplate => appleTemplate;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { selected = -1; loaded = false; catalog = null; appleTemplate = null; }

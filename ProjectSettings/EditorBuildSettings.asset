@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/MamasComing/Scenes/MC_MainMenu.unity
+    guid: 06a2607237b1e0248ab615019864b004
+  - enabled: 1
+    path: Assets/MamasComing/Scenes/MC_Lobby.unity
+    guid: aac0b21e5e774dd4995fc183008553b7
+  - enabled: 1
     path: Assets/MamasComing/Scenes/MamasKitchen.unity
     guid: 4301dd3b9748e54488039c1ebc8b9705
   - enabled: 0

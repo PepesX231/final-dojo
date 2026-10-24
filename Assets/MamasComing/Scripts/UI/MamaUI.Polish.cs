@@ -8,7 +8,7 @@ namespace MamasComing
         Text notesKey;
         void BuildPolishedLayout(RectTransform h)
         {
-            MovePanel(h, "ObjBanner", new Vector2(28, -26), new Vector2(400, 80));
+            MovePanel(h, "ObjBanner", new Vector2(28, -26), new Vector2(440, 96));
             objMain.fontSize = 26;
             objMain.rectTransform.offsetMin = new Vector2(18, 34);
             objMain.rectTransform.offsetMax = new Vector2(-16, -8);
@@ -28,9 +28,9 @@ namespace MamasComing
             timerSub.fontSize = 17;
             MovePanel(h, "Problems", new Vector2(-28, -128), new Vector2(300, 248));
             h.Find("Problems").gameObject.SetActive(false);
-            MovePanel(h, "ContextCard", new Vector2(28, 26), new Vector2(470, 190));
+            MovePanel(h, "ContextCard", new Vector2(28, 26), new Vector2(500, 236));
             MovePanel(h, "ContextCard/Name", new Vector2(18, -8), new Vector2(-36, 34));
-            MovePanel(h, "ContextCard/Meaning", new Vector2(18, -47), new Vector2(-36, 103));
+            MovePanel(h, "ContextCard/Meaning", new Vector2(18, -47), new Vector2(-36, 140));
             MovePanel(h, "ContextCard/Keys", new Vector2(18, 8), new Vector2(-36, 28));
             contextTitle.fontSize = 27; contextBody.fontSize = 24; contextKeys.fontSize = 20;
             contextGO.SetActive(false);
