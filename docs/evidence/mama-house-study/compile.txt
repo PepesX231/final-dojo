@@ -1,0 +1,3 @@
+--- compile started 01:35:59
+Assembly-CSharp-Editor.dll: errors=0 warnings=0
+Assembly-CSharp.dll: errors=0 warnings=0

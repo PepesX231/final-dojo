@@ -1,0 +1,75 @@
+{
+  "schema": "animation_contact_sheet_report.v1",
+  "frames": [
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Hop_00.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Hop_01.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Hop_02.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Hop_03.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Hop_04.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Hop_05.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Hop_06.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Hop_07.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Hop_08.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Hop_09.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Hop_10.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Hop_11.png"
+  ],
+  "frame_diff": [
+    {
+      "from": "Hop_00.png",
+      "to": "Hop_01.png",
+      "mean_rgb_diff": 3.2848027210884356
+    },
+    {
+      "from": "Hop_01.png",
+      "to": "Hop_02.png",
+      "mean_rgb_diff": 1.9740959183673468
+    },
+    {
+      "from": "Hop_02.png",
+      "to": "Hop_03.png",
+      "mean_rgb_diff": 7.419785714285713
+    },
+    {
+      "from": "Hop_03.png",
+      "to": "Hop_04.png",
+      "mean_rgb_diff": 6.22355306122449
+    },
+    {
+      "from": "Hop_04.png",
+      "to": "Hop_05.png",
+      "mean_rgb_diff": 4.977690476190476
+    },
+    {
+      "from": "Hop_05.png",
+      "to": "Hop_06.png",
+      "mean_rgb_diff": 1.6895755102040815
+    },
+    {
+      "from": "Hop_06.png",
+      "to": "Hop_07.png",
+      "mean_rgb_diff": 4.023297959183673
+    },
+    {
+      "from": "Hop_07.png",
+      "to": "Hop_08.png",
+      "mean_rgb_diff": 5.78280544217687
+    },
+    {
+      "from": "Hop_08.png",
+      "to": "Hop_09.png",
+      "mean_rgb_diff": 6.426338095238095
+    },
+    {
+      "from": "Hop_09.png",
+      "to": "Hop_10.png",
+      "mean_rgb_diff": 5.409470068027211
+    },
+    {
+      "from": "Hop_10.png",
+      "to": "Hop_11.png",
+      "mean_rgb_diff": 1.560991156462585
+    }
+  ],
+  "warnings": []
+}

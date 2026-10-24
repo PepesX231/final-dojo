@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "pass": true,
+      "description": "26-bone generic skeleton"
+    },
+    {
+      "pass": true,
+      "description": "Character below 35k triangle showcase budget"
+    },
+    {
+      "pass": true,
+      "description": "Every vertex has a bone influence"
+    },
+    {
+      "pass": true,
+      "description": "Skin weights normalized; max error 0.000000"
+    },
+    {
+      "pass": true,
+      "description": "Idle loop seam matrices match"
+    },
+    {
+      "pass": true,
+      "description": "Walk loop seam matrices match"
+    },
+    {
+      "pass": true,
+      "description": "Run loop seam matrices match"
+    },
+    {
+      "pass": true,
+      "description": "Cheer loop seam matrices match"
+    },
+    {
+      "pass": true,
+      "description": "Six baked actions exist"
+    },
+    {
+      "pass": true,
+      "description": "No scale-key animation required by export"
+    },
+    {
+      "pass": true,
+      "description": "All skin materials use exportable Principled BSDF"
+    }
+  ],
+  "passed": 11,
+  "total": 11,
+  "loop_matrix_max_error": {
+    "Idle": 3.367778596455028e-18,
+    "Walk": 1.520342745749194e-17,
+    "Run": 1.1968621039636954e-17,
+    "Cheer": 3.367778596455028e-18
+  },
+  "weight_max_error": 2.9802322387695312e-08,
+  "notes": [
+    "Original segmented character, rigid weights on solid parts, blended tail weights.",
+    "Clips are in-place. World travel is the isolated Unity demo controller.",
+    "No shape-key/handler-only effects are required by exported FBX."
+  ]
+}

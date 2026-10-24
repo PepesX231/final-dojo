@@ -907,8 +907,23 @@ Final staged virtual-input review **63/63 passed**, zero compile errors/four exi
 - Tests run in the shared editor: Assembly-CSharp and Assembly-CSharp-Editor compile with 0 errors; MamaFightReview 24/24 (fruit swap + heights 1.07–1.14 m, distinct walk sway, punch knock-back 1.9 m + drop, curl/pop-up recovery, slip); MamaUxReview 62/62. Branch compiled again on top of latest main (menu/lobby) with 0 errors.
 - Not covered: human playtest, two-machine online test, lobby picker -> KidLook.Selected hand-off at runtime. House-study files remain uncommitted (owned by the house-redesign work).
 
-## Sculpted fruit kids, comic VFX, chiptune soundtrack — 2026-10-24
-- Features: five clay-sculpted fruit kids (Apple, Banana, Orange, Watermelon, WaxApple) with rig + 8 clips, now in the kid catalog (apple too); SculptKidMotion state→clip; ComicFx (POW starburst/halftone, speed lines, ink puffs, dizzy stars, splash) wired to PowPop, jumps, landings, stuns; four original chiptune tracks (in-level loop replaces the procedural music); six decor props; skills `blender-sculpt-modeling`, `animation`. Details: docs/MAMA_SCULPTED_KIDS.md.
-- Tests run: Blender rebuild of all kids/props/textures/music; Unity compile 0 errors; prefab/catalog/material/prop builders; off-screen Unity line-up renders (docs/evidence/sculpted-kids/unity_lineup_*.png).
-- Not tested: human play session with the new kids, online play, music heard in context, comic FX in a live level.
-- Known issues: mushroom stool spots mostly missed the cap; punch reads best side-on; KidActionAnimator overrides arms during chores.
+## 2026-10-24 — Fruit test controls, tumbling and separate two-storey house study
+
+- Added development keys 1–5/F6/F7 to switch fruit with empty hands, and F8 to test slips. Quiet main-game context hints expose these keys.
+- Replaced the fixed face-down knockdown pose with distance-driven whole-fruit rotation and centre/support correction. Low grip lets the collision-controlled motor slide; limbs and inverse-hull outlines retract, then recover.
+- Authored `MamaHouseStudy.unity`, a separate compact furnished L-plan with two floors, walkable stair ramp, floor visibility and F9 labelled plans. Existing hand-authored MamasKitchen and build order are preserved.
+- Added 12 playable prototype chores using item delivery, a repair dependency chain, separate timing sweeps and 22-second latches. These are study tasks, not released main-round/networked quests.
+- Validation: runtime/Editor compilation without errors or warnings; staged study input/contract review covers all five fruit selections and W movement, tumble/recovery, stair traversal, task restrictions/completion, timing/latch conditions and plan switching. Final evidence and limitations: `docs/MAMA_HOUSE_STUDY.md`, `docs/evidence/mama-house-study/`.
+- Art inspection caught untextured imported study props, a baked material-less shadow quad in the base prefab, floating gallery frames and lingering limb outlines; the study generator/whole-body layer now handle these.
+- Remaining: human fun/layout review, floor-aware disaster simulations and mother route, co-op synchronization/real two-machine test, animation/art polish, standalone performance. Camera evidence excludes HUD.
+
+
+## 2026-10-24 — Roofed house revision after user visual feedback
+
+- Installed/read external level-design skill and reference, then rebuilt only MamaHouseStudy: 808 walkable square units vs 259 previously (3.12x), two storeys, complete main/wing/porch roofs, closed gables, chimney, real window openings, new room circulation and supported furniture assemblies.
+- Authored 50 executable study-task instances across delivery, staged repair, timing and relay mechanics. They are prototype instances using shared mechanics, not 50 bespoke minigames or an integrated online main-game quest pack.
+- Added ReadableFruitGait to handle both bone-based Banana and object-animated fruit feet/gloves; real W-input frame samples validate alternating feet, foot lift and body sway for all five fruits. Existing carry action layer remains later in execution order.
+- Fixed moved-prop visibility across storeys and supported delivery points. Visual inspection also caught and repaired roof gable mesh normal/buffer reuse.
+- Final staged house review 175 passed; original main UX/input 62 passed; Banana carry/rig 33 passed; both game assemblies compile with 0 errors and 0 warnings. Main scene/build settings preserved. No commit/push in this follow-up.
+- Evidence, skill provenance, task catalog, dimensions, limitations and final images/animated walks: docs/MAMA_HOUSE_V2_REVIEW.md and docs/evidence/mama-house-v2/.
+- Remaining: human fun/art/transition review, main-round floor-aware disaster and Mother route integration, actual two-machine shared task state, standalone performance checks.

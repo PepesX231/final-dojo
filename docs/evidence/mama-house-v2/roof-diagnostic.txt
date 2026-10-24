@@ -1,0 +1,3 @@
+Porch canopy closed gables vertices=6 normals=(0.00, 0.00, -1.00);(0.00, 0.00, -1.00);(0.00, 0.00, -1.00);(0.00, 0.00, 1.00);(0.00, 0.00, 1.00);(0.00, 0.00, 1.00) tris=0,2,1,3,5,4 material=Cream color=RGBA(0.976, 0.918, 0.804, 1.000)
+Main gabled roof closed gables vertices=6 normals=(0.00, 0.00, -1.00);(0.00, 0.00, -1.00);(0.00, 0.00, -1.00);(0.00, 0.00, 1.00);(0.00, 0.00, 1.00);(0.00, 0.00, 1.00) tris=0,2,1,3,5,4 material=Cream color=RGBA(0.976, 0.918, 0.804, 1.000)
+Kitchen utility roof closed gables vertices=6 normals=(0.00, 0.00, -1.00);(0.00, 0.00, -1.00);(0.00, 0.00, -1.00);(0.00, 0.00, 1.00);(0.00, 0.00, 1.00);(0.00, 0.00, 1.00) tris=0,2,1,3,5,4 material=Cream color=RGBA(0.976, 0.918, 0.804, 1.000)

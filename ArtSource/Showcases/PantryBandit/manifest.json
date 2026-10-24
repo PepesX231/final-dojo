@@ -1,0 +1,36 @@
+{
+  "blender": "4.5.0",
+  "character_vertices": 16856,
+  "character_triangles": 33272,
+  "bones": 26,
+  "actions": {
+    "Idle": [
+      1,
+      61
+    ],
+    "Walk": [
+      1,
+      31
+    ],
+    "Run": [
+      1,
+      23
+    ],
+    "Hop": [
+      1,
+      37
+    ],
+    "Snatch": [
+      1,
+      49
+    ],
+    "Cheer": [
+      1,
+      61
+    ]
+  },
+  "materials": 5,
+  "skin": "baked skeletal transforms; no handlers",
+  "source": "Original geometry generated for this isolated showcase",
+  "poly_faces_with_props": 19421
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "animation_contact_sheet_report.v1",
+  "frames": [
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Snatch_00.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Snatch_01.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Snatch_02.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Snatch_03.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Snatch_04.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Snatch_05.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Snatch_06.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Snatch_07.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Snatch_08.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Snatch_09.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Snatch_10.png",
+    "C:\\Pepes\\final dojo\\DevBridge\\pantry-showcase\\frames\\Snatch_11.png"
+  ],
+  "frame_diff": [
+    {
+      "from": "Snatch_00.png",
+      "to": "Snatch_01.png",
+      "mean_rgb_diff": 3.033812925170068
+    },
+    {
+      "from": "Snatch_01.png",
+      "to": "Snatch_02.png",
+      "mean_rgb_diff": 2.976461904761905
+    },
+    {
+      "from": "Snatch_02.png",
+      "to": "Snatch_03.png",
+      "mean_rgb_diff": 2.734631292517007
+    },
+    {
+      "from": "Snatch_03.png",
+      "to": "Snatch_04.png",
+      "mean_rgb_diff": 2.2589190476190475
+    },
+    {
+      "from": "Snatch_04.png",
+      "to": "Snatch_05.png",
+      "mean_rgb_diff": 1.7474999999999998
+    },
+    {
+      "from": "Snatch_05.png",
+      "to": "Snatch_06.png",
+      "mean_rgb_diff": 1.1074496598639456
+    },
+    {
+      "from": "Snatch_06.png",
+      "to": "Snatch_07.png",
+      "mean_rgb_diff": 0.7304170068027211
+    },
+    {
+      "from": "Snatch_07.png",
+      "to": "Snatch_08.png",
+      "mean_rgb_diff": 1.6119829931972791
+    },
+    {
+      "from": "Snatch_08.png",
+      "to": "Snatch_09.png",
+      "mean_rgb_diff": 2.254353741496599
+    },
+    {
+      "from": "Snatch_09.png",
+      "to": "Snatch_10.png",
+      "mean_rgb_diff": 2.7164578231292515
+    },
+    {
+      "from": "Snatch_10.png",
+      "to": "Snatch_11.png",
+      "mean_rgb_diff": 3.0006693877551016
+    }
+  ],
+  "warnings": []
+}
