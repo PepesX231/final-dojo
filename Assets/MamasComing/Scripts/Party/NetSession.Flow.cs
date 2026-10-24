@@ -13,6 +13,8 @@ namespace MamasComing
         const byte FlowLoad = 1, FlowPrepared = 2, FlowSnapshot = 3, FlowRelease = 4, FlowResult = 5, FlowVote = 6, FlowVotes = 7, FlowProgress = 8, FlowError = 9;
         public bool Loading { get; private set; }
         public string LoadStatus { get; private set; } = "";
+        /// Loading hit a real problem (e.g. different builds) - the loading screen then offers the way back.
+        public bool HasFlowError => !string.IsNullOrEmpty(flowError);
         public int ReadyCount => State == Mode.Client ? receivedReadyCount : readyPeers.Count;
         int receivedReadyCount; float nextProgress;
         int transitionEpoch;

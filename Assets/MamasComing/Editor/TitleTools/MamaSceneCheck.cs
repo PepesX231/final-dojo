@@ -16,5 +16,12 @@ namespace MamasComing.Editor
             EditorSceneManager.OpenScene("Assets/MamasComing/Scenes/MamasKitchen.unity", OpenSceneMode.Single);
             Report();
         }
+        /// Sets the game's product name (the built .exe / window title) and saves ProjectSettings.
+        public static void SetProductName(string name)
+        {
+            UnityEditor.PlayerSettings.productName = name;
+            UnityEditor.AssetDatabase.SaveAssets();
+            Debug.Log("[SceneCheck] productName=" + UnityEditor.PlayerSettings.productName);
+        }
     }
 }

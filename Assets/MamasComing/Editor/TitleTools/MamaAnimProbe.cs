@@ -24,7 +24,7 @@ namespace MamasComing.Editor
         public static void SetFruit(string id)
         {
             var pc = Kid(); if (!pc) return;
-            int k = int.Parse(id); KidLook.Selected = k; KidLook.Apply(pc, k);
+            int k = int.Parse(id); KidLook.Selected = k; KidLook.Apply(pc, k); pc.WakeUp();
             pc.transform.SetPositionAndRotation(new Vector3(12.2f, 0.02f, 3.0f), Quaternion.Euler(0, 270, 0));
             if (pc.Motor) pc.Motor.Teleport(pc.transform.position, pc.transform.rotation);
             Debug.Log("[AnimProbe] fruit " + k);
@@ -61,6 +61,18 @@ namespace MamasComing.Editor
         {
             var pc = Kid(); if (!pc) return;
             var r = new GameObject("AnimProbe").AddComponent<Runner>(); r.pc = pc; r.punch = true; r.slow = float.Parse(seconds, System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        public static void LogFeet()
+        {
+            var pc = Kid(); if (!pc) return; var rig = pc.GetComponentInChildren<DreamRush.Player.AppleProceduralAnimator>()?.transform; if (!rig) return;
+            Debug.Log("[AnimProbe] grounded=" + (pc.Motor ? pc.Motor.IsGrounded.ToString() : "-"));
+            foreach (var t in pc.GetComponentsInChildren<Transform>(true))
+                if (t.name.StartsWith("Foot_") || t.name.StartsWith("Leg_") || t.name.StartsWith("Arm_"))
+                {
+                    var q = Quaternion.Inverse(rig.rotation) * t.rotation;
+                    Debug.Log("[AnimProbe] " + t.name + " lp=" + rig.InverseTransformPoint(t.position).ToString("F3") + " rel=" + q.eulerAngles.ToString("F0") + " fwd=" + (q * Vector3.forward).ToString("F2") + " up=" + (q * Vector3.up).ToString("F2") + " right=" + (q * Vector3.right).ToString("F2"));
+                }
         }
 
         public static void LogRig()

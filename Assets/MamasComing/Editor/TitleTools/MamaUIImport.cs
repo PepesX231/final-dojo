@@ -17,6 +17,8 @@ namespace MamasComing.Editor
                 case "ui_plank": case "ui_plank_dark": return new Vector4(64, 40, 64, 40);
                 case "ui_board": return new Vector4(150, 150, 150, 150);
                 case "ui_slot": return new Vector4(32, 26, 32, 26);
+                case "ui_round": return new Vector4(80, 80, 80, 80);
+                case "ui_round_soft": return new Vector4(96, 96, 96, 96);
                 default: return Vector4.zero;
             }
         }

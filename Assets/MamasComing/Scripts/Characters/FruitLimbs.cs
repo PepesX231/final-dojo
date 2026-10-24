@@ -152,9 +152,21 @@ namespace MamasComing
             Vector3 down = -rig.up;
             // neutral stance: legs straight down, arms down and a little out (the prefab is frozen mid-stride)
             // the banana's hips sit close together, so the legs splay a touch (feet a shoulder-width apart, never crossed)
+            // legs hang straight down (no slant); hips that sit too close together are moved apart instead,
+            // so the feet stand a little apart like a person's
             float legSide = Mathf.Sign(rig.InverseTransformPoint(legL.position).x - rig.InverseTransformPoint(legR.position).x);
-            Straighten(legL, kneeL, footL, (down + rig.right * legSide * 0.16f).normalized);
-            Straighten(legR, kneeR, footR, (down - rig.right * legSide * 0.16f).normalized);
+            float legLen = Vector3.Distance(legL.position, kneeL.position) + Vector3.Distance(kneeL.position, footL.position);
+            Vector3 across = Vector3.ProjectOnPlane(legL.position - legR.position, rig.up);
+            float gap = across.magnitude, want = legLen * 0.42f;
+            if (gap < want)
+            {
+                Vector3 push = rig.right * legSide * (want - gap) * 0.5f;
+                var l = new[] { legL, kneeL, footL }; var r = new[] { legR, kneeR, footR };
+                foreach (var t in l) if (t && System.Array.IndexOf(l, t.parent) < 0) t.position += push;
+                foreach (var t in r) if (t && System.Array.IndexOf(r, t.parent) < 0) t.position -= push;
+            }
+            Straighten(legL, kneeL, footL, down);
+            Straighten(legR, kneeR, footR, down);
             // long arms: hang them out from the body so the gloves rest at hip height, not by the shins
             float armSide = Mathf.Sign(rig.InverseTransformPoint(armL.position).x - rig.InverseTransformPoint(armR.position).x);
             Straighten(armL, elbowL, handL, (down + rig.right * armSide * 0.55f).normalized);

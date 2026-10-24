@@ -194,10 +194,10 @@ namespace MamasComing
             void Add(Vector3 p) { if (!any) { b = new Bounds(p, Vector3.zero); any = true; } else b.Encapsulate(p); }
             foreach (var r in root.GetComponentsInChildren<Renderer>())
             {
-                if (!r || r.name == "PartyHat" || !r.enabled || r.forceRenderingOff) continue;
+                if (!r || r.name == "PartyHat" || !r.enabled || r.forceRenderingOff || r is ParticleSystemRenderer || r is TrailRenderer || r is LineRenderer || r.shadowCastingMode == UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly) continue;
                 if (r is SkinnedMeshRenderer smr && smr.sharedMesh)
                 {
-                    smr.BakeMesh(tmp, true); var v = tmp.vertices; var m = smr.transform.localToWorldMatrix;
+                    smr.BakeMesh(tmp, true); var v = tmp.vertices; var m = Matrix4x4.TRS(smr.transform.position, smr.transform.rotation, Vector3.one);
                     for (int i = 0; i < v.Length; i += 3) Add(m.MultiplyPoint3x4(v[i]));
                 }
                 else if (r is MeshRenderer && r.TryGetComponent<MeshFilter>(out var mf) && mf.sharedMesh && mf.sharedMesh.isReadable)
