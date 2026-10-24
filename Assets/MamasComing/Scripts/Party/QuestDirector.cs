@@ -166,25 +166,40 @@ namespace MamasComing
             cgo.transform.SetParent(transform, false);
             var cv = cgo.GetComponent<Canvas>(); cv.renderMode = RenderMode.ScreenSpaceOverlay; cv.sortingOrder = 60;
             var sc = cgo.GetComponent<CanvasScaler>(); sc.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; sc.referenceResolution = new Vector2(1920, 1080); sc.matchWidthOrHeight = 0.5f;
-            board = R("Board", cgo.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 1), new Vector2(24, -190), new Vector2(510, 655));
-            boardTitle = Tx(R("Title", board, new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 1), new Vector2(6, 0), new Vector2(0, 34)), "", 24, MamaUI.Paper, TextAnchor.MiddleLeft);
-            boardTitle.gameObject.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 0.6f);
+            // wooden frame + bolted metal plate (art: ArtSource/UI/render_ui_art.js)
+            board = R("Board", cgo.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 1), new Vector2(18, -248), new Vector2(560, 800));
+            var frame = board.gameObject.AddComponent<Image>(); frame.sprite = Resources.Load<Sprite>("MamaUI/Art/ui_woodframe"); frame.type = Image.Type.Sliced; frame.pixelsPerUnitMultiplier = 1.5f; frame.raycastTarget = false;
+            if (!frame.sprite) frame.color = new Color(0.45f, 0.3f, 0.2f, 0.9f);
+            boardTitle = Tx(R("Title", board, new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 1), new Vector2(70, -40), new Vector2(-140, 40)), "", 25, new Color(1f, .96f, .88f), TextAnchor.MiddleLeft);
+            boardTitle.font = MamaTheme.Bold; boardTitle.gameObject.AddComponent<Outline>().effectColor = new Color(0.12f, 0.18f, 0.16f, 0.8f);
+            var slip = Resources.Load<Sprite>("MamaUI/Art/ui_slip"); var gTrack = Resources.Load<Sprite>("MamaUI/Art/ui_gauge_track"); var gFill = Resources.Load<Sprite>("MamaUI/Art/ui_gauge_fill");
             for (int i = 0; i < 8; i++)
             {
-                var row = R("Row" + i, board, new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 1), new Vector2(0, -40 - i * 74), new Vector2(0, 68));
-                var bg = row.gameObject.AddComponent<Image>(); bg.sprite = white; bg.color = new Color(0.99f, 0.93f, 0.8f, 0.92f);
-                var bar = R("Bar", row, new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 0), Vector2.zero, new Vector2(0, 9)).gameObject.AddComponent<Image>();
-                bar.sprite = white; bar.type = Image.Type.Filled; bar.fillMethod = Image.FillMethod.Horizontal;
-                var t = Tx(R("T", row, new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 0.5f), new Vector2(14, 9), new Vector2(-150, -16)), "", 19, MamaUI.Ink, TextAnchor.MiddleLeft);
-                var room = Tx(R("Room", row, new Vector2(1, 0), new Vector2(1, 1), new Vector2(1, 0.5f), new Vector2(-12, 9), new Vector2(125, -16)), "", 16, MamaUI.Edge, TextAnchor.MiddleRight);
+                var row = R("Row" + i, board, new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 1), new Vector2(56, -86 - i * 80), new Vector2(-112, 74));
+                var bg = row.gameObject.AddComponent<Image>(); bg.sprite = slip ? slip : white; bg.type = slip ? Image.Type.Sliced : Image.Type.Simple; bg.pixelsPerUnitMultiplier = 2f; bg.color = new Color(1f, .98f, .94f);
+                // danger gauge: dark track + coloured fill whose length is the urgency
+                var track = R("Track", row, new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 0), new Vector2(12, 8), new Vector2(-24, 14));
+                var ti = track.gameObject.AddComponent<Image>(); ti.sprite = gTrack ? gTrack : white; ti.type = Image.Type.Sliced; ti.pixelsPerUnitMultiplier = 3.4f; ti.color = new Color(1, 1, 1, .9f);
+                var bar = R("Bar", track, new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 0.5f), Vector2.zero, Vector2.zero).gameObject.AddComponent<Image>();
+                bar.sprite = gFill ? gFill : white; bar.type = Image.Type.Sliced; bar.pixelsPerUnitMultiplier = 3.4f;
+                var t = Tx(R("T", row, new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 0.5f), new Vector2(16, 10), new Vector2(-150, -22)), "", 19, MamaUI.Ink, TextAnchor.MiddleLeft);
+                var room = Tx(R("Room", row, new Vector2(1, 0), new Vector2(1, 1), new Vector2(1, 0.5f), new Vector2(-14, 10), new Vector2(125, -22)), "", 16, MamaUI.Edge, TextAnchor.MiddleRight);
                 var coop = Tx(R("Coop", row, new Vector2(1, 1), new Vector2(1, 1), new Vector2(1, 1), new Vector2(4, 8), new Vector2(46, 22)), "2P", 15, Color.white, TextAnchor.MiddleCenter);
                 var cbg = coop.gameObject.AddComponent<Outline>(); cbg.effectColor = MamaUI.Pink; cbg.effectDistance = new Vector2(2, -2);
                 rows.Add((row.gameObject, t, room, bar, bg, coop));
             }
             cgo.AddComponent<GraphicRaycaster>();
-            var tab = MamaFlowUI.Button(cgo.transform, "TAB • Problems", Vector2.zero, new Vector2(420, 50), T("TAB  •  VIEW PROBLEMS", "TAB  •  ดูปัญหาในบ้าน"), MamaTheme.Teal, () => { var read = gm.GetComponent<MamaReadability>(); if (read) read.ToggleNotes(); });
-            var tr=(RectTransform)tab.transform; tr.anchorMin=tr.anchorMax=new Vector2(0,1);tr.pivot=new Vector2(0,1);tr.anchoredPosition=new Vector2(24,-132);
-            tabHint=tab.GetComponentInChildren<Text>();
+            // TAB: a nailed wooden plank with a real keycap (sits under the objective card, not on top of it)
+            var tr = R("TAB • Problems", cgo.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 1), new Vector2(22, -170), new Vector2(400, 74));
+            var plank = tr.gameObject.AddComponent<Image>(); plank.sprite = Resources.Load<Sprite>("MamaUI/Art/ui_plank2"); plank.type = Image.Type.Sliced; plank.pixelsPerUnitMultiplier = 1.6f; plank.raycastTarget = true;
+            if (!plank.sprite) { plank.sprite = white; plank.color = new Color(.6f, .4f, .25f); }
+            var tabBtn = tr.gameObject.AddComponent<Button>(); tabBtn.targetGraphic = plank; tabBtn.onClick.AddListener(() => { var read = gm.GetComponent<MamaReadability>(); if (read) read.ToggleNotes(); });
+            var cols = tabBtn.colors; cols.highlightedColor = new Color(1f, .93f, .8f); cols.pressedColor = new Color(.8f, .75f, .7f); tabBtn.colors = cols;
+            var key = R("Key", tr, new Vector2(0, .5f), new Vector2(0, .5f), new Vector2(0, .5f), new Vector2(26, 2), new Vector2(84, 64));
+            var keyIm = key.gameObject.AddComponent<Image>(); keyIm.sprite = Resources.Load<Sprite>("MamaUI/Art/ui_keycap"); keyIm.preserveAspect = true; keyIm.raycastTarget = false;
+            var keyT = Tx(R("Label", key, Vector2.zero, Vector2.one, new Vector2(.5f, .5f), new Vector2(0, 5), Vector2.zero), "TAB", 20, new Color(.35f, .25f, .18f), TextAnchor.MiddleCenter); keyT.font = MamaTheme.Bold;
+            tabHint = Tx(R("Text", tr, Vector2.zero, Vector2.one, new Vector2(0, .5f), new Vector2(120, 3), new Vector2(-136, 0)), "", 24, new Color(1f, .96f, .88f), TextAnchor.MiddleLeft);
+            tabHint.font = MamaTheme.Bold; var o = tabHint.gameObject.AddComponent<Outline>(); o.effectColor = new Color(.3f, .16f, .07f, .9f); o.effectDistance = new Vector2(2, -2);
             // neighbour meter (top centre, under the gear)
             var nm = R("Neighbors", cgo.transform, new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -98), new Vector2(360, 34));
             var nbg = nm.gameObject.AddComponent<Image>(); nbg.sprite = white; nbg.color = new Color(0.99f, 0.93f, 0.8f, 0.9f);
@@ -202,7 +217,7 @@ namespace MamasComing
             bool mini = MiniGame.I && MiniGame.I.Active;
             board.gameObject.SetActive(play && notes && !mini && !MamaSettings.Open);
             neighFill.transform.parent.gameObject.SetActive(play && (Neighbor > 35f || notes) && gm.state == GameManager.State.Playing && !MamaSettings.Open && !mini);
-            if (tabHint) { tabHint.transform.parent.gameObject.SetActive(play && !mini && !MamaSettings.Open); tabHint.text = notes ? T("TAB  •  CLOSE PROBLEMS", "TAB  •  ปิดรายการปัญหา") : T("TAB  •  VIEW PROBLEMS", "TAB  •  ดูปัญหาในบ้าน"); }
+            if (tabHint) { tabHint.transform.parent.gameObject.SetActive(play && !mini && !MamaSettings.Open); tabHint.text = notes ? T("Close problems", "ปิดรายการปัญหา") : T("View problems", "ดูปัญหาในบ้าน"); }
             if (!play) return;
 
             hudT -= Time.unscaledDeltaTime;
@@ -219,9 +234,9 @@ namespace MamasComing
                     var e = list[i];
                     rows[i].t.text = e.text;
                     rows[i].room.text = e.room >= 0 ? T(GameManager.RoomNames[e.room], Loc.T(GameManager.RoomNames[e.room])) : "";
-                    rows[i].bar.fillAmount = Mathf.Clamp01(e.urgency);
+                    var brt = rows[i].bar.rectTransform; brt.anchorMax = new Vector2(Mathf.Max(.08f, Mathf.Clamp01(e.urgency)), 1f);
                     rows[i].bar.color = e.col;
-                    rows[i].bg.color = Color.Lerp(new Color(0.99f, 0.93f, 0.8f, 0.92f), e.col, e.urgency > 0.85f ? 0.25f + 0.15f * Mathf.Sin(Time.unscaledTime * 8f) : 0.08f);
+                    rows[i].bg.color = Color.Lerp(new Color(1f, .98f, .94f), e.col, e.urgency > 0.85f ? 0.22f + 0.12f * Mathf.Sin(Time.unscaledTime * 8f) : 0.04f);
                     rows[i].coop.gameObject.SetActive(e.coop);
                 }
             }

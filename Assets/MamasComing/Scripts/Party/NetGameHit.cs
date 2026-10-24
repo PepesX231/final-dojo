@@ -26,6 +26,9 @@ namespace MamasComing
         public static void ApplyHit(PlayerController victim, Vector3 dir, float force, float stun, bool dropHeld, Vector3 from)
         {
             if (!victim) return;
+            if (force < 0f) { KidCarry.Command(victim, force, dir, from); return; }   // grab / throw / drop a carried friend
+            var rough = victim.GetComponent<KidRoughhouse>();
+            if (rough && rough.Deflects(from)) return;                                // blocked, countered or still getting up
             Vector3 d = victim.transform.position - from; d.y = 0f;
             if (Debug.isDebugBuild) Debug.Log("[Fx] hit on " + victim.name + " dist=" + d.magnitude.ToString("0.00"));
             if (d.magnitude > HitReach) return;   // dodged on my screen: no hit

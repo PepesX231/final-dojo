@@ -15,6 +15,58 @@ namespace MamasComing
         /// Top of each podium pouf (rank 0 centre, 1 left, 2 right). The stage builder uses the same numbers.
         public static readonly Vector3[] Podium = { new Vector3(0f, 0.72f, 0f), new Vector3(-2.05f, 0.42f, 0.3f), new Vector3(2.05f, 0.26f, 0.4f) };
 
+        class Bar { public int slot; public RectTransform row, fill; public Text score; public Image ring; public float shown, target, pop; }
+        readonly List<Bar> bars = new List<Bar>();
+        readonly List<MamaJobLog> replay = new List<MamaJobLog>();
+        Text tickerText; float maxScore = 1, replayT; int replayIndex; bool replayDone;
+        static Color SlotColor(int slot) => slot == 0 ? new Color(.95f, .55f, .3f) : slot == 1 ? new Color(.3f, .68f, .64f) : new Color(.62f, .5f, .85f);
+
+        void BuildReplay()
+        {
+            replay.Clear();
+            if (MamaRound.Data.log != null && MamaRound.Data.log.Count > 0) replay.AddRange(MamaRound.Data.log);
+            else
+            {
+                // older data without a log: interleave each player's jobs with an even share of their score
+                int most = 0; foreach (var r in ranked) most = Mathf.Max(most, r.completed.Count);
+                for (int k = 0; k < most; k++) foreach (var r in ranked) if (k < r.completed.Count) replay.Add(new MamaJobLog { slot = r.slot, task = r.completed[k], points = r.completed.Count > 0 ? r.score / r.completed.Count + (k == 0 ? r.score % r.completed.Count : 0) : 0 });
+            }
+            replayT = 1.0f; replayIndex = 0; replayDone = replay.Count == 0;
+            if (replayDone) FinishReplay();
+        }
+
+        void FinishReplay()
+        {
+            replayDone = true;
+            foreach (var b in bars) { var r = ranked.Find(x => x.slot == b.slot); if (r != null) b.target = r.score; }
+            if (tickerText) tickerText.text = ranked.Count > 0 ? MamaFlowUI.T("MVP: P", "ตัวท็อป: P") + (ranked[0].slot + 1) + "  •  " + ranked[0].score + MamaFlowUI.T(" pts", " คะแนน") : "";
+            if (ranked.Count > 0) { var top = bars.Find(b => b.slot == ranked[0].slot); if (top != null) top.pop = 1f; }
+            MamaAudio.Play("good", null, .7f);
+        }
+
+        void TickReplay(float dt)
+        {
+            foreach (var b in bars)
+            {
+                b.shown = Mathf.MoveTowards(b.shown, b.target, Mathf.Max(20f, maxScore) * dt * 1.6f);
+                b.fill.sizeDelta = new Vector2(Mathf.Max(30f, 380f * b.shown / Mathf.Max(1f, maxScore)), 30); b.fill.gameObject.SetActive(b.shown > .5f);
+                b.score.text = Mathf.RoundToInt(b.shown).ToString();
+                b.pop = Mathf.MoveTowards(b.pop, 0f, dt * 2.5f);
+                b.row.localScale = Vector3.one * (1f + Mathf.Sin(b.pop * Mathf.PI) * .05f);
+            }
+            if (replayDone) return;
+            replayT -= dt; if (replayT > 0f) return;
+            if (replayIndex >= replay.Count) { FinishReplay(); return; }
+            var e = replay[replayIndex++];
+            var bar = bars.Find(x => x.slot == e.slot);
+            if (bar != null) { bar.target += e.points; bar.pop = 1f; }
+            var who = ranked.Find(x => x.slot == e.slot);
+            string fruit = who != null ? (Loc.Thai ? KidLook.NamesTh[who.fruit] : KidLook.Names[who.fruit]) : "";
+            if (tickerText) tickerText.text = "P" + (e.slot + 1) + " " + fruit + "  •  " + Loc.T(e.task) + "   +" + e.points;
+            MamaAudio.Play("pop", null, .45f, 1f + Mathf.Min(.6f, replayIndex * .03f));
+            replayT = Mathf.Clamp(5f / Mathf.Max(1, replay.Count), .28f, .75f);
+        }
+
         Text detail, detailTitle; Transform crown; RectTransform youBadge, title; List<MamaScore> ranked;
         readonly List<(int slot, Image bg, Image ring)> rows = new List<(int, Image, Image)>();
         float shownAt;
@@ -76,48 +128,46 @@ namespace MamasComing
             var crownChip = Card(card, "Cleared chip", MamaUIKit.CC, new Vector2(215, 414), new Vector2(150, 56), Gold, 4f, false);
             Label(crownChip, "Text", Vector2.zero, new Vector2(140, 50), MamaFlowUI.T("CLEARED!", "รอดแล้ว!"), 24, Ink, TextAnchor.MiddleCenter, MamaTheme.Bold);
 
-            float y = 318;
+            // ---- quest ticker + one bar per player; the bars grow job by job (replay of the round)
+            var tick = Card(card, "Quest ticker", MamaUIKit.CC, new Vector2(0, 318), new Vector2(580, 70), new Color(.25f, .2f, .24f), 4f, false);
+            tickerText = Label(tick, "Text", new Vector2(10, 0), new Vector2(540, 60), MamaFlowUI.T("Counting the jobs...", "กำลังนับงานที่ทำ..."), 24, new Color(1f, .93f, .78f), TextAnchor.MiddleLeft, MamaTheme.Bold);
+            float y = 222;
+            maxScore = 1; foreach (var r in ranked) maxScore = Mathf.Max(maxScore, r.score);
             for (int i = 0; i < ranked.Count; i++)
             {
                 var row = ranked[i];
-                if (i == 0 || i == 1)
-                {
-                    // section bars like a scoreboard: MVP first, then the rest of the crew
-                    var bar = Card(card, i == 0 ? "MVP bar" : "Crew bar", MamaUIKit.CC, new Vector2(0, y), new Vector2(580, 46), i == 0 ? Gold : new Color(.93f, .88f, .8f), 4f, false);
-                    Label(bar, "Left", new Vector2(-150, 0), new Vector2(260, 40), i == 0 ? MamaFlowUI.T("MVP", "ตัวท็อปประจำบ้าน") : MamaFlowUI.T("CLEAN-UP CREW", "ทีมช่วยเก็บ"), 22, Ink, TextAnchor.MiddleLeft, MamaTheme.Bold);
-                    Label(bar, "Right", new Vector2(195, 0), new Vector2(150, 40), MamaFlowUI.T("SCORE", "คะแนน"), 20, new Color(Ink.r, Ink.g, Ink.b, .7f), TextAnchor.MiddleRight, MamaTheme.Bold);
-                    y -= 62;
-                }
-                var ring = MamaUIKit.Rect("P" + (row.slot + 1) + " select ring", card, MamaUIKit.CC, MamaUIKit.CC, new Vector2(0, y), new Vector2(592, 98));
+                var ring = MamaUIKit.Rect("P" + (row.slot + 1) + " select ring", card, MamaUIKit.CC, MamaUIKit.CC, new Vector2(0, y), new Vector2(592, 112));
                 var ringIm = Rounded(ring, new Color(0, 0, 0, 0), null, 2.6f);
-                var rt = Card(card, "P" + (row.slot + 1), MamaUIKit.CC, new Vector2(0, y), new Vector2(580, 86), Color.white, 3f, false);
+                var rt = Card(card, "P" + (row.slot + 1), MamaUIKit.CC, new Vector2(0, y), new Vector2(580, 100), Color.white, 3f, false);
                 var bg = rt.GetComponent<Image>(); bg.raycastTarget = true; int slot = row.slot;
                 var b = rt.gameObject.AddComponent<Button>(); b.targetGraphic = bg; b.onClick.AddListener(() => Select(slot));
-                Label(rt, "Place", new Vector2(-250, 0), new Vector2(50, 70), (i + 1).ToString(), 40, Ink, TextAnchor.MiddleCenter, MamaTheme.Display);
-                var face = MamaUIKit.Rect("Portrait", rt, MamaUIKit.CC, MamaUIKit.CC, new Vector2(-185, 0), new Vector2(66, 66));
-                var faceBg = face.gameObject.AddComponent<Image>(); faceBg.sprite = Circle; faceBg.color = new Color(1f, .86f, .7f); faceBg.raycastTarget = false;
-                var pic = MamaUIKit.Rect("Face", face, MamaUIKit.CC, MamaUIKit.CC, Vector2.zero, new Vector2(66, 66));
+                var face = MamaUIKit.Rect("Portrait", rt, MamaUIKit.CC, MamaUIKit.CC, new Vector2(-240, 0), new Vector2(76, 76));
+                var faceBg = face.gameObject.AddComponent<Image>(); faceBg.sprite = Circle; faceBg.color = SlotColor(row.slot) * .35f + new Color(.65f, .65f, .65f, .65f); faceBg.raycastTarget = false;
+                var pic = MamaUIKit.Rect("Face", face, MamaUIKit.CC, MamaUIKit.CC, Vector2.zero, new Vector2(76, 76));
                 var portrait = Resources.Load<Sprite>("MamaUI/Portraits/fruit_" + row.fruit);
                 var pim = pic.gameObject.AddComponent<Image>(); pim.sprite = portrait; pim.preserveAspect = true; pim.raycastTarget = false; pim.enabled = portrait;
                 string fruit = Loc.Thai ? KidLook.NamesTh[row.fruit] : KidLook.Names[row.fruit];
-                var nameT = Label(rt, "Player", new Vector2(-30, 14), new Vector2(260, 40), "P" + (row.slot + 1) + "  " + fruit, 28, Ink, TextAnchor.MiddleLeft, MamaTheme.Bold);
-                Label(rt, "Tasks", new Vector2(-30, -20), new Vector2(260, 30), row.tasks + MamaFlowUI.T(" jobs done", " งานที่ช่วยทำ"), 19, new Color(Ink.r, Ink.g, Ink.b, .7f));
+                Label(rt, "Player", new Vector2(-40, 26), new Vector2(300, 36), "P" + (row.slot + 1) + "  " + fruit, 26, Ink, TextAnchor.MiddleLeft, MamaTheme.Bold);
                 if (row.slot == mySlot)
                 {
-                    var you = Card(rt, "You tag", MamaUIKit.CC, new Vector2(118, 16), new Vector2(70, 32), YouGreen, 6f, false);
-                    Label(you, "Text", Vector2.zero, new Vector2(66, 30), MamaFlowUI.T("YOU", "คุณ"), 18, Color.white, TextAnchor.MiddleCenter, MamaTheme.Bold);
+                    var you = Card(rt, "You tag", MamaUIKit.CC, new Vector2(150, 28), new Vector2(66, 30), YouGreen, 6f, false);
+                    Label(you, "Text", Vector2.zero, new Vector2(62, 28), MamaFlowUI.T("YOU", "คุณ"), 17, Color.white, TextAnchor.MiddleCenter, MamaTheme.Bold);
                 }
-                var coin = MamaUIKit.Rect("Coin", rt, MamaUIKit.CC, MamaUIKit.CC, new Vector2(178, 0), new Vector2(34, 34));
-                var ci = coin.gameObject.AddComponent<Image>(); ci.sprite = MamaTheme.CoinS; ci.color = Gold; ci.preserveAspect = true; ci.raycastTarget = false; ci.enabled = ci.sprite;
-                Label(rt, "Score", new Vector2(240, 0), new Vector2(90, 60), row.score.ToString(), 36, Ink, TextAnchor.MiddleRight, MamaTheme.Display);
+                // bar
+                var track = Card(rt, "Bar track", MamaUIKit.CC, new Vector2(10, -18), new Vector2(380, 30), new Color(.92f, .88f, .82f), 6f, false);
+                var fill = MamaUIKit.Rect("Fill", track, new Vector2(0, .5f), MamaUIKit.CC, Vector2.zero, new Vector2(0, 30)); fill.pivot = new Vector2(0, .5f);
+                var fillIm = Rounded(fill, SlotColor(row.slot), null, 6f);
+                var score = Label(rt, "Score", new Vector2(250, -4), new Vector2(80, 60), "0", 34, Ink, TextAnchor.MiddleRight, MamaTheme.Display);
+                bars.Add(new Bar { slot = row.slot, row = rt, fill = fill, score = score, ring = ringIm });
                 rows.Add((row.slot, bg, ringIm));
-                y -= 98;
+                y -= 118;
             }
+            BuildReplay();
 
             // jobs of the selected player
-            var jobs = Card(card, "Jobs", MamaUIKit.CC, new Vector2(0, -240), new Vector2(580, 220), new Color(.96f, .92f, .84f), 3f, false);
-            detailTitle = Label(jobs, "Jobs title", new Vector2(0, 82), new Vector2(540, 40), MamaFlowUI.T("Tap a player to see their jobs", "กดที่ชื่อเพื่อดูงานที่ช่วยทำ"), 22, new Color(.2f, .55f, .52f), TextAnchor.MiddleLeft, MamaTheme.Bold);
-            var viewport=MamaUIKit.Rect("Tasks viewport",jobs,MamaUIKit.CC,MamaUIKit.CC,new Vector2(0,-20),new Vector2(540,150));
+            var jobs = Card(card, "Jobs", MamaUIKit.CC, new Vector2(0, -232), new Vector2(580, 190), new Color(.96f, .92f, .84f), 3f, false);
+            detailTitle = Label(jobs, "Jobs title", new Vector2(0, 70), new Vector2(540, 40), MamaFlowUI.T("Tap a player to see their jobs", "กดที่ชื่อเพื่อดูงานที่ช่วยทำ"), 22, new Color(.2f, .55f, .52f), TextAnchor.MiddleLeft, MamaTheme.Bold);
+            var viewport=MamaUIKit.Rect("Tasks viewport",jobs,MamaUIKit.CC,MamaUIKit.CC,new Vector2(0,-18),new Vector2(540,124));
             viewport.gameObject.AddComponent<Image>().color=new Color(1,1,1,.01f); viewport.gameObject.AddComponent<Mask>().showMaskGraphic=false;
             var content=MamaUIKit.Rect("Completed tasks",viewport,MamaUIKit.TC,MamaUIKit.TC,Vector2.zero,new Vector2(530,150));
             detail=content.gameObject.AddComponent<Text>(); detail.font=MamaTheme.Body; detail.fontSize=22; detail.color=Ink; detail.alignment=TextAnchor.UpperLeft; detail.horizontalOverflow=HorizontalWrapMode.Wrap; detail.verticalOverflow=VerticalWrapMode.Overflow; detail.lineSpacing=1.05f;
@@ -186,6 +236,7 @@ namespace MamasComing
                 if(p.x < -7f || p.x > 7f || p.z < -4.5f || p.z > 3.3f || p.y < -.5f) player.Motor.Teleport(SpawnFor(NetSession.I?NetSession.I.MySlot:0),Quaternion.Euler(0,180,0));
             }
             float t = Time.unscaledTime;
+            TickReplay(Time.unscaledDeltaTime);
             if(crown && ranked!=null && ranked.Count>0)
             {
                 var winner=NetSession.I && NetGame.Online?NetSession.I.AvatarAt(ranked[0].slot):player;
@@ -220,6 +271,8 @@ namespace MamasComing
             d.players.Add(new MamaScore { slot = 0, fruit = KidLook.Selected, score = 420, tasks = 6, completed = new List<string> { "Put out the oil fire", "Fixed the leaking pipe", "Mopped the hallway", "Hid the burnt pot", "Threw away rotten food", "Reset the breaker" } });
             d.players.Add(new MamaScore { slot = 1, fruit = (KidLook.Selected + 2) % KidLook.Count, score = 310, tasks = 4, completed = new List<string> { "Closed the tap", "Mopped the kitchen" } });
             d.players.Add(new MamaScore { slot = 2, fruit = (KidLook.Selected + 3) % KidLook.Count, score = 150, tasks = 2, completed = new List<string> { "Opened the window" } });
+            foreach (var p in d.players) for (int i = 0; i < p.completed.Count; i++) d.log.Add(new MamaJobLog { slot = p.slot, task = p.completed[i], points = p.score / p.completed.Count });
+            d.log.Sort((a, b) => (a.task.Length * 7 + a.slot * 3) % 11 - (b.task.Length * 7 + b.slot * 3) % 11);
             MamaRound.Data = d;
             UnityEngine.SceneManagement.SceneManager.LoadScene(MamaLaunch.RankingScene);
         }

@@ -4,11 +4,14 @@ using UnityEngine;
 namespace MamasComing
 {
     [Serializable] public class MamaScore { public int slot, fruit, score, tasks; public List<string> completed = new List<string>(); }
+    [Serializable] public class MamaJobLog { public int slot, points; public string task; }
     [Serializable] public class MamaRoundData
     {
         public bool ended, won; public string title, body, stats, reason;
         public Vector3 cause; public List<MamaScore> players = new List<MamaScore>();
         public int[] votes = { 0, 0, 0 };
+        /// Every credited job in the order it happened (for the results bar-graph replay).
+        public List<MamaJobLog> log = new List<MamaJobLog>();
     }
     public static class MamaRound
     {
@@ -33,6 +36,7 @@ namespace MamasComing
             CapturePlayers(); int slot = NetSession.I ? NetSession.I.SlotFor(player) : 0;
             var row = Data.players.Find(p => p.slot == slot); if (row == null) return;
             row.score += points; row.tasks++; row.completed.Add(task);
+            Data.log.Add(new MamaJobLog { slot = slot, points = points, task = task });
         }
         public static void Finish(bool won, string title, string body, string stats, Vector3 cause, string reason)
         {

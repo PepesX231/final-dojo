@@ -9,7 +9,17 @@ namespace MamasComing
         public bool DoorOpen => doorOpen;
         bool spoiled, doorOpen; Quaternion closedRotation;
         protected override void Start() { if(door)closedRotation=door.localRotation; base.Start(); }
-        protected override void OnActivated(){doorOpen=true;}
+        // The fridge stays CLOSED: something inside has gone off and the smell leaks out. Players open it,
+        // carry the rotten food to a bin - closing the door alone fixes nothing.
+        protected override void OnActivated()
+        {
+            spoiled=true; doorOpen=false;
+            if(rottenFood){rottenFood.gameObject.SetActive(true);}
+            questEn="Something stinks in the fridge - open it and bin the rotten food"; questTh="ตู้เย็นเหม็น! เปิดแล้วเอาของเน่าไปทิ้งถังขยะ";
+            failEn="The smell has filled the kitchen!"; failTh="กลิ่นเหม็นตลบไปทั้งครัวแล้ว!";
+            doneEn="Rotten food binned. Smells fine now!"; doneTh="ทิ้งของเน่าแล้ว หายเหม็น!";
+            momEn="What is that SMELL in my fridge?!"; momTh="กลิ่นอะไรในตู้เย็นแม่เนี่ย?!";
+        }
         public void Spoil()
         {
             if(spoiled || rottenFood && rottenFood.Disposed)return;

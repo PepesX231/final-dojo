@@ -19,6 +19,10 @@ namespace MamasComing.Editor
                 case "ui_slot": return new Vector4(32, 26, 32, 26);
                 case "ui_round": return new Vector4(80, 80, 80, 80);
                 case "ui_round_soft": return new Vector4(96, 96, 96, 96);
+                case "ui_woodframe": return new Vector4(100, 100, 100, 100);
+                case "ui_plank2": return new Vector4(60, 30, 60, 30);
+                case "ui_slip": return new Vector4(40, 40, 40, 40);
+                case "ui_gauge_track": case "ui_gauge_fill": return new Vector4(23, 23, 23, 23);
                 default: return Vector4.zero;
             }
         }

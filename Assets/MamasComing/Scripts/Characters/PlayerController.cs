@@ -407,6 +407,11 @@ namespace MamasComing
             if (GameManager.I) GameManager.I.OnPlayerSlipped(reason);
         }
 
+        /// Keeps the kid curled up (used while a friend carries them).
+        public void KeepStunned(float t) { stun = Mathf.Max(stun, t); knocked = true; }
+        /// Mashing buttons while knocked down gets you back up sooner (never below the get-up beat).
+        public void ShortenStun(float s) { if (stun > RecoverTime) stun = Mathf.Max(RecoverTime, stun - s); }
+
         /// Shoved / bumped by another kid: fly back a bit, maybe drop what you hold.
         public void Bonk(Vector3 dir, float force, float stunTime, bool dropHeld)
         {

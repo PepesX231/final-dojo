@@ -150,6 +150,7 @@ namespace MamasComing
             Transform armL = B("Arm_L"), elbowL = B("Arm_L_Lower"), handL = B("Hand_L"), armR = B("Arm_R"), elbowR = B("Arm_R_Lower"), handR = B("Hand_R");
             if (!body || !legL || !kneeL || !footL || !legR || !kneeR || !footR || !armL || !elbowL || !armR || !elbowR) return;
             Vector3 down = -rig.up;
+            Upright(chr, rig, bananaRig, body, new[] { legL, kneeL, footL, legR, kneeR, footR });
             // neutral stance: legs straight down, arms down and a little out (the prefab is frozen mid-stride)
             // the banana's hips sit close together, so the legs splay a touch (feet a shoulder-width apart, never crossed)
             // legs hang straight down (no slant); hips that sit too close together are moved apart instead,
@@ -188,6 +189,50 @@ namespace MamasComing
             P("Arm_R", armR); P("Arm_R_Lower", elbowR);
             // apple convention: L on -x
             if (rig.InverseTransformPoint(legL.position).x > 0f) foreach (Transform c in rig) c.name = c.name.Contains("_L") ? c.name.Replace("_L", "_R") : c.name.Replace("_R", "_L");
+        }
+
+        /// The banana model leans like a crescent. Stand it up: rotate everything but the legs so the body's long axis
+        /// is vertical, and slide it so the body's centre sits right above the hips.
+        static void Upright(Transform chr, Transform rig, Transform bananaRig, Transform body, Transform[] legs)
+        {
+            var smr = chr.GetComponentInChildren<SkinnedMeshRenderer>(true); if (!smr || !smr.sharedMesh) return;
+            int bi = System.Array.IndexOf(smr.bones, body); if (bi < 0) return;
+            var baked = new Mesh(); smr.BakeMesh(baked, true);
+            var v = baked.vertices; var w = smr.sharedMesh.boneWeights; if (w.Length != v.Length) { Object.Destroy(baked); return; }
+            var m = Matrix4x4.TRS(smr.transform.position, smr.transform.rotation, Vector3.one);
+            var pts = new List<Vector3>();
+            for (int i = 0; i < v.Length; i++)
+            {
+                var bw = w[i]; float wt = bw.boneIndex0 == bi ? bw.weight0 : bw.boneIndex1 == bi ? bw.weight1 : bw.boneIndex2 == bi ? bw.weight2 : bw.boneIndex3 == bi ? bw.weight3 : 0f;
+                if (wt > .6f) pts.Add(rig.InverseTransformPoint(m.MultiplyPoint3x4(v[i])));
+            }
+            if (Application.isPlaying) Object.Destroy(baked); else Object.DestroyImmediate(baked);
+            if (pts.Count < 20) return;
+            Vector3 c = Vector3.zero; foreach (var p in pts) c += p; c /= pts.Count;
+            // principal axis (power iteration on the covariance)
+            float xx = 0, xy = 0, xz = 0, yy = 0, yz = 0, zz = 0;
+            foreach (var p0 in pts) { var p = p0 - c; xx += p.x * p.x; xy += p.x * p.y; xz += p.x * p.z; yy += p.y * p.y; yz += p.y * p.z; zz += p.z * p.z; }
+            Vector3 a = Vector3.up;
+            for (int k = 0; k < 30; k++) a = new Vector3(xx * a.x + xy * a.y + xz * a.z, xy * a.x + yy * a.y + yz * a.z, xz * a.x + yz * a.y + zz * a.z).normalized;
+            if (a.y < 0) a = -a;
+            var q = Quaternion.FromToRotation(a, Vector3.up);
+            Debug.Log("[FruitLimbs] banana lean " + Vector3.Angle(a, Vector3.up).ToString("F1") + "°");
+            Vector3 hips = Vector3.zero; hips = (rig.InverseTransformPoint(legs[0].position) + rig.InverseTransformPoint(legs[3].position)) * .5f;
+            Vector3 pivot = new Vector3(c.x, hips.y, c.z);
+            Vector3 c2 = pivot + q * (c - pivot);
+            Vector3 shift = new Vector3(hips.x - c2.x, 0, hips.z - c2.z);
+            var qW = rig.rotation * q * Quaternion.Inverse(rig.rotation);
+            Vector3 pivotW = rig.TransformPoint(pivot), shiftW = rig.TransformVector(shift);
+            var legSet = new HashSet<Transform>(legs);
+            var moved = new List<Transform>();
+            foreach (var b in smr.bones)
+            {
+                if (!b || legSet.Contains(b) || b == bananaRig || !b.IsChildOf(bananaRig)) continue;
+                bool parentMoves = false; for (var t = b.parent; t && t != bananaRig; t = t.parent) if (System.Array.IndexOf(smr.bones, t) >= 0 && !legSet.Contains(t)) { parentMoves = true; break; }
+                if (parentMoves) continue;
+                moved.Add(b);
+            }
+            foreach (var b in moved) { b.position = pivotW + qW * (b.position - pivotW) + shiftW; b.rotation = qW * b.rotation; }
         }
 
         /// Rotates upper (and with it lower / end) so the chain hangs along `dir`.

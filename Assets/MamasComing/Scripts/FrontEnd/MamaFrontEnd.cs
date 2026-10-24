@@ -35,6 +35,8 @@ namespace MamasComing
             cam = Camera.main;
             // the menu signs are real 3D objects: clicks reach them through physics
             if (cam && !cam.GetComponent<UnityEngine.EventSystems.PhysicsRaycaster>()) cam.gameObject.AddComponent<UnityEngine.EventSystems.PhysicsRaycaster>();
+            // one scene holds both: come back from a round (or while in a room) straight onto the sofa
+            if (title && lobby) { screen = NetGame.Online || MamaLaunch.WantLobby ? Screen.Lobby : Screen.Title; MamaLaunch.WantLobby = false; }
             Current = screen;
             if (title) title.SetVisible(screen == Screen.Title);
             if (lobby) lobby.SetVisible(screen == Screen.Lobby);
@@ -60,6 +62,17 @@ namespace MamasComing
         }
 
         public void StartGame() => MamaLaunch.ToGame();
+
+        /// Switch between the title signs and the character-select sofa: the camera glides over (no loading).
+        public void Show(Screen s)
+        {
+            if (s == Current) return;
+            Current = s; screen = s;
+            if (title) title.SetVisible(s == Screen.Title);
+            if (lobby) lobby.SetVisible(s == Screen.Lobby);
+            shot = s == Screen.Title ? (title ? title.shot : shot) : (lobby ? lobby.shot : shot);
+            MamaAudio.Play("whoosh", null, .5f, s == Screen.Lobby ? 1f : 1.2f);
+        }
 
         /// Test / automation hook: select and press a menu item by action name (e.g. "Coop", "Play", "NextKid").
         public static void Press(string action)

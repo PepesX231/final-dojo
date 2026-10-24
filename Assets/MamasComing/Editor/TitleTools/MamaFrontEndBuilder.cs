@@ -14,7 +14,7 @@ namespace MamasComing.Editor
         const string Dir = "Assets/MamasComing/FrontEnd";
         const string ScenesDir = "Assets/MamasComing/Scenes";
         static string MenuPath => ScenesDir + "/" + MamaLaunch.MenuScene + ".unity";
-        static string LobbyPath => ScenesDir + "/" + MamaLaunch.LobbyScene + ".unity";
+        static string LobbyPath => ScenesDir + "/MC_Lobby.unity";   // the old house-lobby scene (the void menu now has its own sofa)
         const string KitchenPath = "Assets/MamasComing/Scenes/MamasKitchen.unity";
         static readonly string[] SetRoots = { "Sun", "Rooms", "House", "Props", "Outside", "Global Volume" };
 
@@ -463,6 +463,201 @@ namespace MamasComing.Editor
             var lbl = K.Txt(K.Rect("Label", b, K.CC, K.CC, Vector2.zero, size - new Vector2(16, 8)), en, th, Bold, 24, Color.white, TextAnchor.MiddleCenter, 2f);
             var mi = b.gameObject.AddComponent<MamaMenuItem>(); mi.action = a; mi.label = lbl; mi.normal = Color.white; mi.selected = new Color(1f, 0.93f, 0.6f);
             return mi;
+        }
+    
+        // ================================================================================================ VOID MENU
+        /// Rebuilds MC_MainMenu as a bright empty "void": the living-room furniture floats as a little island with
+        /// the posing kids and the 3D signs, household props drift around, and the character-select sofa is part of
+        /// the same scene (PLAY glides the camera to the sofa - no loading screen).
+        [MenuItem("Mama's Coming/Front End/Rebuild VOID main menu (menu + lobby in one scene)")]
+        public static void BuildVoidMenu()
+        {
+            if (EditorApplication.isPlaying) { Debug.LogWarning("[FrontEnd] stop Play mode first"); return; }
+            var kitchen = EditorSceneManager.OpenScene(KitchenPath, OpenSceneMode.Single);
+            appleSrc = SaveApple();
+            var set = SaveHouseSet();
+            var camSrc = GameObject.Find("Main Camera");
+            if (System.IO.File.Exists(MenuPath)) AssetDatabase.DeleteAsset(MenuPath);
+            var sc = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            EditorSceneManager.SetActiveScene(sc);
+
+            // ---- environment: warm white void
+            Color voidCol = new Color(.97f, .95f, .93f);
+            RenderSettings.skybox = null; RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = new Color(1f, .97f, .95f); RenderSettings.ambientEquatorColor = new Color(.95f, .9f, .88f); RenderSettings.ambientGroundColor = new Color(.8f, .74f, .76f); RenderSettings.ambientIntensity = 1f;
+            RenderSettings.fog = true; RenderSettings.fogMode = FogMode.Linear; RenderSettings.fogColor = voidCol; RenderSettings.fogStartDistance = 9f; RenderSettings.fogEndDistance = 34f;
+            var sunGo = new GameObject("Sun (soft key)", typeof(Light)); var sun = sunGo.GetComponent<Light>(); sun.type = LightType.Directional; sun.intensity = 1.25f; sun.color = new Color(1f, .95f, .88f); sun.shadows = LightShadows.Soft; sun.shadowStrength = .55f; sunGo.transform.rotation = Quaternion.Euler(55, -30, 0); RenderSettings.sun = sun;
+            var fillGo = new GameObject("Fill (pink bounce)", typeof(Light)); var fill = fillGo.GetComponent<Light>(); fill.type = LightType.Directional; fill.intensity = .45f; fill.color = new Color(1f, .8f, .86f); fillGo.transform.rotation = Quaternion.Euler(20, 150, 0);
+            if (camSrc) { var cam = Strip(Object.Instantiate(camSrc)); cam.name = "Main Camera"; cam.tag = "MainCamera"; var c = cam.GetComponent<Camera>(); if (c) { c.clearFlags = CameraClearFlags.SolidColor; c.backgroundColor = voidCol; } }
+
+            // ---- zero gravity: nothing stands on anything. Only the sofa (character select) and the apple's mop survive.
+            var house = (GameObject)PrefabUtility.InstantiatePrefab(set, sc);
+            PrefabUtility.UnpackPrefabInstance(house, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Transform sofa = null; float bestD = 9f; Bounds sofaB = default;
+            foreach (var t in house.GetComponentsInChildren<Transform>(true))
+            {
+                if (t.name != "Sofa" && t.name != "Flipped sofa") continue;
+                var rs = t.GetComponentsInChildren<Renderer>(true); if (rs.Length == 0) continue;
+                var bb = rs[0].bounds; foreach (var r in rs) bb.Encapsulate(r.bounds);
+                float d = Vector2.Distance(new Vector2(bb.center.x, bb.center.z), new Vector2(5.6f, 3f));
+                if (d < bestD) { bestD = d; sofa = t; sofaB = bb; }
+            }
+            var sofaGroup = new GameObject("Floating sofa (character select)").transform;
+            sofaGroup.position = new Vector3(sofaB.center.x, sofaB.min.y, sofaB.center.z);
+            if (sofa) { sofa.SetParent(sofaGroup, true); foreach (var c in sofa.GetComponentsInChildren<Collider>(true)) Object.DestroyImmediate(c); foreach (var l in sofa.GetComponentsInChildren<Light>(true)) Object.DestroyImmediate(l.gameObject); }
+            var mopT = house.transform.Find("Props/Mop");
+            if (mopT) { mopT.SetParent(null, true); foreach (var c in mopT.GetComponentsInChildren<Collider>(true)) Object.DestroyImmediate(c); }
+            mopSrc = mopT ? mopT.gameObject : null;
+            Object.DestroyImmediate(house);
+            Debug.Log("[FrontEnd] void sofa: " + (sofa ? sofa.name + " at " + sofaB.center : "NOT FOUND"));
+
+            // ---- front end: title + lobby in the same scene
+            var rootGO = new GameObject("FrontEnd");
+            var fe = rootGO.AddComponent<MamaFrontEnd>();
+            rootGO.AddComponent<MamaThemeSkip>(); rootGO.AddComponent<MamaHowToPlay>();
+            fe.screen = MamaFrontEnd.Screen.Title; fe.title = BuildTitle(rootGO.transform); fe.lobby = BuildLobby(rootGO.transform);
+            fe.blendTime = 2.2f;   // a long, lazy glide out to the sofa
+
+            // the sofa (with the seats on it) floats far off to the side, tilted, so PLAY is a real fly-over
+            var seats = fe.lobby.transform.Find("Seats (on the sofa)"); if (seats) seats.SetParent(sofaGroup, true);
+            Vector3 sofaOffset = new Vector3(6.5f, 1.6f, -3.2f);
+            sofaGroup.position += sofaOffset;
+            var lobbyShot = fe.lobby.shot.transform; lobbyShot.position += sofaOffset + new Vector3(-.9f, .25f, 0f);
+            lobbyShot.LookAt(sofaGroup.position + Vector3.up * .55f);
+            fe.lobby.shot.fov = 50f;
+            sofaGroup.rotation = Quaternion.Euler(-6f, -16f, 10f);
+            var sf = sofaGroup.gameObject.AddComponent<MamaFloaty>(); sf.bob = .09f; sf.bobSpeed = .15f; sf.sway = 1.4f;
+
+            // the kids drift around the title signs in zero-g: scattered, tilted, slowly tumbling
+            Transform kidsRoot = null; foreach (Transform c in fe.title.transform) if (c.name.StartsWith("Kids")) kidsRoot = c;   // (Find() treats the "/" in the name as a path)
+            var tShot = fe.title.shot.transform; Vector3 camP = tShot.position;
+            Vector3 fwd = tShot.forward; fwd.y = 0; fwd.Normalize(); Vector3 right = new Vector3(fwd.z, 0, -fwd.x);
+            Vector3 Spot(float d, float r, float y) { var p = camP + fwd * d + right * r; p.y = y; return p; }
+            var plan = new System.Collections.Generic.Dictionary<string, (Vector3 pos, Vector3 euler, Vector3 tumble, MamaPosedKid.Pose pose)>
+            {
+                { "Kid_Apple",      (Spot(4.6f, 1.45f, 1.05f), new Vector3(8f, 0f, 14f),  new Vector3(0f, 0f, 0f),     MamaPosedKid.Pose.Hero) },
+                { "Kid_Orange",     (Spot(6.2f, 3.3f, 1.75f), new Vector3(0f, 0f, 150f), new Vector3(0f, 0f, 9f),     MamaPosedKid.Pose.Wave) },
+                { "Kid_Banana",     (Spot(5.2f, 2.5f, .05f),  new Vector3(25f, 0f, -38f), new Vector3(4f, 0f, -3f),   MamaPosedKid.Pose.FingerGuns) },
+                { "Kid_WaxApple",   (Spot(4.3f, -2.75f, 1.2f), new Vector3(-30f, 0f, 60f), new Vector3(0f, 0f, -12f),  MamaPosedKid.Pose.Flex) },
+                { "Kid_Watermelon", (Spot(7.8f, -.6f, 3.0f),  new Vector3(0f, 0f, 80f),   new Vector3(3f, 0f, 2f),    MamaPosedKid.Pose.Asleep) },
+            };
+            if (kidsRoot)
+                foreach (Transform k in kidsRoot)
+                {
+                    if (!plan.TryGetValue(k.name, out var pl)) continue;
+                    k.position = pl.pos;
+                    var toCam = camP - pl.pos; toCam.y = 0;
+                    k.rotation = Quaternion.LookRotation(toCam.sqrMagnitude > .01f ? toCam : Vector3.forward) * Quaternion.Euler(pl.euler);
+                    var pk = k.GetComponent<MamaPosedKid>(); if (pk) { pk.pose = pl.pose; pk.fitToSeat = false; }
+                    var f = k.gameObject.AddComponent<MamaFloaty>(); f.bob = .12f; f.bobSpeed = .13f + Random.value * .08f; f.sway = 5f; f.tumble = pl.tumble; f.drift = new Vector3(.15f, .1f, .15f);
+                }
+            var post = fe.title.transform.Find("Menu signpost (3D)");
+            if (post) { var f = post.gameObject.AddComponent<MamaFloaty>(); f.bob = .06f; f.bobSpeed = .2f; f.sway = 1.5f; post.rotation *= Quaternion.Euler(0, 0, 3f); }
+            if (mopSrc) Object.DestroyImmediate(mopSrc);   // the apple holds its own copy
+
+            // ---- drifting household things all around (copies of the real props)
+            var drift = new GameObject("Drifting props").transform;
+            var srcProps = new List<GameObject>();
+            var full = (GameObject)PrefabUtility.InstantiatePrefab(set, sc);
+            var propsRoot = full.transform.Find("Props");
+            if (propsRoot) foreach (Transform p in propsRoot) if (p.name != "Mop" && p.GetComponentInChildren<Renderer>()) srcProps.Add(p.gameObject);
+            var rnd = new System.Random(7);
+            for (int i = 0; i < Mathf.Min(16, srcProps.Count); i++)
+            {
+                var copy = Object.Instantiate(srcProps[i], drift); copy.name = srcProps[i].name + " (drifting)";
+                foreach (var c in copy.GetComponentsInChildren<Collider>(true)) Object.DestroyImmediate(c);
+                foreach (var l in copy.GetComponentsInChildren<Light>(true)) Object.DestroyImmediate(l.gameObject);
+                float a = (float)rnd.NextDouble() * Mathf.PI * 2f, rad = 4.5f + (float)rnd.NextDouble() * 6f;
+                var pos = new Vector3(3.2f + Mathf.Cos(a) * rad, .3f + (float)rnd.NextDouble() * 3.4f, 3f + Mathf.Sin(a) * rad);
+                Vector3 away = pos - sofaGroup.position; if (away.magnitude < 3.2f) pos = sofaGroup.position + away.normalized * 3.2f + Vector3.up * .5f;   // keep the sofa shot clean
+                copy.transform.position = pos;
+                copy.transform.rotation = Quaternion.Euler((float)rnd.NextDouble() * 360f, (float)rnd.NextDouble() * 360f, (float)rnd.NextDouble() * 360f);
+                var f = copy.AddComponent<MamaFloaty>(); f.bob = .25f; f.bobSpeed = .12f + (float)rnd.NextDouble() * .15f; f.sway = 8f; f.spin = (rnd.NextDouble() < .5 ? -1 : 1) * (6f + (float)rnd.NextDouble() * 14f);
+            }
+            // a second cloud of things floating BEHIND the sofa (seen from the lobby camera), never touching it
+            {
+                Vector3 lf = sofaGroup.position - lobbyShot.position; lf.y = 0; lf.Normalize(); Vector3 lr = new Vector3(lf.z, 0, -lf.x);
+                for (int i = 0; i < Mathf.Min(12, srcProps.Count); i++)
+                {
+                    var copy = Object.Instantiate(srcProps[(i * 5 + 3) % srcProps.Count], drift); copy.name = srcProps[(i * 5 + 3) % srcProps.Count].name + " (behind sofa)";
+                    foreach (var c in copy.GetComponentsInChildren<Collider>(true)) Object.DestroyImmediate(c);
+                    foreach (var l in copy.GetComponentsInChildren<Light>(true)) Object.DestroyImmediate(l.gameObject);
+                    Vector3 pos;
+                    int guard = 0;
+                    do { pos = sofaGroup.position + lf * (2.6f + (float)rnd.NextDouble() * 6f) + lr * ((float)rnd.NextDouble() * 9f - 4.5f) + Vector3.up * ((float)rnd.NextDouble() * 4.2f - 1.6f); }
+                    while (Vector3.Distance(pos, sofaGroup.position + Vector3.up * .5f) < 2.6f && ++guard < 20);
+                    copy.transform.position = pos;
+                    copy.transform.rotation = Quaternion.Euler((float)rnd.NextDouble() * 360f, (float)rnd.NextDouble() * 360f, (float)rnd.NextDouble() * 360f);
+                    var f = copy.AddComponent<MamaFloaty>(); f.bob = .2f; f.bobSpeed = .1f + (float)rnd.NextDouble() * .12f; f.sway = 6f; f.spin = (rnd.NextDouble() < .5 ? -1 : 1) * (5f + (float)rnd.NextDouble() * 12f);
+                }
+            }
+            Object.DestroyImmediate(full);
+            GlowingVoid();
+            var fx = new GameObject("Confetti (void)").transform; fx.position = new Vector3(3.2f, -2.5f, 3f);
+            MamaRankingStage.Confetti(fx);
+
+            EditorSceneManager.SaveScene(sc, MenuPath);
+            EditorSceneManager.CloseScene(sc, true);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[FrontEnd] void menu ready: " + MenuPath);
+        }
+
+        /// The "glowing white" look: an HDR-bright sky dome (brightest at the horizon), strong soft bloom and drifting light motes.
+        static void GlowingVoid()
+        {
+            string dir = Dir + "/Void"; if (!AssetDatabase.IsValidFolder(dir)) AssetDatabase.CreateFolder(Dir, "Void");
+            // sky dome: inward-facing sphere with a vertical gradient texture
+            var tex = new Texture2D(4, 256, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
+            for (int y = 0; y < 256; y++)
+            {
+                float v = y / 255f;                                   // 0 bottom .. 1 top
+                float horizon = Mathf.Exp(-Mathf.Pow((v - .5f) * 5.5f, 2f));
+                var c = Color.Lerp(new Color(.93f, .9f, .95f), new Color(.96f, .97f, 1f), v) * .92f + new Color(1f, .97f, .92f) * horizon * .25f;
+                for (int x = 0; x < 4; x++) tex.SetPixel(x, y, c);
+            }
+            tex.Apply();
+            string texPath = dir + "/void_sky_gradient.png"; System.IO.File.WriteAllBytes(texPath, tex.EncodeToPNG()); AssetDatabase.ImportAsset(texPath);
+            var skyTex = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath);
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(dir + "/M_VoidSky.mat");
+            if (!mat) { mat = new Material(Shader.Find("Universal Render Pipeline/Unlit")); AssetDatabase.CreateAsset(mat, dir + "/M_VoidSky.mat"); }
+            mat.SetTexture("_BaseMap", skyTex); mat.SetColor("_BaseColor", new Color(1.9f, 1.9f, 1.9f)); mat.SetFloat("_Cull", 1); EditorUtility.SetDirty(mat);   // HDR > 1: blooms into a glow
+            var prof = new List<Vector2>(); for (int i = 0; i <= 24; i++) { float a = -Mathf.PI / 2 + i / 24f * Mathf.PI; prof.Add(new Vector2(Mathf.Cos(a) * 45f, Mathf.Sin(a) * 45f)); }
+            var mesh = MamaRankingStage.Lathe(prof, 48);
+            var uv = new Vector2[mesh.vertexCount]; var verts = mesh.vertices; for (int i = 0; i < uv.Length; i++) uv[i] = new Vector2(.5f, verts[i].y / 90f + .5f); mesh.uv = uv;
+            string meshPath = dir + "/void_sky_dome.asset"; if (AssetDatabase.LoadAssetAtPath<Mesh>(meshPath)) AssetDatabase.DeleteAsset(meshPath); AssetDatabase.CreateAsset(mesh, meshPath);
+            var dome = new GameObject("Glowing sky dome", typeof(MeshFilter), typeof(MeshRenderer)); dome.transform.position = new Vector3(5f, 1f, 2f);
+            dome.GetComponent<MeshFilter>().sharedMesh = mesh; var mr = dome.GetComponent<MeshRenderer>(); mr.sharedMaterial = mat; mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; mr.receiveShadows = false;
+            RenderSettings.fogEndDistance = 120f; RenderSettings.fogStartDistance = 18f; RenderSettings.fogColor = new Color(.97f, .96f, .97f);
+            // post: soft heavy bloom, slightly cool highlights, gentle vignette
+            string vp = dir + "/VP_Void.asset"; if (AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.VolumeProfile>(vp)) AssetDatabase.DeleteAsset(vp);
+            var p = ScriptableObject.CreateInstance<UnityEngine.Rendering.VolumeProfile>(); AssetDatabase.CreateAsset(p, vp);
+            var tm = p.Add<UnityEngine.Rendering.Universal.Tonemapping>(true); tm.mode.Override(UnityEngine.Rendering.Universal.TonemappingMode.Neutral);
+            var bl = p.Add<UnityEngine.Rendering.Universal.Bloom>(true); bl.intensity.Override(1.1f); bl.threshold.Override(.95f); bl.scatter.Override(.82f); bl.tint.Override(new Color(1f, .97f, .98f));
+            var ca = p.Add<UnityEngine.Rendering.Universal.ColorAdjustments>(true); ca.postExposure.Override(.42f); ca.contrast.Override(14f); ca.saturation.Override(10f);
+            var vg = p.Add<UnityEngine.Rendering.Universal.Vignette>(true); vg.intensity.Override(.12f); vg.smoothness.Override(.7f); vg.color.Override(new Color(.75f, .7f, .85f));
+            foreach (var c in p.components) AssetDatabase.AddObjectToAsset(c, p);
+            var volGo = new GameObject("Void volume", typeof(UnityEngine.Rendering.Volume)); var vol = volGo.GetComponent<UnityEngine.Rendering.Volume>(); vol.isGlobal = true; vol.priority = 10; vol.sharedProfile = p;
+            var cam = GameObject.FindWithTag("MainCamera"); if (cam) { var d = cam.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>(); if (!d) d = cam.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>(); d.renderPostProcessing = true; var c = cam.GetComponent<Camera>(); c.farClipPlane = Mathf.Max(c.farClipPlane, 200f); }
+            // light motes: tiny glowing specks drifting everywhere
+            var mg = new GameObject("Light motes", typeof(ParticleSystem)); mg.transform.position = new Vector3(5f, 1.5f, 2f);
+            var ps = mg.GetComponent<ParticleSystem>(); var main = ps.main; main.loop = true; main.prewarm = true; main.startLifetime = 9f; main.startSpeed = .08f; main.startSize = new ParticleSystem.MinMaxCurve(.03f, .09f); main.maxParticles = 400; main.useUnscaledTime = true;
+            main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, .95f, .85f, .9f), new Color(.85f, .9f, 1f, .9f));
+            var em = ps.emission; em.rateOverTime = 40; var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Box; sh.scale = new Vector3(26, 9, 22);
+            var nz = ps.noise; nz.enabled = true; nz.strength = .15f; nz.frequency = .2f;
+            var col = ps.colorOverLifetime; col.enabled = true; var g = new Gradient(); g.SetKeys(new[] { new GradientColorKey(Color.white, 0), new GradientColorKey(Color.white, 1) }, new[] { new GradientAlphaKey(0, 0), new GradientAlphaKey(1, .3f), new GradientAlphaKey(1, .7f), new GradientAlphaKey(0, 1) }); col.color = g;
+            var pm = AssetDatabase.LoadAssetAtPath<Material>(dir + "/M_Mote.mat");
+            if (!pm) { pm = new Material(Shader.Find("Universal Render Pipeline/Particles/Unlit")); AssetDatabase.CreateAsset(pm, dir + "/M_Mote.mat"); }
+            pm.SetFloat("_Surface", 1); pm.SetFloat("_Blend", 2); pm.SetColor("_BaseColor", new Color(2.2f, 2.1f, 2f, 1f)); pm.EnableKeyword("_SURFACE_TYPE_TRANSPARENT"); pm.renderQueue = 3100;
+            var dp = AssetDatabase.GetBuiltinExtraResource<Material>("Default-ParticleSystem.mat"); if (dp && dp.mainTexture) pm.SetTexture("_BaseMap", dp.mainTexture);
+            EditorUtility.SetDirty(pm); mg.GetComponent<ParticleSystemRenderer>().sharedMaterial = pm;
+        }
+
+        static bool IsUnder(Transform t, string name) { for (var x = t; x; x = x.parent) if (x.name == name) return true; return false; }
+        static bool Kept(Transform t, HashSet<Transform> keep)
+        {
+            if (keep.Contains(t)) return true;
+            foreach (var k in keep) if (k && (k.IsChildOf(t) || t.IsChildOf(k))) return true;   // ancestors of kept parts, and the parts' own children
+            return false;
         }
     }
 }

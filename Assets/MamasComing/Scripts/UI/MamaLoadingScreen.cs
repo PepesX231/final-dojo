@@ -39,6 +39,14 @@ namespace MamasComing
         static readonly Color Chalk = new Color(.95f, .94f, .89f), ChalkDim = new Color(.95f, .94f, .89f, .55f);
         static readonly Color Sticky = new Color(1f, .86f, .48f), Tag = new Color(1f, .78f, .55f), PenBlue = new Color(.27f, .5f, .86f);
 
+        static RectTransform Art(Transform parent, string name, string sprite, Vector2 pos, Vector2 size)
+        {
+            var rt = MamaUIKit.Rect(name, parent, MamaUIKit.CC, MamaUIKit.CC, pos, size);
+            var im = rt.gameObject.AddComponent<Image>(); im.sprite = Resources.Load<Sprite>("MamaUI/Art/" + sprite); im.raycastTarget = false;
+            if (!im.sprite) im.color = new Color(1, 1, 1, .9f);
+            return rt;
+        }
+
         static RectTransform Shadowed(Transform parent, string name, Vector2 pos, Vector2 size, Color color, float rot)
         {
             var shadow = MamaFlowUI.Panel(parent, name + " shadow", pos + new Vector2(10, -14), size, MamaTheme.PaperS, new Color(0, 0, 0, .38f));
@@ -58,27 +66,27 @@ namespace MamasComing
             var logo = MamaUIKit.Label("Chalk title", c.transform, MamaUIKit.TL, MamaUIKit.TL, new Vector2(70, -48), new Vector2(700, 80), "MAMA'S COMING!", null, MamaTheme.Display, 54, Chalk, TextAnchor.MiddleLeft, 0f, 3f);
             logo.color = new Color(1f, .93f, .78f, .92f);
 
-            // the polaroid with the problem photo
-            polaroidRt = Shadowed(c.transform, "Polaroid", new Vector2(-235, 55), new Vector2(880, 650), new Color(.98f, .97f, .94f), -1.5f);
-            var pic = MamaUIKit.Rect("Problem photo", polaroidRt, MamaUIKit.CC, MamaUIKit.CC, new Vector2(0, 50), new Vector2(810, 456));
-            MamaUIKit.Img(MamaUIKit.Rect("Photo frame", polaroidRt, MamaUIKit.CC, MamaUIKit.CC, new Vector2(0, 50), new Vector2(822, 468)), null, new Color(.86f, .85f, .82f));
-            pic.SetAsLastSibling();
+            // the polaroid with the problem photo (paper art rendered by ArtSource/UI/render_ui_art.js; photo sits under the frame)
+            polaroidRt = MamaUIKit.Rect("Polaroid", c.transform, MamaUIKit.CC, MamaUIKit.CC, new Vector2(-235, 45), new Vector2(940, 710), -1.5f);
+            var pic = MamaUIKit.Rect("Problem photo", polaroidRt, MamaUIKit.CC, MamaUIKit.CC, new Vector2(0, 50), new Vector2(816, 462));
             photo = pic.gameObject.AddComponent<RawImage>(); photo.raycastTarget = false;
-            tipTitle = MamaFlowUI.Text(polaroidRt, "Caption", new Vector2(-20, -250), new Vector2(760, 90), "", 40, PenBlue, TextAnchor.MiddleLeft);
+            Art(polaroidRt, "Frame", "ui_polaroid", Vector2.zero, new Vector2(940, 710));
+            tipTitle = MamaFlowUI.Text(polaroidRt, "Caption", new Vector2(-20, -248), new Vector2(760, 90), "", 40, PenBlue, TextAnchor.MiddleLeft);
             tipTitle.font = MamaTheme.Bold;
-            // orange paper tag taped over the top edge (like a label on a photo)
-            var tag = Shadowed(polaroidRt, "Next job tag", new Vector2(0, 318), new Vector2(330, 86), Tag, 1f);
-            MamaFlowUI.Text(tag, "Tag text", Vector2.zero, new Vector2(300, 70), MamaFlowUI.T("Next job", "ภารกิจต่อไป"), 38, new Color(.62f, .33f, .17f), TextAnchor.MiddleCenter).font = MamaTheme.Bold;
+            // orange pinked paper tag over the top edge
+            var tag = Art(polaroidRt, "Next job tag", "ui_tag", new Vector2(0, 320), new Vector2(370, 126));
+            tag.localRotation = Quaternion.Euler(0, 0, 1.2f);
+            MamaFlowUI.Text(tag, "Tag text", new Vector2(0, 4), new Vector2(300, 70), MamaFlowUI.T("Next job", "ภารกิจต่อไป"), 38, new Color(.55f, .28f, .12f), TextAnchor.MiddleCenter).font = MamaTheme.Bold;
 
-            // sticky note with the tip
-            noteRt = Shadowed(c.transform, "Tip note", new Vector2(470, 75), new Vector2(470, 560), Sticky, 1.8f);
-            MamaUIKit.Img(MamaUIKit.Rect("Note top band", noteRt, MamaUIKit.TC, MamaUIKit.TC, new Vector2(0, -6), new Vector2(450, 34)), null, new Color(1f, .78f, .35f, .55f));
-            MamaTheme.Tape(noteRt, new Vector2(1, .62f), new Vector2(-6, 0), 88, 150);
-            MamaFlowUI.Text(noteRt, "Tip label", new Vector2(-20, 210), new Vector2(380, 70), MamaFlowUI.T("Tips:", "เคล็ดลับ:"), 40, new Color(.36f, .22f, .12f)).font = MamaTheme.Bold;
-            tipBody = MamaFlowUI.Text(noteRt, "Tip", new Vector2(0, 10), new Vector2(400, 320), "", 30, new Color(.3f, .2f, .12f), TextAnchor.UpperLeft);
+            // sticky note with the tip (curled corner, crease)
+            noteRt = MamaUIKit.Rect("Tip note", c.transform, MamaUIKit.CC, MamaUIKit.CC, new Vector2(470, 70), new Vector2(530, 620), 1.8f);
+            Art(noteRt, "Paper", "ui_sticky", Vector2.zero, new Vector2(530, 620));
+            var tape = Art(noteRt, "Tape", "ui_tape2", new Vector2(0, 292), new Vector2(190, 58)); tape.localRotation = Quaternion.Euler(0, 0, -4f);
+            MamaFlowUI.Text(noteRt, "Tip label", new Vector2(-20, 205), new Vector2(380, 70), MamaFlowUI.T("Tips:", "เคล็ดลับ:"), 40, new Color(.36f, .22f, .12f)).font = MamaTheme.Bold;
+            tipBody = MamaFlowUI.Text(noteRt, "Tip", new Vector2(0, 5), new Vector2(400, 320), "", 30, new Color(.3f, .2f, .12f), TextAnchor.UpperLeft);
             // handwritten link instead of a boxed button
-            LinkButton(noteRt, "Next tip", new Vector2(40, -228), new Vector2(330, 64), MamaFlowUI.T("Next tip  →", "เคล็ดลับถัดไป  →"), 32, new Color(.2f, .42f, .78f), Next);
-            counter = MamaFlowUI.Text(noteRt, "Counter", new Vector2(150, 213), new Vector2(110, 40), "", 22, new Color(.45f, .3f, .15f, .8f), TextAnchor.MiddleRight);
+            LinkButton(noteRt, "Next tip", new Vector2(10, -222), new Vector2(330, 64), MamaFlowUI.T("Next tip  →", "เคล็ดลับถัดไป  →"), 32, new Color(.2f, .42f, .78f), Next);
+            counter = MamaFlowUI.Text(noteRt, "Counter", new Vector2(160, 207), new Vector2(110, 40), "", 22, new Color(.45f, .3f, .15f, .8f), TextAnchor.MiddleRight);
 
             // little chalk kid mopping (2D frame animation) + chalk status, bottom-left
             var kidRt = MamaUIKit.Rect("Chalk kid (loading)", c.transform, MamaUIKit.BL, MamaUIKit.BL, new Vector2(40, 10), new Vector2(330, 330));
@@ -114,7 +122,7 @@ namespace MamasComing
             float e=1f+Mathf.Sin(tipPop*Mathf.PI*2.2f)*(1f-tipPop)*.12f;float k=Mathf.SmoothStep(.85f,1f,tipPop)*e;
             if(noteRt){noteRt.localScale=Vector3.one*k;noteRt.localRotation=Quaternion.Euler(0,0,1.8f+Mathf.Sin(t*1.1f)*.6f);}
             if(polaroidRt)polaroidRt.localRotation=Quaternion.Euler(0,0,-1.5f+Mathf.Sin(t*.8f+1)*.4f);
-            foreach(var card in new[]{noteRt,polaroidRt}) if(card){var sh=card.parent.Find(card.name+" shadow"); if(sh){sh.localRotation=card.localRotation;sh.localScale=card.localScale;}}
+
             progress.rectTransform.anchorMax=new Vector2(Mathf.Max(.03f,Progress),1);
             var net=NetSession.I;
             if(returnLink&&!returnLink.activeSelf&&(Time.unscaledTime-openedAt>StuckSeconds||(NetSession.I&&NetSession.I.HasFlowError))) returnLink.SetActive(true);

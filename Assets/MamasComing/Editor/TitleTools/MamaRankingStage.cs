@@ -34,15 +34,15 @@ namespace MamasComing.Editor
             var root = new GameObject(Root).transform;
 
             // ------------------------------------------------------------ materials
-            var wall = Mat("RK Cyclorama peach", new Color(1f, .63f, .42f), .12f);
-            var burst = Mat("RK Burst light", new Color(1f, .74f, .5f), .05f, 0f, false, new Color(.35f, .2f, .1f));
-            var gold = Mat("RK Pouf mustard", new Color(1f, .74f, .22f), .35f);
-            var teal = Mat("RK Pouf teal", new Color(.22f, .66f, .64f), .35f);
-            var coral = Mat("RK Pouf coral", new Color(.95f, .42f, .38f), .35f);
+            var wall = Mat("RK Cyclorama peach", new Color(.86f, .58f, .47f), .12f);
+            var burst = Mat("RK Burst light", new Color(.93f, .68f, .55f), .05f, 0f, false, new Color(.12f, .07f, .04f));
+            var gold = Mat("RK Pouf mustard", new Color(.93f, .7f, .3f), .3f);
+            var teal = Mat("RK Pouf teal", new Color(.27f, .55f, .54f), .3f);
+            var coral = Mat("RK Pouf coral", new Color(.84f, .43f, .4f), .3f);
             var cream = Mat("RK Piping cream", new Color(1f, .95f, .84f), .45f);
             var ink = Mat("RK Ink brown", new Color(.36f, .2f, .12f), .2f);
             var bubble = Mat("RK Soap bubble", new Color(.75f, .93f, 1f, .28f), .95f, 0f, true, new Color(.05f, .1f, .14f));
-            var rug = Mat("RK Rug cream", new Color(1f, .9f, .72f), .05f);
+            var rug = Mat("RK Rug cream", new Color(.9f, .8f, .68f), .05f);
 
             // ------------------------------------------------------------ set: seamless cyclorama + floor collider
             var cyc = Obj("Cyclorama", root, Cyclorama(), wall);
@@ -100,20 +100,37 @@ namespace MamasComing.Editor
 
             // ------------------------------------------------------------ lights
             var lights = new GameObject("Ranking lights").transform;
-            var key = L("Key (warm sun)", lights, LightType.Directional, new Color(1f, .9f, .78f), 1.35f, Quaternion.Euler(42, -28, 0)); key.shadows = LightShadows.Soft; key.shadowStrength = .65f;
+            var key = L("Key (warm sun)", lights, LightType.Directional, new Color(1f, .88f, .76f), .95f, Quaternion.Euler(42, -28, 0)); key.shadows = LightShadows.Soft; key.shadowStrength = .65f;
             var rim = L("Rim (pink back light)", lights, LightType.Directional, new Color(1f, .62f, .75f), .7f, Quaternion.Euler(20, 160, 0));
-            var spot = L("Winner spotlight", lights, LightType.Spot, new Color(1f, .93f, .8f), 22f, Quaternion.Euler(62, 0, 0)); spot.transform.position = new Vector3(0, 6.2f, -3.2f); spot.range = 12; spot.spotAngle = 34; spot.innerSpotAngle = 18; spot.shadows = LightShadows.Soft;
+            // stage beams: soft additive cones from above onto each podium (concert look)
+            var beamMat = AssetDatabase.LoadAssetAtPath<Material>(Dir + "RK Beam.mat");
+            if (!beamMat) { beamMat = new Material(Shader.Find("Universal Render Pipeline/Unlit")); AssetDatabase.CreateAsset(beamMat, Dir + "RK Beam.mat"); }
+            beamMat.SetFloat("_Surface", 1); beamMat.SetFloat("_Blend", 2); beamMat.SetFloat("_Cull", 0); beamMat.SetFloat("_ZWrite", 0);
+            beamMat.SetFloat("_SrcBlend", (float)BlendMode.SrcAlpha); beamMat.SetFloat("_DstBlend", (float)BlendMode.One);
+            beamMat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT"); beamMat.renderQueue = (int)RenderQueue.Transparent + 10; beamMat.SetOverrideTag("RenderType", "Transparent");
+            beamMat.SetColor("_BaseColor", new Color(1f, .86f, .66f, .07f)); EditorUtility.SetDirty(beamMat);
+            for (int i = 0; i < 3; i++)
+            {
+                Vector3 target = new Vector3(Podium[i].x, Podium[i].y, Podium[i].z);
+                Vector3 apex = new Vector3(Podium[i].x * 1.6f, 8.5f, Podium[i].z - 2.5f);
+                var cone = Obj("Beam " + (i + 1), root, Lathe(new List<Vector2> { new Vector2(.12f, 0f), new Vector2(i == 0 ? 1.35f : 1.05f, -1f) }, 40), beamMat);
+                cone.transform.position = apex; cone.transform.rotation = Quaternion.FromToRotation(Vector3.down, (target - apex).normalized);
+                cone.transform.localScale = new Vector3(1, (target - apex).magnitude, 1);
+                cone.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+                var sp = L("Beam light " + (i + 1), lights, LightType.Spot, new Color(1f, .9f, .75f), i == 0 ? 16f : 9f, Quaternion.LookRotation(target - apex));
+                sp.transform.position = apex; sp.range = 14; sp.spotAngle = i == 0 ? 26 : 22; sp.innerSpotAngle = 10; sp.shadows = i == 0 ? LightShadows.Soft : LightShadows.None;
+            }
             var fill = L("Fill (sky bounce)", lights, LightType.Point, new Color(.75f, .88f, 1f), 3.5f, Quaternion.identity); fill.transform.position = new Vector3(-4, 3, -4); fill.range = 14;
             RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(1f, .86f, .74f) * 1.05f;
-            RenderSettings.ambientEquatorColor = new Color(.96f, .64f, .5f) * .95f;
+            RenderSettings.ambientSkyColor = new Color(.86f, .78f, .8f) * .9f;
+            RenderSettings.ambientEquatorColor = new Color(.85f, .6f, .52f) * .8f;
             RenderSettings.ambientGroundColor = new Color(.55f, .32f, .26f) * .9f;
-            RenderSettings.fog = true; RenderSettings.fogMode = FogMode.Linear; RenderSettings.fogColor = new Color(1f, .7f, .5f); RenderSettings.fogStartDistance = 14; RenderSettings.fogEndDistance = 40;
+            RenderSettings.fog = true; RenderSettings.fogMode = FogMode.Linear; RenderSettings.fogColor = new Color(.8f, .55f, .47f); RenderSettings.fogStartDistance = 14; RenderSettings.fogEndDistance = 40;
             RenderSettings.skybox = null;
 
             // ------------------------------------------------------------ camera + post
             var camGo = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener)); camGo.tag = "MainCamera";
-            var cam = camGo.GetComponent<Camera>(); cam.fieldOfView = 33; cam.clearFlags = CameraClearFlags.SolidColor; cam.backgroundColor = new Color(1f, .66f, .46f);
+            var cam = camGo.GetComponent<Camera>(); cam.fieldOfView = 33; cam.clearFlags = CameraClearFlags.SolidColor; cam.backgroundColor = new Color(.7f, .45f, .38f);
             cam.transform.position = new Vector3(-2.35f, 2.35f, -9.6f); cam.transform.LookAt(new Vector3(-1.45f, 1.45f, 0.4f));
             cam.nearClipPlane = .1f; cam.farClipPlane = 60;
             var data = camGo.GetComponent<UniversalAdditionalCameraData>(); if (!data) data = camGo.AddComponent<UniversalAdditionalCameraData>();
@@ -183,15 +200,15 @@ namespace MamasComing.Editor
             if (p) AssetDatabase.DeleteAsset(path);
             p = ScriptableObject.CreateInstance<VolumeProfile>(); AssetDatabase.CreateAsset(p, path);
             var tm = p.Add<Tonemapping>(true); tm.mode.Override(TonemappingMode.Neutral);
-            var bloom = p.Add<Bloom>(true); bloom.intensity.Override(.55f); bloom.threshold.Override(1.0f); bloom.scatter.Override(.65f); bloom.tint.Override(new Color(1f, .9f, .8f));
-            var ca = p.Add<ColorAdjustments>(true); ca.postExposure.Override(.25f); ca.contrast.Override(14f); ca.saturation.Override(16f); ca.colorFilter.Override(new Color(1f, .98f, .95f));
-            var vg = p.Add<Vignette>(true); vg.intensity.Override(.24f); vg.smoothness.Override(.45f); vg.color.Override(new Color(.35f, .12f, .05f));
+            var bloom = p.Add<Bloom>(true); bloom.intensity.Override(.4f); bloom.threshold.Override(1.0f); bloom.scatter.Override(.65f); bloom.tint.Override(new Color(1f, .9f, .8f));
+            var ca = p.Add<ColorAdjustments>(true); ca.postExposure.Override(.05f); ca.contrast.Override(18f); ca.saturation.Override(-4f); ca.colorFilter.Override(new Color(1f, .97f, .95f));
+            var vg = p.Add<Vignette>(true); vg.intensity.Override(.34f); vg.smoothness.Override(.45f); vg.color.Override(new Color(.35f, .12f, .05f));
             var lgg = p.Add<LiftGammaGain>(true); lgg.lift.Override(new Vector4(1f, .98f, .96f, .02f));
             foreach (var c in p.components) AssetDatabase.AddObjectToAsset(c, p);
             EditorUtility.SetDirty(p); return p;
         }
 
-        static void Confetti(Transform root)
+        internal static void Confetti(Transform root)
         {
             var go = new GameObject("Confetti", typeof(ParticleSystem)); go.transform.SetParent(root, false);
             go.transform.localPosition = new Vector3(0, 7.5f, 0); go.transform.localRotation = Quaternion.Euler(90, 0, 0);
@@ -233,7 +250,7 @@ namespace MamasComing.Editor
         }
 
         /// Revolves a (radius, height) profile around Y.
-        static Mesh Lathe(List<Vector2> prof, int seg)
+        internal static Mesh Lathe(List<Vector2> prof, int seg)
         {
             var v = new List<Vector3>(); var t = new List<int>();
             for (int i = 0; i < prof.Count; i++) for (int s = 0; s <= seg; s++) { float a = s / (float)seg * Mathf.PI * 2; v.Add(new Vector3(Mathf.Cos(a) * prof[i].x, prof[i].y, Mathf.Sin(a) * prof[i].x)); }
@@ -258,13 +275,13 @@ namespace MamasComing.Editor
             return Lathe(p, 56);
         }
 
-        static Mesh Torus(float R, float r, int seg, int side)
+        internal static Mesh Torus(float R, float r, int seg, int side)
         {
             var p = new List<Vector2>(); for (int i = 0; i <= side; i++) { float a = i / (float)side * Mathf.PI * 2; p.Add(new Vector2(R + Mathf.Cos(a) * r, Mathf.Sin(a) * r)); }
             return Lathe(p, seg);
         }
 
-        static Mesh Sphere(int seg, int rings)
+        internal static Mesh Sphere(int seg, int rings)
         {
             var p = new List<Vector2>(); for (int i = 0; i <= rings; i++) { float a = Mathf.PI / 2 - i / (float)rings * Mathf.PI; p.Add(new Vector2(Mathf.Cos(a) * .5f, Mathf.Sin(a) * .5f)); }
             return Lathe(p, seg);
