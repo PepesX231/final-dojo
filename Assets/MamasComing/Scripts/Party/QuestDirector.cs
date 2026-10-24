@@ -17,6 +17,26 @@ namespace MamasComing
 
         /// Fewer players = problems escalate a bit slower.
         public float Pace => NetGame.PlayerCount <= 1 ? 0.72f : NetGame.PlayerCount == 2 ? 0.9f : 1f;
+        public int RoundProblemCount { get; private set; }
+        public static int ProblemBudget(int players) => players <= 1 ? 10 : players == 2 ? 18 : 26;
+        public static int ConcurrentBudget(int players) => players <= 1 ? 2 : players == 2 ? 3 : 4;
+
+        public void ConfigureRound()
+        {
+            if (!NetGame.IsAuthority) return;
+            var candidates = new List<Hazard>();
+            foreach (var h in Hazard.All)
+                if (h && (h.startActive || h.startAt >= 0f)) candidates.Add(h);
+            // Host chooses once. Clients receive the resulting hazard states, never roll their own.
+            for (int i = candidates.Count - 1; i > 0; i--)
+            { int j = Random.Range(0, i + 1); var tmp = candidates[i]; candidates[i] = candidates[j]; candidates[j] = tmp; }
+            RoundProblemCount = Mathf.Min(candidates.Count, ProblemBudget(NetGame.PlayerCount));
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                var h = candidates[i]; h.SetRoundEnabled(i < RoundProblemCount);
+                h.startAt = i < ConcurrentBudget(NetGame.PlayerCount) ? 0f : 25f + (i - ConcurrentBudget(NetGame.PlayerCount)) * 16f;
+            }
+        }
 
         GameManager gm;
         static string T(string en, string th) => Loc.Thai ? th : en;
@@ -34,8 +54,10 @@ namespace MamasComing
             if (NetGame.IsAuthority)
             {
                 Elapsed += dt;
+                int active = Hazard.All.FindAll(h => h && h.Urgent).Count;
                 foreach (var h in Hazard.All.ToArray())
-                    if (h && !h.Active && !h.Fixed && h.startAt >= 0f && Elapsed >= h.startAt * (1f / Mathf.Max(0.6f, Pace)) * 0.85f) h.Activate();
+                    if (active < ConcurrentBudget(NetGame.PlayerCount) && h && h.RoundEnabled && !h.Active && !h.Fixed && h.startAt >= 0f && Elapsed >= h.startAt)
+                    { h.Activate(); active++; }
 
                 // neighbours: loud music, smoke alarm and visible flames annoy them
                 float add = 0f;

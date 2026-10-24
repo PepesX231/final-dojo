@@ -8,6 +8,13 @@ namespace MamasComing
         public static System.Action<PlayerController, Vector3, float, float, bool, Vector3> SendHit;
         /// Relays a one-shot body animation of OUR kid to every other screen.
         public static System.Action<PlayerController, byte, float> SendAnim;
+        public static System.Action<PlayerController, PlayerController> SendGrab;
+        public static void Grab(PlayerController attacker, PlayerController victim)
+        {
+            if (!attacker || !victim) return;
+            if (victim.isLocal || !Online) victim.ReceiveGrab();
+            else SendGrab?.Invoke(attacker, victim);
+        }
         /// Relays a comic word + sound at a spot to every other screen.
         public static System.Action<Vector3, string, string, Color, string, float, float> SendPop;
 

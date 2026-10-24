@@ -63,6 +63,9 @@ namespace MamasComing
             (Gamepad.current != null && Gamepad.current.rightShoulder.wasPressedThisFrame);
 
         public static bool ClickDown => Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
+        public static bool PunchHeld => (Mouse.current != null && Mouse.current.leftButton.isPressed) ||
+            (Keyboard.current != null && Keyboard.current.gKey.isPressed) ||
+            (Gamepad.current != null && Gamepad.current.rightShoulder.isPressed);
 
         public static Vector2 MouseDelta => Mouse.current != null ? Mouse.current.delta.ReadValue() : Vector2.zero;
         public static Vector2 StickLook => Gamepad.current != null ? Gamepad.current.rightStick.ReadValue() : Vector2.zero;

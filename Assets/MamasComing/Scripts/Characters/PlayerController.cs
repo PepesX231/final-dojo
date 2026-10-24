@@ -22,7 +22,7 @@ namespace MamasComing
         [Header("Wet floor")]
         public float wetGrip = 0.12f;
         public float wetRunFallChance = 0.85f;
-        public float wetWalkFallChance = 0.05f;
+        public float wetWalkFallChance = 0f;
 
         public bool controlsEnabled;
 
@@ -60,6 +60,9 @@ namespace MamasComing
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)] static void ResetPlayers() { AllPlayers.Clear(); }
         /// False for other players' avatars in online co-op (they are driven by the network).
         public bool isLocal = true;
+        float grabbedUntil;
+        public bool BeingGrabbed => Time.time < grabbedUntil;
+        public void ReceiveGrab() { if (!Stunned) grabbedUntil = Time.time + 0.22f; }
         void OnEnable() { if (!AllPlayers.Contains(this)) AllPlayers.Add(this); }
         void OnDisable() { AllPlayers.Remove(this); }
 
@@ -82,6 +85,10 @@ namespace MamasComing
 
         void Start()
         {
+            // Passing friends never pushes or trips them; contact comes from an explicit punch/grab.
+            foreach (var other in AllPlayers) if (other && other != this)
+                foreach (var mine in GetComponentsInChildren<Collider>())
+                    foreach (var theirs in other.GetComponentsInChildren<Collider>()) Physics.IgnoreCollision(mine, theirs);
             if (Camera.main) Motor.CameraTransform = Camera.main.transform;
             // wear the fruit picked in the menu / lobby (remote avatars get theirs from the network)
             if (isLocal && GameManager.I && GameManager.I.player == this && KidLook.Of(this) != KidLook.Selected) KidLook.Apply(this, KidLook.Selected);
@@ -109,7 +116,7 @@ namespace MamasComing
 
         /// Remote player's avatar (online co-op): pose comes from the network; just keep the held item in the hands.
         public void RemoteTick(float speed, bool sprint, bool stunned) => RemoteTick(speed, sprint, stunned, false);
-        public void RemoteTick(float speed, bool sprint, bool stunned, bool knockedDown)
+        public void RemoteTick(float speed, bool sprint, bool stunned, bool knockedDown, bool grounded = true)
         {
             // the owner decides when it is down; KidBody plays the curl / pop-up from this flag
             if (knockedDown) { knocked = true; stun = Mathf.Max(stun, RecoverTime + 0.15f); }
@@ -123,7 +130,7 @@ namespace MamasComing
             {
                 if (planarField == null) planarField = typeof(PlayerMotor3D).GetField("_planar", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
                 planarField?.SetValue(Motor, remoteVel);
-                typeof(PlayerMotor3D).GetProperty("IsGrounded").SetValue(Motor, true); typeof(PlayerMotor3D).GetProperty("IsSprinting").SetValue(Motor, sprint);
+                typeof(PlayerMotor3D).GetProperty("IsGrounded").SetValue(Motor, grounded); typeof(PlayerMotor3D).GetProperty("IsSprinting").SetValue(Motor, sprint);
             }
             if (Held != null) Held.TickHeldPose(Time.deltaTime);
             stun = stunned ? Mathf.Max(stun, 0.1f) : stun;
@@ -149,9 +156,12 @@ namespace MamasComing
             bool canMove = controlsEnabled && !Stunned && !inMini && !MamaSettings.Open;
             bool holdingAction = HoldProgress > 0f;
             Motor.InputEnabled = canMove;
-            Motor.AllowJump = canMove && Held == null;
+            Motor.AllowJump = canMove && Held == null && !BeingGrabbed;
             Motor.GroundGripScale = KnockedDown ? 0.075f : OnWet ? Mathf.Lerp(1f, wetGrip, Mathf.InverseLerp(0.0009f, 0.003f, WaterDepth)) : 1f;
             float mult = Held ? Held.SpeedMultiplier : 1f;
+            if (BeingGrabbed) mult *= 0.12f;
+            var roughhouse = GetComponent<KidRoughhouse>();
+            if (roughhouse && roughhouse.Grabbing) mult *= 0.45f;
             if (scrubbedLastFrame) mult *= Held && Held.tool == ToolType.Mop ? 0.75f : 0.6f;
             if (actionLock > 0f) mult *= 0.25f;
             mult *= SplatMess.StickyAt(transform.position);
@@ -289,8 +299,8 @@ namespace MamasComing
             float spd = PlanarSpeed;
             float chance = 0f;
             if (Sprinting && spd > 3.5f) chance = wetRunFallChance;
-            else if (spd > 2.2f) chance = wetWalkFallChance;
-            if (Held && Held.tool == ToolType.Bucket) chance += 0.25f;
+            // Walking is the safe, learnable response to a puddle.
+            if (Sprinting && Held && Held.tool == ToolType.Bucket) chance += 0.25f;
             chance *= Mathf.InverseLerp(0.0009f, 0.0025f, WaterDepth);
             if (Random.value < chance * dt) { Slip(null); return; }
 

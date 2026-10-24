@@ -73,18 +73,23 @@ namespace MamasComing
                 title = Text("OIL FIRE", "ไฟน้ำมัน");
                 body = Text("Water makes it flare up. Look for a lid or a fire extinguisher.", "โดนน้ำแล้วไฟจะปะทุ ลองมองหาฝาหม้อ หรือถังดับเพลิง");
             }
+            else if (p.OnWet)
+            {
+                title = Text("WET FLOOR — WATER", "พื้นเปียก — น้ำ");
+                body = Text("Walk slowly. Running can make you slip! Stop the leak, then use a mop.", "เดินช้า ๆ วิ่งแล้วอาจลื่น! ปิดน้ำที่รั่ว แล้วใช้ไม้ถูพื้น");
+            }
             else
             {
                 title = Text("Take a look around", "ลองสังเกตรอบตัว");
                 body = Text("Water, smoke, things out of place. What will Mom notice?", "น้ำ ควัน ของผิดที่... แม่จะเห็นอะไรบ้าง?");
             }
             string keys = held ? Text("Q place  •  RMB throw  •  hold H: idea", "Q วาง  •  คลิกขวา ขว้าง  •  H ค้าง: คำใบ้") : Text("E interact  •  TAB notes  •  hold H: idea", "E ใช้ / หยิบ  •  TAB ภาพรวม  •  H ค้าง: คำใบ้");
-            if (Debug.isDebugBuild && !held && !p.Target) keys = Text("1–5 fruit  •  F6/F7 cycle  •  F8 tumble", "1–5 เลือกผลไม้  •  F6/F7 สลับ  •  F8 ลองลื่น");
+            if (!held && !p.Target) keys = Text("E pick up  •  click: punch  •  hold click: grab  •  ESC menu", "E หยิบ  •  คลิก: ต่อย  •  คลิกค้าง: จับเพื่อน  •  ESC เมนู");
             if (pad != null && k == null) keys = held ? "B place  •  Y throw  •  D-pad up: idea" : "A interact  •  View notes  •  D-pad up: idea";
             gm.ui.SetContext(title, body, keys, Room(p.transform.position));
             Idea(held, p.Target, out string ideaTitle, out string ideaBody);
             gm.ui.SetReadabilityPanels(overview && !MamaSettings.Open && !mini, help, ideaTitle, ideaBody);
-            gm.ui.SetContextVisible(!MamaSettings.Open && !mini && !help && !overview && (held || p.Target || NearOilFire()));
+            gm.ui.SetContextVisible(!MamaSettings.Open && !mini && !help && !overview && (held || p.Target || NearOilFire() || p.OnWet || Time.timeSinceLevelLoad < 25f));
             UpdateHome(held as MessyProp, help);
             UpdateFocus(p.Target, help);
             if (!mini && !held && !p.Target && Time.time >= thoughtAt && Time.timeSinceLevelLoad < 18f)

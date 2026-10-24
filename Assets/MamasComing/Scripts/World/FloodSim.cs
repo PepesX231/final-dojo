@@ -74,6 +74,14 @@ namespace MamasComing
                 var m = surface.material;
                 m.SetTexture("_BaseMap", tex);
                 m.SetColor("_BaseColor", Color.white);
+                // The depth texture stores straight RGB + alpha. Premultiplied blending
+                // made even dry cells contribute a solid cyan sheet over the whole house.
+                m.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+                m.SetFloat("_Surface", 1f); m.SetFloat("_Blend", 0f);
+                m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                m.SetFloat("_ZWrite", 0f); m.renderQueue = 3000;
                 m.SetFloat("_Smoothness", 0.62f);
                 m.SetFloat("_EnvironmentReflections", 1f); m.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
                 ripple = MakeRipple(128);

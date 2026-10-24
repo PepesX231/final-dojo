@@ -22,17 +22,17 @@ namespace MamasComing
         public static readonly string[] RoomNames =
         {
             "Living room", "Laundry", "Dining room", "Hallway", "Bedroom", "Bathroom", "Kitchen", "Garage", "Game room",
-            "Staircase", "Upstairs hall", "Mom's room", "Party loft", "Landing",
+            "Bedroom", "Upstairs hall", "Mom's room", "Party loft", "Landing",
         };
         public static readonly Rect[] RoomRects =
         {
             new Rect(0f, 0f, 26f, 12f), new Rect(26f, 0f, 8f, 12f), new Rect(34f, 0f, 10f, 12f), new Rect(0f, 12f, 60f, 4f),
-            new Rect(0f, 0f, 14f, 12f), new Rect(14f, 16f, 10f, 12f), new Rect(24f, 16f, 20f, 12f), new Rect(44f, 0f, 16f, 12f),
+            new Rect(0f, 16f, 14f, 12f), new Rect(14f, 16f, 10f, 12f), new Rect(24f, 16f, 20f, 12f), new Rect(44f, 0f, 16f, 12f),
             new Rect(44f, 16f, 16f, 12f), new Rect(0f, 16f, 14f, 12f), new Rect(0f, 12f, 30f, 4f), new Rect(14f, 0f, 16f, 12f),
             new Rect(14f, 16f, 16f, 12f), new Rect(0f, 16f, 14f, 12f),
         };
         /// 0 = ground floor, 1 = upper floor.
-        public static readonly int[] RoomFloor = { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1 };
+        public static readonly int[] RoomFloor = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 };
 
         public static int FloorOf(Vector3 p) => p.y > UpperThreshold ? 1 : 0;
         public static float FloorY(int floor) => floor == 1 ? UpperY : 0f;

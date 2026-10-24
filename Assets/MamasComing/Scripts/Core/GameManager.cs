@@ -365,6 +365,7 @@ namespace MamasComing
         public void StartRound()
         {
             if (state != State.Title) return;
+            if (QuestDirector.I) QuestDirector.I.ConfigureRound();
             state = State.Intro;
             MamaAudio.Play("pop", null, 0.7f);
             ui.ShowTitle(false);

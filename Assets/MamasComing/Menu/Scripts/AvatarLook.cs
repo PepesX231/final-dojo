@@ -33,7 +33,7 @@ namespace MamasComing.Menu
             if (!sameBody)
             {
                 if (body) Destroy(body.gameObject);
-                body = BuildBody(fruits != null && fruits.Length > 0 ? fruits[c.fruit % fruits.Length] : null);
+                body = BuildBody(KidLook.Prefab(c.fruit) ?? (fruits != null && fruits.Length > 0 ? fruits[c.fruit % fruits.Length] : null));
                 walking = false; phase = Random.value * 6f;
             }
             if (hat) Destroy(hat.gameObject);

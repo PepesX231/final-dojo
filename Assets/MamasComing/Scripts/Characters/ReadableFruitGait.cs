@@ -32,6 +32,7 @@ namespace MamasComing
             bool canWalk=!player.Stunned && player.Motor && player.Motor.IsGrounded;
             float speed=delta.magnitude/Time.deltaTime;
             weight=Mathf.MoveTowards(weight,canWalk?Mathf.Clamp01(speed/1.1f):0,Time.deltaTime*9);
+            // Preserve the gait phase when stopping/reversing; a frame-rate independent stride.
             if(delta.magnitude<1f)phase+=delta.magnitude/.95f*Mathf.PI*2;
             foreach(var p in parts)
             {
@@ -48,7 +49,8 @@ namespace MamasComing
                     p.t.localPosition=p.p+p.t.parent.InverseTransformVector(shift*k);
                     p.t.localRotation=Quaternion.AngleAxis(p.role==1?-Mathf.Max(0,Mathf.Sin(a)) * 16*weight:swing,axis)*p.r;
                 }
-                else if(!player.Held && player.HoldProgress<=0)
+                else if(!player.Held && player.HoldProgress<=0 &&
+                    (!player.actions || (!player.actions.Busy && player.actions.Current == KidActionAnimator.Clip.None)))
                 {
                     p.t.localPosition=p.p+p.t.parent.InverseTransformVector(-shift*.45f);
                     p.t.localRotation=Quaternion.AngleAxis(-swing*.75f,axis)*p.r;

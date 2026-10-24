@@ -22,7 +22,7 @@ namespace MamasComing
         public Mode State { get; private set; } = Mode.Offline;
         public string Status { get; private set; } = "";
         public string JoinCode { get; private set; } = "";
-        public const int MaxPlayers = 3;
+        public const int MaxPlayers = 4;
         public const ushort Port = 7777;
 
         NetworkManager nm;
@@ -35,7 +35,7 @@ namespace MamasComing
         int mySlot;
         PlayerController localKid;
 
-        class RemoteState { public Vector3 pos; public float yaw, speed; public bool use, sprint, stunned, down; public int holdTarget = -1; public int kid = -1, shownKid = -1; public float t; }
+        class RemoteState { public Vector3 pos; public float yaw, speed; public bool use, sprint, stunned, down, airborne; public int holdTarget = -1; public int kid = -1, shownKid = -1; public float t; }
 
         // registry (built when the scene loads, identical on every machine)
         List<Interactable> reg = new List<Interactable>();
@@ -56,6 +56,7 @@ namespace MamasComing
             SceneManager.sceneLoaded += (s, m) => { BindScene(); };
             NetGame.SendInteract = (t, p) => SendAct(0, t, null);
             NetGame.SendHit = SendHitMsg;
+            NetGame.SendGrab = SendGrabMsg;
             NetGame.SendAnim = SendFxAnim;
             NetGame.SendPop = SendFxPop;
             if (!GetComponent<CoopFriendMarkers>()) gameObject.AddComponent<CoopFriendMarkers>();
@@ -184,7 +185,7 @@ namespace MamasComing
         }
 
         // living room, on the fruit-scale plan
-        static readonly Vector3[] Spawns = { new Vector3(4.4f * HouseLayout.Scale, 0.02f, 3f * HouseLayout.Scale), new Vector3(6.8f * HouseLayout.Scale, 0.02f, 4.6f * HouseLayout.Scale), new Vector3(3.0f * HouseLayout.Scale, 0.02f, 4.8f * HouseLayout.Scale) };
+        static readonly Vector3[] Spawns = { new Vector3(4.4f * HouseLayout.Scale, 0.02f, 3f * HouseLayout.Scale), new Vector3(6.8f * HouseLayout.Scale, 0.02f, 4.6f * HouseLayout.Scale), new Vector3(3.0f * HouseLayout.Scale, 0.02f, 4.8f * HouseLayout.Scale), new Vector3(6f * HouseLayout.Scale, 0.02f, 2.5f * HouseLayout.Scale) };
         static readonly Color[] Tints = { new Color(1f, 1f, 1f), new Color(0.55f, 1f, 0.55f), new Color(1f, 0.95f, 0.45f) };
         void PlaceAtSpawn(PlayerController k, int slot) { if (k && k.Motor && k.isLocal) k.Motor.Teleport(Spawns[slot % Spawns.Length], Quaternion.Euler(0, -90, 0)); else if (k) k.transform.position = Spawns[slot % Spawns.Length]; }
 
@@ -249,6 +250,7 @@ namespace MamasComing
             nm.OnClientConnectedCallback += OnConnected;
             nm.OnClientDisconnectCallback += OnDisconnected;
             var cm = nm.CustomMessagingManager;
+            cm.RegisterNamedMessageHandler("mc/grab", OnGrab);
             cm.RegisterNamedMessageHandler("mc/state", OnState);
             cm.RegisterNamedMessageHandler("mc/act", OnAct);
             cm.RegisterNamedMessageHandler("mc/world", OnWorld);
@@ -381,10 +383,10 @@ namespace MamasComing
             {
                 if (kv.Key == mySlot || !kv.Value || !remote.TryGetValue(kv.Key, out var rs)) continue;
                 var pc = kv.Value;
-                pc.transform.position = Vector3.Lerp(pc.transform.position, rs.pos, 1f - Mathf.Exp(-14f * dt));
+                pc.transform.position = Vector3.Distance(pc.transform.position, rs.pos) > 5f ? rs.pos : Vector3.Lerp(pc.transform.position, rs.pos, 1f - Mathf.Exp(-14f * dt));
                 pc.transform.rotation = Quaternion.Slerp(pc.transform.rotation, Quaternion.Euler(0, rs.yaw, 0), 1f - Mathf.Exp(-14f * dt));
                 if (rs.kid >= 0 && rs.kid != rs.shownKid) { rs.shownKid = rs.kid; KidLook.Apply(pc, rs.kid); }   // wear the fruit they picked
-                pc.RemoteTick(rs.speed, rs.sprint, rs.stunned, rs.down);
+                pc.RemoteTick(rs.speed, rs.sprint, rs.stunned, rs.down, !rs.airborne);
                 // their hold-actions (cranking a valve, lifting the sofa...) look the same on every screen
                 if (pc.actions && rs.holdTarget >= 0 && rs.holdTarget < reg.Count && reg[rs.holdTarget]) pc.actions.Hold(pc.HoldClipFor(reg[rs.holdTarget]));
                 if (State == Mode.Host)
@@ -415,7 +417,8 @@ namespace MamasComing
             w.Write((byte)mySlot);
             var p = localKid.transform.position; w.Write(p.x); w.Write(p.y); w.Write(p.z);
             w.Write(localKid.transform.eulerAngles.y); w.Write(localKid.PlanarSpeed);
-            byte f = 0; if (MamaInput.UseHeld && localKid.Held && localKid.controlsEnabled) f |= 1; if (localKid.Sprinting) f |= 2; if (localKid.Stunned) f |= 4; if (localKid.KnockedDown) f |= 8;
+            byte f = 0; if (MamaInput.UseHeld && localKid.Held && localKid.controlsEnabled && !MamaSettings.Open) f |= 1; if (localKid.Sprinting) f |= 2; if (localKid.Stunned) f |= 4; if (localKid.KnockedDown) f |= 8;
+            if (localKid.Motor && !localKid.Motor.IsGrounded) f |= 16;
             w.Write(f);
             w.Write((short)(localKid.HoldProgress > 0f && localKid.Target ? reg.IndexOf(localKid.Target) : -1));
             w.Write((byte)KidLook.Of(localKid));
@@ -432,6 +435,7 @@ namespace MamasComing
             if (!remote.TryGetValue(slot, out var rs)) { rs = new RemoteState(); remote[slot] = rs; }
             rs.pos = new Vector3(r.ReadSingle(), r.ReadSingle(), r.ReadSingle()); rs.yaw = r.ReadSingle(); rs.speed = r.ReadSingle();
             byte f = r.ReadByte(); rs.use = (f & 1) != 0; rs.sprint = (f & 2) != 0; rs.stunned = (f & 4) != 0; rs.down = (f & 8) != 0;
+            rs.airborne = (f & 16) != 0;
             rs.holdTarget = r.ReadInt16(); rs.t = Time.time;
             rs.kid = r.BaseStream.Position < r.BaseStream.Length ? r.ReadByte() : -1;   // older builds don't send the fruit
             if (!avatars.ContainsKey(slot)) SpawnPuppet(slot);
@@ -783,6 +787,37 @@ namespace MamasComing
             var w = Begin(); WriteHit(w, slot, dir, force, stun, drop, from);
             if (State == Mode.Host) { foreach (var kv in slotOf) if (kv.Value == slot && kv.Key != nm.LocalClientId) Send("mc/hit", kv.Key, w, NetworkDelivery.Reliable); }
             else SendHost("mc/hit", w, NetworkDelivery.Reliable);
+        }
+
+        void SendGrabMsg(PlayerController attacker, PlayerController victim)
+        {
+            int slot = SlotOfAvatar(victim); if (slot < 0 || attacker != localKid) return;
+            var w = Begin(); w.Write((byte)mySlot); w.Write((byte)slot);
+            if (State == Mode.Host) SendAll("mc/grab", w, NetworkDelivery.UnreliableSequenced);
+            else if (State == Mode.Client) SendHost("mc/grab", w, NetworkDelivery.UnreliableSequenced);
+        }
+
+        void OnGrab(ulong sender, FastBufferReader reader)
+        {
+            var r = Read(reader); if (r == null) return;
+            int attacker = r.ReadByte(), victim = r.ReadByte();
+            if (State == Mode.Host)
+            {
+                if (!slotOf.TryGetValue(sender, out attacker)) return;
+            }
+            else if (sender != NetworkManager.ServerClientId) return;
+            if (attacker == victim || !avatars.TryGetValue(attacker, out var a) || !a ||
+                !avatars.TryGetValue(victim, out var v) || !v || a.Stunned || a.Held ||
+                !HouseLayout.SameFloor(a.transform.position, v.transform.position) ||
+                Vector3.Distance(a.transform.position, v.transform.position) > 2.4f) return;
+            if (a.actions) a.actions.Hold(KidActionAnimator.Clip.Pull);
+            if (v.isLocal) v.ReceiveGrab();
+            if (State == Mode.Host)
+            {
+                var w = Begin(); w.Write((byte)attacker); w.Write((byte)victim);
+                foreach (var kv in slotOf) if (kv.Key != sender && kv.Key != nm.LocalClientId)
+                    Send("mc/grab", kv.Key, w, NetworkDelivery.UnreliableSequenced);
+            }
         }
 
         void OnHit(ulong sender, FastBufferReader reader)

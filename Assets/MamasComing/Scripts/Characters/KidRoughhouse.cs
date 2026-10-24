@@ -3,7 +3,7 @@ using UnityEngine;
 namespace MamasComing
 {
     /// Chaotic co-op slapstick: left click (empty hands) / G / RB = punch the kid in front of you: they fly back,
-    /// curl up into a plain fruit and drop what they carry. Two kids sprinting into each other bounce apart.
+    /// curl up into a plain fruit and drop what they carry. Hold the same button to restrain a friend.
     /// Online: the swing animation, the comic word and the sounds play on EVERY screen; the knock-back is applied
     /// by the victim's own machine (which also decides whether they had already dodged).
     [RequireComponent(typeof(PlayerController))]
@@ -17,7 +17,7 @@ namespace MamasComing
         public float bumpSpeed = 4.0f;
 
         PlayerController me;
-        float shoveCd, bumpCd;
+        float shoveCd;
 
         static readonly string[] PowEn = { "POW!", "BONK!", "OOF!", "WHAM!", "BOOP!" };
         static readonly string[] PowTh = { "ตุ้บ!", "โป๊ก!", "อั่ก!", "ปั้ก!", "ดึ๋ง!" };
@@ -29,9 +29,10 @@ namespace MamasComing
         void Update()
         {
             if (!me || !me.isLocal) return;
-            shoveCd -= Time.deltaTime; bumpCd -= Time.deltaTime;
+            shoveCd -= Time.deltaTime;
             if (swingT > 0f) { swingT -= Time.deltaTime; if (swingT <= 0f) Land(); }
-            if (!me.controlsEnabled || me.Stunned || (MiniGame.I && MiniGame.I.Active) || MamaSettings.Open) return;
+            if (!me.controlsEnabled || me.Stunned || (MiniGame.I && MiniGame.I.Active) || MamaSettings.Open)
+            { pressTime = -1f; grabbed = null; swingT = 0f; return; }
             if (Debug.isDebugBuild)
             {
                 int fruit = MamaInput.FruitPressed;
@@ -45,12 +46,33 @@ namespace MamasComing
                 if (MamaInput.DevSlip) me.Slip(null);
             }
 
-            bool punch = MamaInput.ShoveDown || MamaInput.ClickDown && me.Held == null && me.HoldProgress <= 0f;
-            if (punch && shoveCd <= 0f) Shove();
-            if (bumpCd <= 0f && me.PlanarSpeed > bumpSpeed) Bump();
+            TickGrab();
         }
 
         float swingT;
+        float pressTime = -1f, grabSend;
+        PlayerController grabbed;
+        public bool Grabbing => grabbed;
+
+        void TickGrab()
+        {
+            if (!MamaInput.PunchHeld || me.Held || me.Stunned || !me.controlsEnabled || MamaSettings.Open)
+            {
+                if (pressTime >= 0f && Time.time - pressTime < 0.32f && !me.Held &&
+                    !me.Stunned && me.controlsEnabled && !MamaSettings.Open && shoveCd <= 0f) Shove();
+                pressTime = -1f; grabbed = null; return;
+            }
+            if (pressTime < 0f) pressTime = Time.time;
+            if (Time.time - pressTime < 0.32f) return;
+            if (!grabbed) grabbed = Victim(shoveRange + 0.25f, 0.1f);
+            if (!grabbed) return;
+            if (!HouseLayout.SameFloor(transform.position, grabbed.transform.position) ||
+                Vector3.Distance(transform.position, grabbed.transform.position) > 2.2f)
+            { grabbed = null; return; }
+            if (me.actions) me.actions.Hold(KidActionAnimator.Clip.Pull);
+            grabSend -= Time.deltaTime;
+            if (grabSend <= 0f) { grabSend = 0.08f; NetGame.Grab(me, grabbed); }
+        }
 
         PlayerController Victim(float range, float minDot)
         {
@@ -58,6 +80,7 @@ namespace MamasComing
             foreach (var o in PlayerController.AllPlayers)
             {
                 if (!o || o == me || !o.isActiveAndEnabled) continue;
+                if (!HouseLayout.SameFloor(transform.position, o.transform.position)) continue;
                 Vector3 d = o.transform.position - transform.position; d.y = 0f;
                 float dist = d.magnitude; if (dist > range) continue;
                 float dot = dist > 0.01f ? Vector3.Dot(transform.forward, d / dist) : 1f;
@@ -88,25 +111,6 @@ namespace MamasComing
             int i = Random.Range(0, PowEn.Length);
             NetGame.Pop(best.transform.position + Vector3.up * 1.3f, PowEn[i], PowTh[i], new Color(1f, 0.85f, 0.2f), "slap", 0.9f, Random.Range(0.85f, 1.15f));
             if (Random.value < 0.35f && GameManager.I && GameManager.I.ui) { int l = Random.Range(0, Lines.Length); GameManager.I.ui.KidSay(Loc.Thai ? LinesTh[l] : Lines[l]); }
-        }
-
-        void Bump()
-        {
-            Vector3 v = me.Motor ? me.Motor.PlanarVelocity : transform.forward * me.PlanarSpeed;
-            foreach (var o in PlayerController.AllPlayers)
-            {
-                if (!o || o == me || !o.isActiveAndEnabled) continue;
-                Vector3 d = o.transform.position - transform.position; d.y = 0f;
-                float dist = d.magnitude; if (dist > 0.85f || dist < 0.01f) continue;
-                if (Vector3.Dot(v.normalized, d / dist) < 0.5f) continue;
-                // head-on, both sprinting: only ONE machine resolves the crash, so it never happens twice
-                if (o.PlanarSpeed > bumpSpeed * 0.8f && string.CompareOrdinal(NetGame.NameOf(me) ?? "", NetGame.NameOf(o) ?? "") > 0) continue;
-                bumpCd = 0.8f;
-                NetGame.Hit(o, d, 4.5f, 0.35f, false, transform.position);   // them: boing
-                me.Bonk(-d, 3.5f, 0.25f, false);                              // me: bounce back
-                NetGame.Pop((transform.position + o.transform.position) * 0.5f + Vector3.up * 1.2f, "BOING!", "ดึ๋ง!", new Color(0.5f, 0.9f, 1f), "thud", 0.8f, 1.3f);
-                return;
-            }
         }
 
         /// Comic-book word that pops, floats up and fades.

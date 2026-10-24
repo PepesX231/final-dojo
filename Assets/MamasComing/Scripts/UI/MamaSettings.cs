@@ -15,7 +15,7 @@ namespace MamasComing
         public static float MasterVol = 1f, MusicVol = 0.8f, SfxVol = 0.8f;
 
         GameObject panel; RectTransform gear; Font baseFont, thaiFont;
-        Text title, langLbl, musicLbl, sfxLbl, masterLbl, closeLbl, hint; Image btnEN, btnTH; Image[] bars = new Image[3];
+        Text title, langLbl, musicLbl, sfxLbl, masterLbl, closeLbl, quitLbl, hint; Image btnEN, btnTH; Image[] bars = new Image[3];
         float closedAt = -10f; bool prevLock;
         readonly Dictionary<Text, string[]> seen = new Dictionary<Text, string[]>();
         Text[] all = new Text[0]; float rescan;
@@ -118,7 +118,8 @@ namespace MamasComing
             netStatus = Tx(R("NetStatus", p, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, -225), new Vector2(700, 40)), "", 22, Edge);
             netStatus.horizontalOverflow = HorizontalWrapMode.Wrap;
 
-            Btn(p, new Vector2(0, -320), new Vector2(260, 70), Teal, "", Toggle, out closeLbl, out _);
+            Btn(p, new Vector2(-160, -320), new Vector2(260, 70), Teal, "", Toggle, out closeLbl, out _);
+            Btn(p, new Vector2(160, -320), new Vector2(260, 70), Pink, "", QuitGame, out quitLbl, out _);
             closeLbl.color = Color.white;
             hint = Tx(R("Hint", p, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0, 12), new Vector2(600, 30)), "", 20, Edge);
             panel.SetActive(false);
@@ -159,7 +160,7 @@ namespace MamasComing
         void RefreshLabels()
         {
             bool th = Loc.Thai;
-            coopLbl.text = th ? "เล่นกับเพื่อน (2-3 คน)" : "CO-OP  (2-3 players)";
+            coopLbl.text = th ? "เล่นกับเพื่อน (2-4 คน)" : "CO-OP  (2-4 players)";
             hostLbl.text = th ? "สร้างห้องออนไลน์" : "Host online";
             lanLbl.text = th ? "สร้างห้อง LAN" : "Host LAN";
             leaveLbl.text = th ? "ออก" : "Leave";
@@ -172,10 +173,21 @@ namespace MamasComing
             musicLbl.text = th ? "เพลง" : "Music";
             sfxLbl.text = th ? "เสียงเอฟเฟกต์" : "Sounds";
             closeLbl.text = th ? "กลับไปเล่น" : "Resume";
+            quitLbl.text = th ? "ออกจากเกม" : "Quit game";
             hint.text = th ? "กด ESC เพื่อเปิด/ปิดหน้านี้" : "Press ESC to open / close";
             btnEN.color = th ? Paper : Color.Lerp(Paper, Teal, 0.55f);
             btnTH.color = th ? Color.Lerp(Paper, Teal, 0.55f) : Paper;
-            foreach (var t in new[] { title, langLbl, masterLbl, musicLbl, sfxLbl, closeLbl, hint }) t.font = th ? thaiFont : baseFont;
+            foreach (var t in new[] { title, langLbl, masterLbl, musicLbl, sfxLbl, closeLbl, quitLbl, hint }) t.font = th ? thaiFont : baseFont;
+        }
+
+        public static void QuitGame()
+        {
+            PlayerPrefs.Save(); Time.timeScale = 1f;
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
 
         public static void Toggle()
@@ -185,7 +197,7 @@ namespace MamasComing
             if (open)
             {
                 s.prevLock = Cursor.lockState == CursorLockMode.Locked;
-                Time.timeScale = 0f; Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
+                Time.timeScale = NetGame.Online ? 1f : 0f; Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
             }
             else
             {
