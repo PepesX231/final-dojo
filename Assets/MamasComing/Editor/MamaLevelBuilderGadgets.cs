@@ -56,15 +56,15 @@ namespace MamasComing.EditorTools
             }
             // 3. LIVING: karaoke machine stuck on max with the mic howling
             {
-                var root = G("Karaoke machine", gGadgets, V(2.6f, 0f, 9.6f));
-                Cube("Cabinet", root, V(2.6f, 0.7f, 9.6f), V(1.2f, 1.4f, 1.0f), M("KaraokePink", C("FF4F9A"), 0.5f), true);
-                Cyl("Woofer", root, V(2.6f, 0.65f, 10.12f), V(0.8f, 0.04f, 0.8f), dark, false, V(90, 0, 0));
-                var mic = G("Mic", root, V(3.6f, 0f, 10.2f));
-                Cyl("Stand", mic, V(3.6f, 0.9f, 10.2f), V(0.06f, 0.9f, 0.06f), chrome, true);
-                Sph("Head", mic, V(3.6f, 1.9f, 10.2f), Vector3.one * 0.26f, M("MicGrille", C("BFC4CC"), 0.7f, 0.5f));
-                var bl = new GameObject("Strobe").AddComponent<Light>(); bl.transform.SetParent(root, false); bl.transform.position = V(2.6f, 2.2f, 9.6f);
+                var root = G("Karaoke machine", gGadgets, V(2.6f, 0f, 10.7f));
+                Cube("Cabinet", root, V(2.6f, 0.7f, 10.7f), V(1.2f, 1.4f, 1.0f), M("KaraokePink", C("FF4F9A"), 0.5f), true);
+                Cyl("Woofer", root, V(2.6f, 0.65f, 11.22f), V(0.8f, 0.04f, 0.8f), dark, false, V(90, 0, 0));
+                var mic = G("Mic", root, V(3.2f, 0f, 11.45f));
+                Cyl("Stand", mic, V(3.2f, 0.9f, 11.45f), V(0.06f, 0.9f, 0.06f), chrome, true);
+                Sph("Head", mic, V(3.2f, 1.9f, 11.45f), Vector3.one * 0.26f, M("MicGrille", C("BFC4CC"), 0.7f, 0.5f));
+                var bl = new GameObject("Strobe").AddComponent<Light>(); bl.transform.SetParent(root, false); bl.transform.position = V(2.6f, 2.2f, 10.7f);
                 bl.type = LightType.Point; bl.color = C("FF4FD8"); bl.range = 6f; bl.intensity = 2.5f;
-                var g = Gz(root, "Karaoke machine", V(3.4f, 0, 8.2f), "Mute the howling karaoke machine", "ปิดเสียงคาราโอเกะที่หอนไม่หยุด",
+                var g = Gz(root, "Karaoke machine", V(3.4f, 0, 9.3f), "Mute the howling karaoke machine", "ปิดเสียงคาราโอเกะที่หอนไม่หยุด",
                     null, null, "The neighbours are SINGING ALONG... and calling Mom!", "ข้างบ้านร้องตาม... แล้วโทรหาแม่!", "Silence. Beautiful silence.", "เงียบแล้ว เพราะจัง",
                     "Who was singing on my karaoke machine?!", "ใครร้องคาราโอเกะของแม่?!", 0f, 140f, 2);
                 g.startActive = true; g.needsPower = true; g.neighbourPerSec = 0.6f; g.onFail = GadgetHazard.Consequence.Neighbour;
@@ -132,7 +132,7 @@ namespace MamasComing.EditorTools
                     "CLANG CLANG CLANG - the whole street can hear it!", "โครม ๆ ๆ - ได้ยินทั้งซอย!", "Door stopped. Spooky.", "ประตูหยุดแล้ว น่าขนลุก",
                     "Why is the garage door motor so HOT?", "ทำไมมอเตอร์ประตูโรงรถร้อนจัง?", 200f, 110f, 2);
                 g.coop = true; g.needsPower = true; g.wobbler = panel; g.wobble = 2f; g.blink = bl; g.neighbourPerSec = 0.35f; g.onFail = GadgetHazard.Consequence.Neighbour;
-                g.partners = new[] { Switch(g, root, V(44.35f, 1.6f, 10.4f), V(45.6f, 0, 10.4f), true), Switch(g, root, V(59.65f, 1.6f, 6.5f), V(58.4f, 0, 6.5f), true) };
+                g.partners = new[] { Switch(g, root, V(44.35f, 1.6f, 11.2f), V(45.6f, 0, 11.2f), true), Switch(g, root, V(59.65f, 1.6f, 8.0f), V(58.4f, 0, 8.0f), true) };
                 g.partnerWindow = 3f; g.loopClip = "hum"; g.loopVolume = 0.3f;
             }
             // 8. HALLWAY: the grandfather clock is chiming THIRTEEN - Mom will think she's late

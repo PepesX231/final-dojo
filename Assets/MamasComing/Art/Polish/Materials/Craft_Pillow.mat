@@ -138,6 +138,6 @@ Material:
     - _Color: {r: 0.92, g: 0.92, b: 0.92, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _ToonShadow: {r: 0.4787217, g: 0.5940437, b: 0.81100005, a: 1}
+    - _ToonShadow: {r: 0.62, g: 0.57, b: 0.86, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

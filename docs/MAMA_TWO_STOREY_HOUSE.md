@@ -54,3 +54,10 @@ Shared tools create real co-op tension: one lid, one wrench, one plunger, one bu
 ## Rebuilding
 
 `Mama's Coming > Build House Level` (or `MamaTwoStoreyReview.BuildAndCapture` in batch) regenerates the whole scene from code and re-runs the art passes (`MamaVisualPolish`, `MamaRecastBuilder`). Any hand edits made directly in the old scene are not carried over; the previous scene stays in git history.
+
+## Verification (2026-10-24)
+
+- Unity 6000.3.11f1 batch rebuild of `MamasKitchen` on the merged main: compiles, 36 hazard components in the scene (14 existing + 22 gadgets), the art thread's ToyToon comic look is re-applied by the builder (`MamaToonStyleTool.ApplyActiveScene`, 432 materials).
+- `MamaTwoStoreyPlayReview` (staged virtual-keyboard checks in Play mode): **117/117 passed** — climbing the stairs with real input, walking into the upstairs bedroom, the chute drop landing in the ground hallway, upper floor hidden/shown by floor, no cross-floor interaction, Mom's route on both floors, the hamster network, and requirement/fix paths for the foam cannon, blender, garage door, robot vacuum and slime. Evidence: `docs/evidence/mama-two-storey/play-review.txt`.
+- Layer audit (`MamaLayerAudit`, scene-layering-qa): 0 buried, 0 strays below the floor, 30 coplanar pairs left (mostly pre-existing details: breaker panel, cake tablecloth on the dining runner, kitchen curtain vs cabinet, door trims), 8 "floating": the three goldfish (in water), the wall-mounted extinguisher, and the pot/towels whose art-pass meshes sit ~5 cm above their collider. Report: `layer_audit_MamasKitchen.txt`.
+- Not done: a human playthrough, an online two-machine session, standalone build, performance on target hardware, balance of 50 problems in a 12-minute round.

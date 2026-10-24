@@ -78,6 +78,7 @@ namespace MamasComing.EditorTools
                 PartyHazards();
                 PartyDetails();
                 Gadgets();
+                SettlePickups();
                 Kid();
                 Mom();
                 Systems();
@@ -116,7 +117,11 @@ namespace MamasComing.EditorTools
             RenderSettings.ambientSkyColor = C("A796C8"); RenderSettings.ambientEquatorColor = C("F2A47E"); RenderSettings.ambientGroundColor = C("5E4352");
             var scene = EditorSceneManager.GetActiveScene();
             EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
-            Debug.Log("[Mama's Coming] Friend passes re-applied (recast models + Mother Apple + polish).");
+            // the art thread's bright comic look (ToyToon materials, volume, sky) goes on last
+            try { Debug.Log("[Mama's Coming] " + MamasComing.Style.Editor.MamaToonStyleTool.ApplyActiveScene()); } catch (System.Exception ex) { Debug.LogError("[Mama's Coming] MamaToonStyleTool failed: " + ex); }
+            SettlePickups();   // the art passes swap prop meshes: drop them onto their supports again
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+            Debug.Log("[Mama's Coming] Friend passes re-applied (recast models + Mother Apple + polish + comic look).");
         }
 
         // shell, stairs, upper floor and roof: MamaLevelBuilderHouse.cs

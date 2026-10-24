@@ -98,6 +98,13 @@ namespace MamasComing.EditorTools
         static void Check(bool ok, string what) { if (!ok) throw new Exception(what); passed++; lines.Add("PASS " + what); }
         static void Note(string s) => lines.Add("     " + s);
         static void Press(params Key[] keys) => InputSystem.QueueStateEvent(keyboard, new KeyboardState(keys));
+        /// The WASD key that moves the kid closest to a world direction with the current (camera-relative) controls.
+        static Key KeyToward(Vector3 dir)
+        {
+            var c = Camera.main.transform; Vector3 f = c.forward; f.y = 0f; f.Normalize(); Vector3 r = c.right; r.y = 0f; r.Normalize();
+            float w = Vector3.Dot(dir, f), d = Vector3.Dot(dir, r);
+            return Mathf.Abs(w) >= Mathf.Abs(d) ? (w > 0 ? Key.W : Key.S) : (d > 0 ? Key.D : Key.A);
+        }
 
         static void CamShot(string file)
         {
@@ -134,7 +141,7 @@ namespace MamasComing.EditorTools
             // ---- walk up the stairs with real input (stairs rise towards +x; camera yaw 0 so D = +x)
             cam.yaw = 0f;
             motor.Teleport(new Vector3(0.7f, 0.05f, 26.1f), Quaternion.Euler(0, 90, 0)); yield return 0.4f;
-            Press(Key.D); float t0 = Time.time; float maxY = 0f;
+            Press(KeyToward(Vector3.right)); float t0 = Time.time; float maxY = 0f;
             while (Time.time - t0 < 6f && kid.transform.position.x < 13.3f) { maxY = Mathf.Max(maxY, kid.transform.position.y); yield return 0.1f; }
             Press(); yield return 0.6f;
             Note("after stairs: " + kid.transform.position.ToString("0.00"));
@@ -146,7 +153,8 @@ namespace MamasComing.EditorTools
 
             // ---- walk the upstairs hall into the bedroom (W = +z, S = -z)
             motor.Teleport(new Vector3(10.8f, U + 0.05f, 14f), Quaternion.Euler(0, 180, 0)); yield return 0.3f;
-            Press(Key.S); t0 = Time.time; while (Time.time - t0 < 2.5f && kid.transform.position.z > 8.5f) yield return 0.1f; Press(); yield return 0.4f;
+            Note("camera yaw " + Camera.main.transform.eulerAngles.y.ToString("0") + ", key for -z: " + KeyToward(Vector3.back));
+            Press(KeyToward(Vector3.back)); t0 = Time.time; while (Time.time - t0 < 2.5f && kid.transform.position.z > 8.5f) yield return 0.1f; Press(); yield return 0.4f;
             Note("after bedroom walk: " + kid.transform.position.ToString("0.00"));
             Check(HouseLayout.RoomOf(kid.transform.position) == 4, "walked through the door into the upstairs bedroom");
             CamShot("play-bedroom.png");
@@ -159,7 +167,7 @@ namespace MamasComing.EditorTools
             var jam = UnityEngine.Object.FindObjectsByType<GadgetHazard>(FindObjectsSortMode.None).First(g => g.displayName == "Chute jam");
             Check(!jam.Active, "chute is open before its jam starts");
             motor.Teleport(new Vector3(24.2f, U + 0.05f, 14f), Quaternion.Euler(0, 90, 0)); yield return 0.4f;
-            Press(Key.D); t0 = Time.time; while (Time.time - t0 < 3f && kid.transform.position.y > 1f) yield return 0.1f; Press(); yield return 1.0f;
+            Press(KeyToward(Vector3.right)); t0 = Time.time; while (Time.time - t0 < 3f && kid.transform.position.y > 1f) yield return 0.1f; Press(); yield return 1.0f;
             Note("after chute: " + kid.transform.position.ToString("0.00"));
             Check(kid.transform.position.y < 1f && HouseLayout.RoomOf(kid.transform.position) == 3, "dropping through the chute lands in the ground hallway");
 

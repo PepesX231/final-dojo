@@ -152,7 +152,7 @@ namespace MamasComing.EditorTools
             WallX(0f, 14f, 30f, new[] { V2(19f, 23f) }, wOut, wMom, new[] { true });
             WallX(28f, 0f, 14f, new[] { V2(3.5f, 6.5f) }, wLand, wOut, new[] { true });
             WallX(28f, 14f, 30f, new[] { V2(20f, 24f) }, wLoft, wOut, new[] { true });
-            WallZ(0f, 0f, 12f, new[] { V2(4f, 7f) }, wOut, wBed, true);
+            WallZ(0f, 0f, 12f, new[] { V2(8.2f, 10.4f) }, wOut, wBed, true);   // clear of the bedroom wardrobe
             WallZ(0f, 12f, 16f, null, wOut, wHall);
             WallZ(0f, 16f, 28f, null, wOut, wLand);
             WallZ(30f, 0f, 12f, new[] { V2(4f, 7f) }, wMom, wOut, true);
@@ -209,8 +209,8 @@ namespace MamasComing.EditorTools
             // ---------------------------------------------------------- upstairs hall + landing
             var hall = G("UpstairsHall", gRooms);
             Cube("HallRunner", hall, V(13f, UpY + 0.01f, 14f), V(20f, 0.016f, 1.6f), M("RunnerRed", C("C8553D")));
-            Frame(hall, V(5f, UpY + 3.2f, 15.85f), 1.4f, 1.0f, Vector3.back, C("6EC6FF"));
-            Frame(hall, V(16f, UpY + 3.2f, 12.15f), 1.2f, 1.4f, Vector3.forward, C("FFC93C"));
+            Frame(hall, V(5f, UpY + 3.2f, 15.8f), 1.4f, 1.0f, Vector3.back, C("6EC6FF"));
+            Frame(hall, V(16f, UpY + 3.2f, 12.2f), 1.2f, 1.4f, Vector3.forward, C("FFC93C"));
             Plant(hall, V(0.9f, UpY, 12.9f), 3.2f, C("E0623B"));
             PointLight("UpHallLight", V(10f, UpY + 4.8f, 14f), C("FFE2B8"), 14f, 1.1f, gRooms);
             PointLight("UpHallLight2", V(24f, UpY + 4.8f, 14f), C("FFE2B8"), 12f, 1.0f, gRooms);
@@ -254,12 +254,35 @@ namespace MamasComing.EditorTools
             var roof = M("RoofTerrace", C("B5524A")); var cap = M("Parapet", C("FFF1D6"));
             float topUp = UpY + WallH;
             Cube("UpperRoof", gRoof, V(15f, topUp + 0.15f, 14f), V(30.6f, 0.3f, 28.6f), roof);
-            Cube("LowRoof", gRoof, V(45f, WallH + 0.15f, 14f), V(30.6f, 0.3f, 28.6f), roof);
+            Cube("LowRoof", gRoof, V(45.15f, WallH + 0.15f, 14f), V(29.7f, 0.3f, 28.6f), roof);   // stops at the upper floor's wall
             foreach (var (c, s) in new[] { (V(15f, topUp + 0.6f, 0f), V(30.6f, 0.6f, 0.3f)), (V(15f, topUp + 0.6f, 28f), V(30.6f, 0.6f, 0.3f)), (V(0f, topUp + 0.6f, 14f), V(0.3f, 0.6f, 28.6f)), (V(30f, topUp + 0.6f, 14f), V(0.3f, 0.6f, 28.6f)),
                                          (V(45f, WallH + 0.6f, 0f), V(30.6f, 0.6f, 0.3f)), (V(45f, WallH + 0.6f, 28f), V(30.6f, 0.6f, 0.3f)), (V(60f, WallH + 0.6f, 14f), V(0.3f, 0.6f, 28.6f)) })
                 Cube("Parapet", gRoof, c, s, cap);
-            Cube("Chimney", gRoof, V(5f, topUp + 1.5f, 24f), V(1.6f, 3f, 1.6f), M("Brick", C("B5524A")));
+            Cube("Chimney", gRoof, V(5f, topUp + 1.8f, 24f), V(1.6f, 3f, 1.6f), M("Brick", C("B5524A")));
             Cube("Skylight", gRoof, V(45f, WallH + 0.32f, 22f), V(4f, 0.06f, 3f), MT("Glass", new Color(0.75f, 0.92f, 1f, 0.22f), 0.95f));
+        }
+
+        /// The old plan's prop heights don't land exactly on the 2x furniture: drop every loose pickup onto whatever is
+        /// under it (counter, table, shelf, floor) so nothing hovers. Fish stay in their tank water.
+        static void SettlePickups()
+        {
+            Physics.SyncTransforms();
+            foreach (var p in Object.FindObjectsByType<Pickup>(FindObjectsSortMode.None))
+            {
+                if (p is Fish || p is Extinguisher) continue;   // fish swim; the extinguisher hangs on its bracket
+                var rs = System.Array.FindAll(p.GetComponentsInChildren<Renderer>(), r => r.enabled); if (rs.Length == 0) continue;   // art passes keep the old meshes disabled
+                Bounds b = rs[0].bounds; foreach (var r in rs) b.Encapsulate(r.bounds);
+                var own = p.GetComponentsInChildren<Collider>();
+                float best = float.MaxValue;
+                foreach (var h in Physics.RaycastAll(new Vector3(b.center.x, b.min.y + 0.05f, b.center.z), Vector3.down, 1.2f, ~0, QueryTriggerInteraction.Ignore))
+                    if (System.Array.IndexOf(own, h.collider) < 0 && !h.collider.GetComponentInParent<Pickup>()) best = Mathf.Min(best, b.min.y - h.point.y);
+                if (best == float.MaxValue || best < 0.002f || best > 1.1f) continue;
+                var mp = p as MessyProp;
+                bool atHome = mp && mp.homeSet && (mp.homePosition - p.transform.position).sqrMagnitude < 1e-4f;
+                p.transform.position += Vector3.down * (best - 0.002f);
+                if (atHome) mp.homePosition = p.transform.position;
+            }
+            Physics.SyncTransforms();
         }
 
         // =====================================================================  helpers (raw world units)
@@ -322,9 +345,9 @@ namespace MamasComing.EditorTools
                     else
                     {
                         WallPieceX(z, a, b, DoorH, WallH, matA, matB, false);
-                        Trim(V((a + b) / 2, baseY + DoorH + 0.08f, z), V(b - a + 0.32f, 0.16f, WallT + 0.08f));
-                        Trim(V(a - 0.08f, baseY + DoorH / 2, z), V(0.16f, DoorH, WallT + 0.08f));
-                        Trim(V(b + 0.08f, baseY + DoorH / 2, z), V(0.16f, DoorH, WallT + 0.08f));
+                        Trim(V((a + b) / 2, baseY + DoorH + 0.083f, z), V(b - a + 0.32f, 0.16f, WallT + 0.08f));
+                        Trim(V(a - 0.08f, baseY + DoorH / 2 + 0.003f, z), V(0.16f, DoorH, WallT + 0.08f));
+                        Trim(V(b + 0.08f, baseY + DoorH / 2 + 0.003f, z), V(0.16f, DoorH, WallT + 0.08f));
                     }
                 }
         }
@@ -365,9 +388,9 @@ namespace MamasComing.EditorTools
             if (blocks && y0 < 0.01f)
             {
                 if (baseY < 0.01f) blockRects.Add(new Vector4(a, z - WallT / 2, b, z + WallT / 2));
-                Cube("Base", grp, V((a + b) / 2, baseY + 0.12f, z), V(b - a, 0.24f, WallT + 0.06f), M("Baseboard", C("FFFFFF")));
+                Cube("Base", grp, V((a + b) / 2, baseY + 0.123f, z), V(b - a - 0.006f, 0.24f, WallT + 0.06f), M("Baseboard", C("FFFFFF")));   // 3 mm up: no shared plane with the wall
             }
-            if (y1 >= WallH - 0.01f) Cube("Top", grp, V((a + b) / 2, baseY + WallH, z), V(b - a, 0.1f, WallT + 0.08f), M("TopTrim", C("FFF4E0")));
+            if (y1 >= WallH - 0.01f) Cube("Top", grp, V((a + b) / 2, baseY + WallH - 0.045f, z), V(b - a - 0.006f, 0.1f, WallT + 0.08f), M("TopTrim", C("FFF4E0")));
         }
 
         static void WallPieceZ(float x, float a, float b, float y0, float y1, Material ma, Material mb, bool blocks)
@@ -381,9 +404,9 @@ namespace MamasComing.EditorTools
             if (blocks && y0 < 0.01f)
             {
                 if (baseY < 0.01f) blockRects.Add(new Vector4(x - WallT / 2, a, x + WallT / 2, b));
-                Cube("Base", grp, V(x, baseY + 0.12f, (a + b) / 2), V(WallT + 0.06f, 0.24f, b - a), M("Baseboard", C("FFFFFF")));
+                Cube("Base", grp, V(x, baseY + 0.123f, (a + b) / 2), V(WallT + 0.06f, 0.24f, b - a - 0.006f), M("Baseboard", C("FFFFFF")));
             }
-            if (y1 >= WallH - 0.01f) Cube("Top", grp, V(x, baseY + WallH, (a + b) / 2), V(WallT + 0.08f, 0.1f, b - a), M("TopTrim", C("FFF4E0")));
+            if (y1 >= WallH - 0.01f) Cube("Top", grp, V(x, baseY + WallH - 0.045f, (a + b) / 2), V(WallT + 0.08f, 0.1f, b - a - 0.006f), M("TopTrim", C("FFF4E0")));
         }
 
         static void Trim(Vector3 p, Vector3 s) => Cube("Trim", baseY > 0f ? gUpper : gHouse, p, s, M("Trim", C("FFFFFF")));

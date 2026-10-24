@@ -83,9 +83,11 @@ namespace MamasComing.EditorTools
             Shot("view-kitchen.png", new Vector3(34f, 10f, 13f), new Vector3(34f, 0.5f, 22f), 50f, false, 0f, r => IsRoof(r) || IsUpper(r));
             Shot("view-garage.png", new Vector3(52f, 10f, -3f), new Vector3(52f, 0.5f, 6f), 50f, false, 0f, r => IsRoof(r));
 
+            // the art thread's layering audit (scene-layering-qa): z-fighting, floating/buried props, strays below the floor
+            string audit = MamasComing.Style.Editor.MamaLayerAudit.AuditActiveScene(Out, true);
             int hazards = Object.FindObjectsByType<Hazard>(FindObjectsSortMode.None).Length;
             int gadgets = Object.FindObjectsByType<GadgetHazard>(FindObjectsSortMode.None).Length;
-            File.WriteAllText(Path.Combine(Out, "capture.txt"), "scene=" + scene.path + "\nhazards=" + hazards + " (gadgets " + gadgets + ")\nimages=" + string.Join(", ", report) + "\n");
+            File.WriteAllText(Path.Combine(Out, "capture.txt"), "scene=" + scene.path + "\nhazards=" + hazards + " (gadgets " + gadgets + ")\nimages=" + string.Join(", ", report) + "\nlayer audit: " + audit + "\n");
             Debug.Log("[Mama's Coming] two-storey review captured: " + string.Join(", ", report));
         }
     }

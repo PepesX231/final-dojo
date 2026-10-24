@@ -1,0 +1,39 @@
+Layer audit MamasKitchen: renderers=1904 axisBoxes=1176 zfight=30 (nudged 9) floating=8 buried=0 strays=0
+Z-FIGHT House/Wall/SideN <> House/Trim axis=X+ area=0.6600m2
+Z-FIGHT House/Wall/SideS <> House/Trim axis=X+ area=0.6600m2
+Z-FIGHT House/UpperFloor/Wall/SideN <> House/UpperFloor/Trim axis=X+ area=0.6600m2
+Z-FIGHT House/UpperFloor/Wall/SideS <> House/UpperFloor/Trim axis=X+ area=0.6600m2
+Z-FIGHT House/UpperFloor/Wall/Base <> House/UpperFloor/Trim axis=Y- area=0.0565m2
+Z-FIGHT House/Wall/Base <> House/Trim axis=Y- area=0.0565m2
+Z-FIGHT Rooms/LivingRoom/Living room carpet/Border <> Rooms/LivingRoom/Leg axis=Y- area=0.0100m2  -> nudged Border 3mm out
+Z-FIGHT Rooms/Bedroom/Bed/DuvetFold <> Rooms/Bedroom/Bed/Duvet axis=X- area=0.0160m2
+Z-FIGHT Rooms/Bedroom/Bed/DuvetFold <> Rooms/Bedroom/Bed/Duvet axis=X+ area=0.0160m2
+Z-FIGHT House/UpperFloor/Wall/SideN <> House/UpperFloor/Trim axis=X- area=0.6600m2
+Z-FIGHT House/Wall/SideN <> House/Trim axis=X- area=0.6600m2
+Z-FIGHT House/UpperFloor/Wall/SideS <> House/UpperFloor/Trim axis=X- area=0.6600m2
+Z-FIGHT House/Wall/SideS <> House/Trim axis=X- area=0.6600m2
+Z-FIGHT House/Trim <> House/Wall/Base axis=Y- area=0.0565m2
+Z-FIGHT House/UpperFloor/Trim <> House/UpperFloor/Wall/Base axis=Y- area=0.0565m2
+Z-FIGHT House/UpperFloor/Slab <> House/UpperFloor/Floor_PartyLoft axis=Z+ area=0.0964m2
+Z-FIGHT House/UpperFloor/Wall/Base <> Party/Gadgets/Treadmill/Mark axis=Y- area=0.3600m2  -> nudged Mark 3mm out
+Z-FIGHT House/UpperFloor/Floor_PartyLoft <> House/UpperFloor/Slab axis=Z+ area=0.0240m2
+Z-FIGHT House/Trim <> House/Wall/SideN axis=X- area=0.6600m2
+Z-FIGHT House/Trim <> House/Wall/SideS axis=X- area=0.6600m2
+Z-FIGHT House/UpperFloor/Trim <> House/UpperFloor/Wall/SideS axis=X- area=0.6600m2
+Z-FIGHT House/UpperFloor/Trim <> House/UpperFloor/Wall/SideN axis=X- area=0.6600m2
+Z-FIGHT House/UpperFloor/Wall/SideN <> House/Roof/Parapet axis=Z+ area=0.1800m2
+Z-FIGHT House/UpperFloor/Wall/SideS <> House/Roof/Parapet axis=Z- area=0.1800m2
+Z-FIGHT Rooms/Kitchen/UpperB <> House/Window/CurtainL axis=Y+ area=0.0150m2
+Z-FIGHT Rooms/Party/Party cake/Tablecloth <> Rooms/Dining/Runner axis=Y- area=2.0400m2  -> nudged Runner 3mm out
+Z-FIGHT Rooms/Party/Party cake/Tablecloth <> Rooms/Dining/Runner axis=Y+ area=2.0400m2  -> nudged Runner 3mm out
+Z-FIGHT Rooms/Party/Breaker panel/Breaker <> Party/Breaker panel/Lever/Base axis=X- area=0.0156m2
+Z-FIGHT Rooms/Party/Breaker panel/Breaker <> Party/Breaker panel/Lever/Base axis=X- area=0.0104m2
+Z-FIGHT Rooms/Party/Breaker panel/Breaker <> Party/Breaker panel/DoorHinge/Warning axis=X+ area=0.0168m2  -> nudged Warning 3mm out
+FLOATING Big towel bottomY=2.891
+FLOATING Towel bottomY=1.891
+FLOATING Goldfish bottomY=2.020
+FLOATING Fire extinguisher bottomY=0.900
+FLOATING CurryPot bottomY=1.900
+FLOATING Towel bottomY=1.891
+FLOATING Goldfish bottomY=2.020
+FLOATING Goldfish bottomY=2.020

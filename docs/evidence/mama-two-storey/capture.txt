@@ -1,3 +1,4 @@
 scene=Assets/MamasComing/Scenes/MamasKitchen.unity
 hazards=36 (gadgets 22)
 images=exterior.png, plan-ground.png, plan-upper.png, view-living.png, view-staircase.png, view-bedroom.png, view-loft.png, view-kitchen.png, view-garage.png
+layer audit: Layer audit MamasKitchen: renderers=1904 axisBoxes=1176 zfight=30 (nudged 9) floating=8 buried=0 strays=0
