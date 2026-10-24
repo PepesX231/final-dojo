@@ -1,5 +1,7 @@
 # Milestone Reports — P0
 
+> **Note 2026-10-23:** the DREAM RUSH card system (card draw/selection, active cards, Dream Laws, Lucky Pillow rerolls) has been removed. Card mentions below are historical records of earlier milestones, not the current game. See `docs/CARD_REMOVAL_REPORT.md`.
+
 ## 2026-10-23 — MAMA'S COMING! readability pass (current game)
 
 - Replaced the competing always-on checklist/markers with a compact goal, contextual item descriptions, optional held-H ideas and a Tab overview. Teddy names its bedroom/bed/pillow and gains a matching home silhouette nearby; off-screen optional destination labels stay visible. Oil fire offers environmental clues and alternative tools. New text switches between Thai/English. Reduced bloom/saturation in a cloned runtime profile and improved UI contrast.
