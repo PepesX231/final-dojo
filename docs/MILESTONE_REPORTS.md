@@ -898,3 +898,11 @@ Followed the user's revised saturated cartoon brief and supplied Pinterest/house
 Added carry contact/cradle profiles, real hollow disposal bins with a hinged lid and bag acceptance, ten licensed CC0 foley overrides, revised 108 bpm procedural music and callout ducking, warm lifetime fire gradients, and corrected the live-clone blink material bug exposed by the expanded review. Authoring preserves the existing house and rules; the upright teddy and hollow-bin colliders are documented exceptions to collider preservation.
 
 Final staged virtual-input review **63/63 passed**, zero compile errors/four existing warnings. Includes actual E/Q interactions, hand-contact and torso-clearance samples, bin deposit, mother moods, foley loading, fire resolution, bilingual compact HUD and three offline avatars deliberately cloned during a source blink. Independent staged art views accompany normal game screenshots in `docs/evidence/mama-recast/`. Full implementation, recovery history and remaining work are in `docs/MAMA_RECAST_IMPLEMENTATION.md`. No human/online playtest or final-art/performance certification is claimed.
+
+
+## 2026-10-24 — Fruit kids: sculpted models, tumbling knock-downs, test keys, locked camera zoom
+
+- Committed the Codex fruit-kid work from the shared editor folder: sculpted kid models/prefabs (Art/Sculpted, Prefabs/Characters/Sculpted, MamaSculptKids, SculptKidMotion) now used by Resources/MamaKidCatalog; ReadableFruitGait foot/glove walk layer; KidBody rolls the curled fruit in the direction it travels; dev keys 1–5 / F6 / F7 pick fruit, F8 tests a slip; quiet debug hint.
+- ThirdPersonCamera: orbit unchanged, mouse-wheel zoom locked (allowZoom off). MamaFightReview added (staged Play-mode check).
+- Tests run in the shared editor: Assembly-CSharp and Assembly-CSharp-Editor compile with 0 errors; MamaFightReview 24/24 (fruit swap + heights 1.07–1.14 m, distinct walk sway, punch knock-back 1.9 m + drop, curl/pop-up recovery, slip); MamaUxReview 62/62. Branch compiled again on top of latest main (menu/lobby) with 0 errors.
+- Not covered: human playtest, two-machine online test, lobby picker -> KidLook.Selected hand-off at runtime. House-study files remain uncommitted (owned by the house-redesign work).

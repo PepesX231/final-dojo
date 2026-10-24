@@ -68,11 +68,13 @@ namespace MamasComing
             var visual = Visual(pc); var old = Chr(pc);
             if (!visual || !old) return false;
             id = Mathf.Clamp(id, 0, Count - 1);
-            if (IdOf(old.name) == id) return true;
+            // a catalog apple (the sculpted kids) replaces the scene's own apple too
+            var catalogApple = id == Apple && Catalog && Catalog.Prefab(Apple) ? Catalog.Prefab(Apple) : null;
+            if (IdOf(old.name) == id && (!catalogApple || old.name.EndsWith("_Sculpt"))) return true;
 
             RememberApple(pc);
             GameObject src = null; Transform srcRoot = null;
-            if (id == Apple) src = appleTemplate;
+            if (id == Apple && !catalogApple) src = appleTemplate;
             else if (Catalog && Catalog.Prefab(id)) { srcRoot = Catalog.Prefab(id).transform; foreach (var t in srcRoot.GetComponentsInChildren<Transform>(true)) if (t.name.StartsWith("CHR_")) { src = t.gameObject; break; } }
             if (!src) return false;
 

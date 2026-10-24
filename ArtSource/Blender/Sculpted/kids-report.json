@@ -1,0 +1,151 @@
+{
+  "Apple": {
+    "fbx": "Assets\\MamasComing\\Art\\Sculpted\\Apple\\Apple_Sculpt.fbx",
+    "triangles": 16380,
+    "materials": [
+      "Apple_Peel",
+      "Apple_PeelAccent",
+      "Kid_Ink",
+      "Kid_EyeWhite",
+      "Kid_Glove",
+      "Apple_Limb",
+      "Apple_Shoe",
+      "Apple_Sole",
+      "Kid_Mouth",
+      "Apple_Lid",
+      "Kid_Tongue",
+      "Apple_Leaf",
+      "Apple_Stem"
+    ],
+    "actions": [
+      "Apple_Idle",
+      "Apple_Walk",
+      "Apple_Run",
+      "Apple_Jump",
+      "Apple_Punch",
+      "Apple_Taunt",
+      "Apple_Hit",
+      "Apple_Cheer"
+    ],
+    "scale": 1.1423452945051542
+  },
+  "Banana": {
+    "fbx": "Assets\\MamasComing\\Art\\Sculpted\\Banana\\Banana_Sculpt.fbx",
+    "triangles": 15052,
+    "materials": [
+      "Banana_Peel",
+      "Banana_PeelAccent",
+      "Kid_Ink",
+      "Kid_EyeWhite",
+      "Kid_Glove",
+      "Banana_Limb",
+      "Banana_Shoe",
+      "Banana_Sole",
+      "Kid_Mouth",
+      "Banana_Lid",
+      "Kid_Tongue",
+      "Banana_Tip",
+      "Banana_Spot"
+    ],
+    "actions": [
+      "Banana_Idle",
+      "Banana_Walk",
+      "Banana_Run",
+      "Banana_Jump",
+      "Banana_Punch",
+      "Banana_Taunt",
+      "Banana_Hit",
+      "Banana_Cheer"
+    ],
+    "scale": 1.0041115243942988
+  },
+  "Orange": {
+    "fbx": "Assets\\MamasComing\\Art\\Sculpted\\Orange\\Orange_Sculpt.fbx",
+    "triangles": 14932,
+    "materials": [
+      "Orange_Peel",
+      "Orange_PeelAccent",
+      "Kid_Ink",
+      "Kid_EyeWhite",
+      "Kid_Glove",
+      "Orange_Limb",
+      "Orange_Shoe",
+      "Orange_Sole",
+      "Kid_Mouth",
+      "Orange_Lid",
+      "Kid_Tongue",
+      "Orange_Leaf",
+      "Orange_Stem"
+    ],
+    "actions": [
+      "Orange_Idle",
+      "Orange_Walk",
+      "Orange_Run",
+      "Orange_Jump",
+      "Orange_Punch",
+      "Orange_Taunt",
+      "Orange_Hit",
+      "Orange_Cheer"
+    ],
+    "scale": 1.2031352203932673
+  },
+  "Watermelon": {
+    "fbx": "Assets\\MamasComing\\Art\\Sculpted\\Watermelon\\Watermelon_Sculpt.fbx",
+    "triangles": 13564,
+    "materials": [
+      "Watermelon_Peel",
+      "Watermelon_PeelAccent",
+      "Kid_Ink",
+      "Kid_EyeWhite",
+      "Kid_Glove",
+      "Watermelon_Limb",
+      "Watermelon_Shoe",
+      "Watermelon_Sole",
+      "Kid_Mouth",
+      "Watermelon_Lid",
+      "Kid_Tongue",
+      "Watermelon_Flesh",
+      "Watermelon_Rind"
+    ],
+    "actions": [
+      "Watermelon_Idle",
+      "Watermelon_Walk",
+      "Watermelon_Run",
+      "Watermelon_Jump",
+      "Watermelon_Punch",
+      "Watermelon_Taunt",
+      "Watermelon_Hit",
+      "Watermelon_Cheer"
+    ],
+    "scale": 1.4369616094762703
+  },
+  "WaxApple": {
+    "fbx": "Assets\\MamasComing\\Art\\Sculpted\\WaxApple\\WaxApple_Sculpt.fbx",
+    "triangles": 15320,
+    "materials": [
+      "WaxApple_Peel",
+      "WaxApple_PeelAccent",
+      "Kid_Ink",
+      "Kid_EyeWhite",
+      "Kid_Glove",
+      "WaxApple_Limb",
+      "WaxApple_Shoe",
+      "WaxApple_Sole",
+      "Kid_Mouth",
+      "WaxApple_Lid",
+      "Kid_Tongue",
+      "WaxApple_Crown"
+    ],
+    "actions": [
+      "WaxApple_Idle",
+      "WaxApple_Walk",
+      "WaxApple_Run",
+      "WaxApple_Jump",
+      "WaxApple_Punch",
+      "WaxApple_Taunt",
+      "WaxApple_Hit",
+      "WaxApple_Cheer"
+    ],
+    "scale": 1.2564695808722313
+  }
+}
