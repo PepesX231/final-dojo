@@ -37,6 +37,31 @@ namespace MamasComing.EditorTools
             Debug.Log("[Mama's Coming] kid catalog back on the original fruit models");
         }
 
+        /// Whimsical house props from sculpt/props.py -> Prefabs/Props/Sculpted (decor only, no gameplay components).
+        [MenuItem("Mama's Coming/Sculpted Kids/Build Prop Prefabs")]
+        public static void BuildProps()
+        {
+            const string src = Art + "/Props", dst = "Assets/MamasComing/Prefabs/Props/Sculpted";
+            System.IO.Directory.CreateDirectory(dst); System.IO.Directory.CreateDirectory(src + "/Materials");
+            foreach (var fbx in System.IO.Directory.GetFiles(src, "*.fbx").Select(p => p.Replace('\\', '/')))
+            {
+                var imp = (ModelImporter)AssetImporter.GetAtPath(fbx);
+                imp.animationType = ModelImporterAnimationType.None; imp.importAnimation = false;
+                imp.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
+                imp.addCollider = false;
+                imp.SaveAndReimport();
+                foreach (var m in AssetDatabase.LoadAllAssetsAtPath(fbx).OfType<Material>())
+                    imp.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material), m.name), ToonFrom(m, src + "/Materials"));
+                imp.SaveAndReimport();
+                var go = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(fbx));
+                foreach (var mf in go.GetComponentsInChildren<MeshFilter>()) { var mc = mf.gameObject.AddComponent<MeshCollider>(); mc.convex = true; }
+                PrefabUtility.SaveAsPrefabAsset(go, dst + "/" + System.IO.Path.GetFileNameWithoutExtension(fbx) + ".prefab");
+                Object.DestroyImmediate(go);
+            }
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Mama's Coming] sculpted prop prefabs written to " + dst);
+        }
+
         static void UseSculpted(GameObject[] made)
         {
             var cat = AssetDatabase.LoadAssetAtPath<KidCatalog>(Catalog);

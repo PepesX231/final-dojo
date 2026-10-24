@@ -23,8 +23,8 @@ namespace MamasComing
             motor = null;
         }
 
-        void OnJump() { if (anim) { Cross("Jump", .04f); lockUntil = Time.time + .25f; } }
-        void OnLand(float speed) { if (cur == "Jump") lockUntil = 0; }
+        void OnJump() { if (anim) { Cross("Jump", .04f); lockUntil = Time.time + .25f; } ComicFx.Puff(transform.position, .55f, 4); }
+        void OnLand(float speed) { if (cur == "Jump") lockUntil = 0; if (Mathf.Abs(speed) > 3f) ComicFx.Puff(transform.position, Mathf.Clamp(Mathf.Abs(speed) / 7f, .6f, 1.3f), 6); }
 
         /// Celebrate (round won, chore done).
         public void Cheer(float seconds = 1.6f) { Cross("Cheer", .1f); lockUntil = Time.time + seconds; }
@@ -45,7 +45,7 @@ namespace MamasComing
 
             bool stunned = player.Stunned;
             bool punching = player.actions && player.actions.Current == KidActionAnimator.Clip.Punch;
-            if (stunned && !wasStunned) { Cross("Hit", .05f); lockUntil = Time.time + .9f; }
+            if (stunned && !wasStunned) { Cross("Hit", .05f); lockUntil = Time.time + .9f; ComicFx.Dizzy(transform, 1.1f, .3f, 1.2f); }
             if (punching && !wasPunching) { cur = null; Cross("Punch", .03f); lockUntil = Time.time + .45f; }
             wasStunned = stunned; wasPunching = punching;
             if (Time.time < lockUntil) return;

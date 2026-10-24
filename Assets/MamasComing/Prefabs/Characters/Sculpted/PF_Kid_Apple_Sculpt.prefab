@@ -163,7 +163,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MamasComing.KidActionAnimator
   player: {fileID: 3121373821278255745}
   chr: {fileID: 7639001853941610940}
-  pivot: {x: -0.000014028652, y: 0.07130672, z: 0.031899307}
+  pivot: {x: 0.00094299484, y: 0.07536127, z: 0.03104197}
   blend: 14
   carryDepth: 0.55
 --- !u!114 &7486457272480622902
@@ -240,8 +240,8 @@ Transform:
   m_GameObject: {fileID: 7842720708564977647}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.00001335144, y: 0.052135497, z: -0.030359417}
-  m_LocalScale: {x: 0.9517265, y: 0.9517265, z: 0.9517265}
+  m_LocalPosition: {x: -0.00086951256, y: 0.05051121, z: -0.028623044}
+  m_LocalScale: {x: 0.9220757, y: 0.9220757, z: 0.9220757}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4895455796318211827}

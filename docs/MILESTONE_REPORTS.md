@@ -906,3 +906,9 @@ Final staged virtual-input review **63/63 passed**, zero compile errors/four exi
 - ThirdPersonCamera: orbit unchanged, mouse-wheel zoom locked (allowZoom off). MamaFightReview added (staged Play-mode check).
 - Tests run in the shared editor: Assembly-CSharp and Assembly-CSharp-Editor compile with 0 errors; MamaFightReview 24/24 (fruit swap + heights 1.07–1.14 m, distinct walk sway, punch knock-back 1.9 m + drop, curl/pop-up recovery, slip); MamaUxReview 62/62. Branch compiled again on top of latest main (menu/lobby) with 0 errors.
 - Not covered: human playtest, two-machine online test, lobby picker -> KidLook.Selected hand-off at runtime. House-study files remain uncommitted (owned by the house-redesign work).
+
+## Sculpted fruit kids, comic VFX, chiptune soundtrack — 2026-10-24
+- Features: five clay-sculpted fruit kids (Apple, Banana, Orange, Watermelon, WaxApple) with rig + 8 clips, now in the kid catalog (apple too); SculptKidMotion state→clip; ComicFx (POW starburst/halftone, speed lines, ink puffs, dizzy stars, splash) wired to PowPop, jumps, landings, stuns; four original chiptune tracks (in-level loop replaces the procedural music); six decor props; skills `blender-sculpt-modeling`, `animation`. Details: docs/MAMA_SCULPTED_KIDS.md.
+- Tests run: Blender rebuild of all kids/props/textures/music; Unity compile 0 errors; prefab/catalog/material/prop builders; off-screen Unity line-up renders (docs/evidence/sculpted-kids/unity_lineup_*.png).
+- Not tested: human play session with the new kids, online play, music heard in context, comic FX in a live level.
+- Known issues: mushroom stool spots mostly missed the cap; punch reads best side-on; KidActionAnimator overrides arms during chores.

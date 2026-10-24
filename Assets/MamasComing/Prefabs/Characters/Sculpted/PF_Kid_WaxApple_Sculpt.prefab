@@ -141,8 +141,8 @@ Transform:
   m_GameObject: {fileID: 4914028177544420145}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.000023305416, y: 0.05716455, z: -0.010133177}
-  m_LocalScale: {x: 0.94707, y: 0.94707, z: 0.94707}
+  m_LocalPosition: {x: 0.00051259995, y: 0.0551579, z: 0.018446475}
+  m_LocalScale: {x: 0.91382855, y: 0.91382855, z: 0.91382855}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5582836779558932996}
@@ -328,7 +328,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MamasComing.KidActionAnimator
   player: {fileID: 6188890709358822268}
   chr: {fileID: 1410089207669089213}
-  pivot: {x: -0.000024607913, y: 0.066347204, z: 0.010699502}
+  pivot: {x: -0.0005609367, y: 0.07095652, z: -0.020185925}
   blend: 14
   carryDepth: 0.55
 --- !u!114 &7552176735625019772
