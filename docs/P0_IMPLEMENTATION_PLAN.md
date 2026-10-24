@@ -37,7 +37,7 @@ M0 Foundation ──► M1 Apple Movement ──► M2 Bedroom Hub ──► M3 
                                                              M5 Chair AI + Baseline Victory
                                                                      │
                                                                      ▼
-                                                             M6 3-Card System + Alt Solutions
+                                                             M6 3-Card System + Alt Solutions (นำออกแล้ว 2026-10-23)
                                                                      │
                                                                      ▼
                                                      M7 Art / Anim / VFX / SFX / UI pass
@@ -76,7 +76,7 @@ M0 Foundation ──► M1 Apple Movement ──► M2 Bedroom Hub ──► M3 
 - **Acceptance**: วงจร Hub→Dream→Hub ซ้ำได้ ≥5 รอบโดยไม่มี state รั่ว (test อัตโนมัติ)
 
 ### M4 — Chair Stage Graybox (3D Platformer + 2D illustration hooks)
-- Section A–E ตาม GDD §13 (Arrival, Tutorial 3 challenges, Moving Furniture/Little Stool, Card Experiment, Boss Arena 32×25)
+- Section A–E ตาม GDD §13 (Arrival, Tutorial 3 challenges, Moving Furniture/Little Stool, Card Experiment [นำออกพร้อมระบบการ์ด 2026-10-23], Boss Arena 32×25)
 - `StageCameraController` (curated 3/4 view, look-ahead, boss framing player+chair)
 - จุดวาง 2D cutout (Type A/B/C) เป็น placeholder ที่มีกติกาชัด
 - **Acceptance**: ด่าน navigable และสนุกก่อนมีอาร์ต; ระยะกระโดดทุกจุดอยู่ใน envelope ที่วัดจาก M1
@@ -85,9 +85,9 @@ M0 Foundation ──► M1 Apple Movement ──► M2 Bedroom Hub ──► M3 
 - State machine 13 states (GDD §15.2), escape destination scoring (§15.5) บน NavMesh, fatigue/exhaust, stumble, anti-softlock (§15.8), seat validation 2s (§15.9)
 - Chair reveal: เก้าอี้ "เตะนิ้วก้อย" แล้ววิ่งหนี (จาก pitch ของผู้ใช้) → title THE CHAIR / SIT ON THE CHAIR
 - Sleep Stability + ชนสิ่งกีดขวาง = เสีย stability และเก้าอี้ได้ระยะเพิ่ม (pitch)
-- **Acceptance**: ชนะด้วย Chase & Exhaust ได้โดยไม่ใช้การ์ด; bot test 50 seeds ไม่มี softlock, เก้าอี้ไม่ออกนอก arena, victory trigger ครั้งเดียว
+- **Acceptance**: ชนะด้วย Chase & Exhaust ได้; bot test 50 seeds ไม่มี softlock, เก้าอี้ไม่ออกนอก arena, victory trigger ครั้งเดียว
 
-### M6 — 3-Card System + Alternative Solutions
+### M6 — 3-Card System + Alternative Solutions (ประวัติ — ระบบการ์ดถูกนำออก 2026-10-23 ดู Decision Log; ห้ามสร้างคืน)
 - `CardDefinition` (SO ตาม §17.6), `CardDrawManager` (3 ใบไม่ซ้ำจาก starter pool, seeded), `CardInventory`, `CardEffectResolver` → `StatusEffectSystem` ผ่าน `DreamProperty` (ห้าม if card==X && boss==Chair → win)
 - Starter 6: Super Glue(Root), Camera Flash(Freeze), Fishing Rod(Pull), Be a Grandpa(ChangeBehavior→OfferSeat), Decoy Apple, Bouncy Cushion
 - **Dream Law / การ์ดข้อห้าม** (จาก pitch): เช่น "ห้ามกระโดด", "ห้ามวิ่งเร็ว" สุ่มขึ้นระหว่างไล่ล่า — เป็น rule modifier ผ่านระบบเดียวกัน
@@ -132,7 +132,6 @@ M0 Foundation ──► M1 Apple Movement ──► M2 Bedroom Hub ──► M3 
 | โมเดลแอปเปิ้ลท่ามือประสาน + ไม่มีชุดนอน (GDD ระบุชุดนอน) | วิ่งแกว่งแขนไม่ได้ / ไม่ตรง GDD §4.2 | แยกมือซ้าย/ขวา, ท่า idle = มือประสาน; ชุดนอนเป็นคำถามให้ผู้ใช้ตัดสิน |
 | Chair AI หนีเก่งเกิน/โง่เกิน | ไม่สนุก | ค่า tuning ใน SO + bot test หลาย seed + playtest |
 | กล้อง 3D ทำให้กะระยะกระโดดยาก | หงุดหงิด | blob shadow, landing area ชัด, stage camera มุมคงที่ |
-| การ์ดสุ่มไม่มีประโยชน์ | ทำลาย trust | starter pool คัดแล้ว ทุกใบใช้ได้ทั้ง tutorial และ boss |
 
 ---
 
