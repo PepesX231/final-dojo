@@ -34,7 +34,8 @@ namespace MamasComing
         readonly Dictionary<int, RemoteState> remote = new Dictionary<int, RemoteState>();
         int mySlot;
         PlayerController localKid;
-
+        bool hasRoster, hooked;
+        float rosterRetryT;
         class RemoteState { public Vector3 pos; public float yaw, speed; public bool use, sprint, stunned, down; public int holdTarget = -1; public int kid = -1, shownKid = -1; public float t; }
 
         // registry (built when the scene loads, identical on every machine)
@@ -245,15 +246,19 @@ namespace MamasComing
 
         void Hook()
         {
+            if (hooked) return;
+            var cm = nm.CustomMessagingManager;
+            if (cm == null) return;
+            hooked = true;
             nm.OnClientConnectedCallback += OnConnected;
             nm.OnClientDisconnectCallback += OnDisconnected;
-            var cm = nm.CustomMessagingManager;
             cm.RegisterNamedMessageHandler("mc/state", OnState);
             cm.RegisterNamedMessageHandler("mc/act", OnAct);
             cm.RegisterNamedMessageHandler("mc/world", OnWorld);
             cm.RegisterNamedMessageHandler("mc/field", OnField);
             cm.RegisterNamedMessageHandler("mc/evt", OnEvent);
             cm.RegisterNamedMessageHandler("mc/roster", OnRoster);
+            cm.RegisterNamedMessageHandler("mc/roster-request", OnRosterRequest);
             cm.RegisterNamedMessageHandler("mc/snd", OnSound);
             cm.RegisterNamedMessageHandler("mc/hit", OnHit);
             cm.RegisterNamedMessageHandler("mc/fx", OnFx);
@@ -303,8 +308,13 @@ namespace MamasComing
         {
             if (State != Mode.Offline || string.IsNullOrWhiteSpace(codeOrIp)) return;
             codeOrIp = codeOrIp.Trim();
-            State = Mode.Connecting; Status = Txt("Joining ", "กำลังเข้า ") + codeOrIp + "...";
             MakeManager();
+            hasRoster = false;
+            rosterRetryT = 0f;
+            State = Mode.Client;
+            NetGame.Online = true;
+            NetGame.IsHost = false;
+            Status = Txt("Joining ", "กำลังเข้า ") + codeOrIp + "...";
             bool isIp = codeOrIp.Contains(".") || codeOrIp == "localhost";
             try
             {
@@ -314,14 +324,18 @@ namespace MamasComing
                     if (!nm.StartClient()) throw new Exception("StartClient failed");
                 }
                 else session = await NetServices.JoinSession(codeOrIp.ToUpperInvariant());
-                State = Mode.Client; NetGame.Online = true; NetGame.IsHost = false;
                 Hook();
-                Status = Txt("Connecting...", "กำลังเชื่อมต่อ...");
+                if (State == Mode.Client && !hasRoster)
+                    Status = Txt("Connecting...", "กำลังเชื่อมต่อ...");
             }
             catch (Exception e)
             {
-                State = Mode.Offline; NetGame.Online = false; Status = Txt("Could not join: ", "เข้าห้องไม่ได้: ") + e.Message;
                 if (nm && nm.IsListening) nm.Shutdown();
+                State = Mode.Offline;
+                NetGame.Online = false;
+                NetGame.IsHost = true;
+                hasRoster = false;
+                Status = Txt("Could not join: ", "เข้าห้องไม่ได้: ") + e.Message;
             }
         }
 
@@ -373,7 +387,21 @@ namespace MamasComing
         {
             if (State != Mode.Host && State != Mode.Client) return;
             if (!nm || !nm.IsListening) return;
+            if (!hooked) Hook();
+            if (!hooked) return;
             float dt = Time.deltaTime;
+
+            // Do not treat the host's slot 0 as our own until the roster assigns us a slot.
+            if (State == Mode.Client && !hasRoster)
+            {
+                rosterRetryT -= dt;
+                if (rosterRetryT <= 0f && nm.IsConnectedClient)
+                {
+                    rosterRetryT = 0.5f;
+                    SendHost("mc/roster-request", Begin(), NetworkDelivery.Reliable);
+                }
+                return;
+            }
 
             // remote avatars: smooth to their reported pose; the host also performs their continuous actions
             foreach (var kv in avatars)
@@ -382,9 +410,8 @@ namespace MamasComing
                 var pc = kv.Value;
                 pc.transform.position = Vector3.Lerp(pc.transform.position, rs.pos, 1f - Mathf.Exp(-14f * dt));
                 pc.transform.rotation = Quaternion.Slerp(pc.transform.rotation, Quaternion.Euler(0, rs.yaw, 0), 1f - Mathf.Exp(-14f * dt));
-                if (rs.kid >= 0 && rs.kid != rs.shownKid) { rs.shownKid = rs.kid; KidLook.Apply(pc, rs.kid); }   // wear the fruit they picked
+                if (rs.kid >= 0 && rs.kid != rs.shownKid) { rs.shownKid = rs.kid; KidLook.Apply(pc, rs.kid); }
                 pc.RemoteTick(rs.speed, rs.sprint, rs.stunned, rs.down);
-                // their hold-actions (cranking a valve, lifting the sofa...) look the same on every screen
                 if (pc.actions && rs.holdTarget >= 0 && rs.holdTarget < reg.Count && reg[rs.holdTarget]) pc.actions.Hold(pc.HoldClipFor(reg[rs.holdTarget]));
                 if (State == Mode.Host)
                 {
@@ -424,17 +451,19 @@ namespace MamasComing
 
         void OnState(ulong sender, FastBufferReader reader)
         {
+            if (State == Mode.Client && (!hasRoster || sender != NetworkManager.ServerClientId)) return;
+            if (State == Mode.Host && !slotOf.TryGetValue(sender, out _)) return;
             var r = Read(reader); if (r == null) return;
             int slot = r.ReadByte();
-            if (State == Mode.Host && slotOf.TryGetValue(sender, out int s)) slot = s;   // never trust the claimed slot
+            if (State == Mode.Host) slot = slotOf[sender];
             if (slot == mySlot) return;
             if (!remote.TryGetValue(slot, out var rs)) { rs = new RemoteState(); remote[slot] = rs; }
             rs.pos = new Vector3(r.ReadSingle(), r.ReadSingle(), r.ReadSingle()); rs.yaw = r.ReadSingle(); rs.speed = r.ReadSingle();
             byte f = r.ReadByte(); rs.use = (f & 1) != 0; rs.sprint = (f & 2) != 0; rs.stunned = (f & 4) != 0; rs.down = (f & 8) != 0;
             rs.holdTarget = r.ReadInt16(); rs.t = Time.time;
-            rs.kid = r.BaseStream.Position < r.BaseStream.Length ? r.ReadByte() : -1;   // older builds don't send the fruit
+            rs.kid = r.BaseStream.Position < r.BaseStream.Length ? r.ReadByte() : -1;
             if (!avatars.ContainsKey(slot)) SpawnPuppet(slot);
-            if (State == Mode.Host)   // relay to the other clients
+            if (State == Mode.Host)
             {
                 var w = Begin(); w.Write((byte)slot); w.Write(rs.pos.x); w.Write(rs.pos.y); w.Write(rs.pos.z); w.Write(rs.yaw); w.Write(rs.speed); w.Write(f); w.Write((short)rs.holdTarget); if (rs.kid >= 0) w.Write((byte)rs.kid);
                 foreach (var kv in slotOf) if (kv.Key != sender && kv.Key != nm.LocalClientId) Send("mc/state", kv.Key, w, NetworkDelivery.UnreliableSequenced);
@@ -532,7 +561,7 @@ namespace MamasComing
 
         void OnWorld(ulong sender, FastBufferReader reader)
         {
-            if (State != Mode.Client) return;
+            if (State != Mode.Client || !hasRoster || sender != NetworkManager.ServerClientId) return;
             var r = Read(reader); if (r == null) return;
             var gm = GameManager.I; if (!gm) return;
             var st = (GameManager.State)r.ReadByte(); float tl = r.ReadSingle(); bool power = r.ReadBoolean();
@@ -705,23 +734,38 @@ namespace MamasComing
             }
         }
 
-        void SendRoster()
+        void SendRoster(ulong? only = null)
         {
             var w = Begin(); w.Write((byte)slotOf.Count);
             foreach (var kv in slotOf) { w.Write(kv.Key); w.Write((byte)kv.Value); }
-            SendAll("mc/roster", w, NetworkDelivery.ReliableSequenced);
+            if (only.HasValue) Send("mc/roster", only.Value, w, NetworkDelivery.ReliableSequenced);
+            else SendAll("mc/roster", w, NetworkDelivery.ReliableSequenced);
         }
+
+        void OnRosterRequest(ulong sender, FastBufferReader reader)
+        {
+            if (State != Mode.Host || !nm.ConnectedClients.ContainsKey(sender)) return;
+            if (!slotOf.ContainsKey(sender)) OnConnected(sender);
+            else SendRoster(sender);
+        }
+
         void OnRoster(ulong sender, FastBufferReader reader)
         {
-            if (State != Mode.Client) return;
+            if (State != Mode.Client || sender != NetworkManager.ServerClientId) return;
             var r = Read(reader); if (r == null) return;
-            int n = r.ReadByte(); var seen = new HashSet<int>(); slotOf.Clear();
-            for (int i = 0; i < n; i++) { ulong id = r.ReadUInt64(); int slot = r.ReadByte(); slotOf[id] = slot; seen.Add(slot); }
-            if (slotOf.TryGetValue(nm.LocalClientId, out int mine) && mine != mySlot)
+            int n = r.ReadByte();
+            var seen = new HashSet<int>();
+            var nextSlots = new Dictionary<ulong, int>();
+            for (int i = 0; i < n; i++) { ulong id = r.ReadUInt64(); int slot = r.ReadByte(); nextSlots[id] = slot; seen.Add(slot); }
+            if (!nextSlots.TryGetValue(nm.LocalClientId, out int mine)) return;
+            slotOf.Clear();
+            foreach (var kv in nextSlots) slotOf[kv.Key] = kv.Value;
+            if (mine != mySlot)
             {
                 avatars.Remove(mySlot); mySlot = mine; avatars[mySlot] = localKid; PlaceAtSpawn(localKid, mySlot);
                 ApplyClientMode();
             }
+            hasRoster = true;
             foreach (var s in seen) if (s != mySlot) SpawnPuppet(s);
             foreach (var s in new List<int>(avatars.Keys)) if (!seen.Contains(s) && s != mySlot) DespawnPuppet(s);
             NetGame.Connected = n;
