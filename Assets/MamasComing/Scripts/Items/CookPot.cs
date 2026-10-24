@@ -96,7 +96,7 @@ namespace MamasComing
             burn = Mathf.Max(0f, burn - 0.1f * dt);
             p.Scrubbing = true;
             sink.Splash(dt);
-            if (burn <= 0.2f && !cleanedToast) { cleanedToast = true; if (GameManager.I) GameManager.I.OnSmart("The pot looks (almost) brand new!"); }
+            if (burn <= 0.2f && !cleanedToast) { MamaRound.Award(p,this,"Cleaned the burnt pot",125); cleanedToast = true; if (GameManager.I) GameManager.I.OnSmart("The pot looks (almost) brand new!"); }
             return true;
         }
 

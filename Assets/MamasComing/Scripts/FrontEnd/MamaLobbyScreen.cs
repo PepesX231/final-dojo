@@ -42,7 +42,7 @@ namespace MamasComing
             if (canvas) canvas.gameObject.SetActive(v);
             if (seats != null) foreach (var s in seats) if (s) s.gameObject.SetActive(v);
             if (emptyMarkers != null) foreach (var e in emptyMarkers) if (e) e.SetActive(false);
-            if (v) { NetSession.Ensure(); shownSlots = -1; Sync(); }
+            if (v) { NetSession.Ensure(); shownSlots = -1; foreach (var seat in seats) if (seat) seat.builtKid = -1; Sync(); }
         }
 
         void Update()
@@ -57,7 +57,7 @@ namespace MamasComing
             {
                 if (k.qKey.wasPressedThisFrame || k.leftArrowKey.wasPressedThisFrame) Cycle(-1);
                 if (k.eKey.wasPressedThisFrame || k.rightArrowKey.wasPressedThisFrame) Cycle(1);
-                if (k.enterKey.wasPressedThisFrame) { if (MamaFrontEnd.I) MamaFrontEnd.I.StartGame(); }
+
             }
             if (g != null)
             {
@@ -110,13 +110,14 @@ namespace MamasComing
             if (statusText)
             {
                 string st = NetSession.I ? NetSession.I.Status : "";
-                if (string.IsNullOrEmpty(st)) st = th ? "เล่นคนเดียวก็ได้ หรือสร้างห้องแล้วส่งรหัสให้เพื่อน" : "Play solo, or host a room and send friends the code";
+                if (string.IsNullOrEmpty(st)) st = th ? "สร้างห้องและชวนเพื่อน ต้องมีอย่างน้อย 2 คน" : "Host a room and invite a friend. At least 2 players required.";
                 statusText.text = NetGame.IsClientOnly ? (th ? "รอเจ้าของห้องกดเริ่ม..." : "Waiting for the host to start...") : st;
             }
-            if (startLabel) startLabel.text = NetGame.IsAuthority ? (th ? "เริ่มเลย!" : "START!") : (th ? "รอเจ้าของห้อง" : "WAITING");
+            if (startLabel) { startLabel.resizeTextForBestFit = true; startLabel.resizeTextMinSize = 22; startLabel.resizeTextMaxSize = 64; }
+            if (startLabel) startLabel.text = count < 2 ? (th ? "รอเพื่อน 2 คนขึ้นไป" : "NEED 2 PLAYERS") : NetGame.IsAuthority ? (th ? "เริ่มเลย!" : "START!") : (th ? "รอเจ้าของห้อง" : "WAITING");
             foreach (var b in buttons) if (b)
             {
-                if (b.action == MamaMenuItem.Action.Start) b.interactable = NetGame.IsAuthority;
+                if (b.action == MamaMenuItem.Action.Start) b.interactable = MamaLaunch.CanStart;
                 if (b.action == MamaMenuItem.Action.Leave) b.interactable = NetGame.Online;
                 if (b.action == MamaMenuItem.Action.HostOnline || b.action == MamaMenuItem.Action.HostLan || b.action == MamaMenuItem.Action.Join) b.interactable = !NetGame.Online;
             }
@@ -138,7 +139,9 @@ namespace MamasComing
             int id = (KidLook.Selected + d + KidLook.Count) % KidLook.Count;
             KidLook.Selected = id;
             MamaAudio.Play("pop", null, 0.6f, 1.2f);
-            if (seats != null && seats.Length > 0 && seats[0]) seats[0].builtKid = -1;
+            int slot = NetGame.Online && NetSession.I ? NetSession.I.MySlot : 0;
+            if (seats != null && slot < seats.Length && seats[slot]) seats[slot].builtKid = -1;
+            if (NetSession.I) NetSession.I.PublishPick();
         }
 
         void Back() => MamaLaunch.ToMenu();

@@ -28,6 +28,7 @@ namespace MamasComing
 
         void Start()
         {
+            NetSession.Ensure();
             MamaAudio.Ensure();
             MamaSettings.Ensure();
             Time.timeScale = 1f;

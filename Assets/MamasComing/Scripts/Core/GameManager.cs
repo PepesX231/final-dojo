@@ -93,8 +93,7 @@ namespace MamasComing
             ui.ShowTitle(false);
             yield return null;
             if (!NetGame.IsAuthority) yield break;          // clients follow the host's Start / world state
-            float wait = NetGame.Online ? 3f : 0.4f;
-            while (wait > 0f || MamaHowToPlay.Open) { wait -= Time.unscaledDeltaTime; if (state != State.Title) yield break; yield return null; }
+            while (NetSession.I && NetSession.I.Loading) { if (state != State.Title) yield break; yield return null; }
             if (state != State.Title) yield break;
             StartRound();
             NetGame.Broadcast(NetGame.Msg.Start, null, null, 0);
@@ -105,7 +104,7 @@ namespace MamasComing
             switch (state)
             {
                 case State.Title:
-                    if (MamaFrontEnd.Active) break;   // the authored title / lobby screens handle input
+                    if (MamaFrontEnd.Active || MamaLaunch.FromMenu || NetSession.I && NetSession.I.Loading) break;   // the authored title / lobby screens handle input
                     if (MamaInput.EscDown) MamaSettings.Toggle();
                     if (MamaInput.AnyStart && !MamaSettings.BlockStart && !MamaHowToPlay.BlockStart && NetGame.IsAuthority)
                     {
@@ -143,9 +142,7 @@ namespace MamasComing
 
                 case State.Ending:
                     endShownT += Time.deltaTime;
-                    if (MamaInput.RestartDown && endShownT > 0.5f && NetGame.IsAuthority) { NetGame.Broadcast(NetGame.Msg.Restart, null, null, 0); Restart(); }
-                    else if (endShownT > 0.5f && UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.mKey.wasPressedThisFrame && MamaLaunch.InBuild(MamaLaunch.MenuScene))
-                    { if (NetSession.I && NetGame.Online) NetSession.I.Leave(); MamaLaunch.ToMenu(); }
+                    // Everyone chooses through the shared vote panel; no host-only R shortcut.
                     break;
             }
 
@@ -306,10 +303,12 @@ namespace MamasComing
 
         public void MomFinished() { endDelay = 2.5f; }
 
+        Vector3 lastFailure; string lastFailureLine; int lastFailureSeverity;
         void Found(object key, string line, int severity, bool isMajor)
         {
             if (key == null || found.Contains(key)) return;
             found.Add(key);
+            if (severity >= lastFailureSeverity) { lastFailureSeverity = severity; lastFailureLine = line; if (key is IMess mess) lastFailure = mess.Position; else if (key is Component component) lastFailure = component.transform.position; else if (mom) lastFailure = mom.transform.position; }
             foundLines.Add(line);
             suspicion += severity;
             if(mom && mom.TryGetComponent<MotherApplePresentation>(out var expression)) expression.IsAngry=true;
@@ -377,14 +376,15 @@ namespace MamasComing
                 stats += "\n\nMom noticed:";
                 for (int i = 0; i < foundLines.Count && i < 7; i++) stats += "\n- " + foundLines[i];
             }
-            ui.ShowEnding(title, body, stats, col);
-            NetGame.BroadcastEnding(title, body, stats, col);
+            MamaRound.Finish(col == MamaUI.Teal || col == MamaUI.Orange, title, body, stats, FailurePosition(), FailureExplanation());
+            NetSession.Ensure(); NetSession.I.PublishResults();
         }
 
         /// Title -> intro. Host runs it locally and tells clients to do the same.
         public void StartRound()
         {
-            if (state != State.Title) return;
+            if (state != State.Title || NetSession.I && NetSession.I.Loading) return;
+            if (NetGame.IsAuthority && !MamaLaunch.CanStart && !MamaShowcase.Enabled) return;
             state = State.Intro;
             MamaAudio.Play("pop", null, 0.7f);
             ui.ShowTitle(false);
@@ -404,10 +404,26 @@ namespace MamasComing
             MamaAudio.Play(col == MamaUI.Teal || col == MamaUI.Orange ? "win" : "lose", null, 0.85f);
         }
 
+        public Vector3 FailurePosition()
+        {
+            if (fireDept) foreach (var f in FireSource.All) if (f && f.burning) return f.transform.position;
+            if (potAvalanche && pot) return pot.transform.position;
+            return lastFailureSeverity > 0 ? lastFailure : player.transform.position;
+        }
+        public string FailureExplanation() => fireDept ? MamaReadability.Text("The fire spread. Put it out and switch off the stove.", "ไฟลุกลาม ดับไฟและปิดเตาให้ทัน") : potAvalanche ? MamaReadability.Text("The hidden burnt pot fell on Mom. Wash it at the sink next time.", "หม้อไหม้ที่ซ่อนไว้หล่นใส่แม่ รอบหน้าล้างที่อ่างให้สะอาด") : MamaReadability.Text("Mom found the mess here. Fix the cause, then clean up the evidence.", "แม่พบความผิดปกติตรงนี้ แก้ต้นเหตุแล้วเก็บหลักฐานให้เรียบร้อย");
+        public void PresentMom() { if (NetGame.IsAuthority && state != State.Ending) { state = State.Playing; TimeLeft = 0; MomArrives(); } }
+        public void PresentResult(bool win)
+        {
+            if (!NetGame.IsAuthority) return;
+            state = State.Ending; player.controlsEnabled = false;
+            MamaRound.Finish(win, win ? "HOUSE HEROES!" : "BUSTED!", "", "", FailurePosition(), FailureExplanation());
+            NetSession.Ensure(); NetSession.I.PublishResults();
+        }
+
         public void Restart()
         {
-            var s = SceneManager.GetActiveScene();
-            if (s.buildIndex >= 0) SceneManager.LoadScene(s.buildIndex); else SceneManager.LoadScene(s.name);
+            if (!NetGame.IsAuthority) return;
+            MamaRound.Begin(); NetSession.Ensure(); NetSession.I.LoadLevelForAll(MamaLaunch.GameScene);
         }
 
         // ------------------------------------------------------------------ HUD

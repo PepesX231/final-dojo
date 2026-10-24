@@ -97,7 +97,7 @@ namespace MamasComing
             if (p != null && velocity.sqrMagnitude < 30f && NearHome(p))
             {
                 base.OnDropped(p, Vector3.zero);
-                if (CanSettle) { Settle(); if (GameManager.I && GameManager.I.ui) GameManager.I.ui.Confirm(MamaReadability.Text(displayName + " is back where it belongs.", Loc.T(displayName) + " กลับเข้าที่แล้ว")); return; }
+                if (CanSettle) { MamaRound.Award(p, this, displayName, 50); Settle(); if (GameManager.I && GameManager.I.ui) GameManager.I.ui.Confirm(MamaReadability.Text(displayName + " is back where it belongs.", Loc.T(displayName) + " กลับเข้าที่แล้ว")); return; }
                 transform.SetPositionAndRotation(homePosition, homeRotation);
                 // Commit the restored pose to physics too: the last carried pose must not
                 // become a release velocity that throws a correctly returned prop away.

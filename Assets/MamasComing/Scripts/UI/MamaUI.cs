@@ -587,6 +587,8 @@ namespace MamasComing
 
         public void MomSay(string s) { if (momQ.Count < 8) momQ.Enqueue(s); }
 
+        public void HideForResults() { if (hud) hud.SetActive(false); if (endGO) endGO.SetActive(false); if (callGO) callGO.SetActive(false); if (toastGO) toastGO.SetActive(false); if (momGO) momGO.SetActive(false); }
+
         public void ShowEnding(string title, string body, string stats, Color accent)
         {
             hud.SetActive(false);

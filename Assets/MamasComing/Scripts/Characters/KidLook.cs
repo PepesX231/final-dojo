@@ -14,6 +14,8 @@ namespace MamasComing
         const string Pref = "mama.kid";
 
         static int selected = -1;
+        // In-memory selection used by isolated development-build probes; never writes player preferences.
+        public static void SelectForSession(int id) { selected = Mathf.Clamp(id, 0, Count - 1); }
         /// This machine's chosen fruit (saved between sessions).
         public static int Selected
         {

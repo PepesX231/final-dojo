@@ -36,7 +36,8 @@ namespace MamasComing
         public static void Interact(Interactable t, PlayerController p)
         {
             if (!t) return;
-            if (IsAuthority || SendInteract == null) t.Interact(p);
+            if (!HeldInteraction.Allows(p, t)) return;
+            if (IsAuthority || SendInteract == null) { bool problem=t is IMess before && before.IsProblem; t.Interact(p); if(problem && t is IMess after && !after.IsProblem) MamaRound.Award(p,t,t.displayName,100); }
             else SendInteract(t, p);
         }
 

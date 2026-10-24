@@ -32,6 +32,9 @@ namespace MamasComing
             if (logo) logoScale = logo.localScale;
             bubbleScale = new Vector3[bubbles != null ? bubbles.Length : 0];
             for (int i = 0; i < bubbleScale.Length; i++) if (bubbles[i]) bubbleScale[i] = bubbles[i].localScale;
+            var visibleItems = new System.Collections.Generic.List<MamaMenuItem>();
+            foreach (var it in items) { if (!it) continue; if (it.action == MamaMenuItem.Action.Coop) it.gameObject.SetActive(false); else visibleItems.Add(it); }
+            items = visibleItems.ToArray(); startItem = items.Length - 1;
             foreach (var it in items)
             {
                 if (!it) continue;
@@ -74,7 +77,7 @@ namespace MamasComing
                     float s = t < 0f ? 0f : Mathf.Min(1f, t * 6f) * (1f + Mathf.Sin(Mathf.Min(1f, t * 3f) * Mathf.PI) * 0.15f);
                     bubbles[i].localScale = bubbleScale[i] * s;
                 }
-            foreach (var it in items) if (it && it.action == MamaMenuItem.Action.Play) it.interactable = NetGame.IsAuthority;
+            foreach (var it in items) if (it && it.action == MamaMenuItem.Action.Play) it.interactable = true;
             if (status) status.text = StatusLine();
 
             if (MamaInput.EscDown) { MamaSettings.Toggle(); return; }
@@ -104,7 +107,7 @@ namespace MamasComing
                 string who = NetGame.IsHost ? (th ? "คุณเป็นเจ้าของห้อง" : "You are the host") : (th ? "รอเจ้าของห้องกดเริ่ม" : "Waiting for the host to start");
                 return (th ? "เล่นกับเพื่อน " : "CO-OP ") + NetGame.PlayerCount + "/3" + (string.IsNullOrEmpty(code) ? "" : "  ·  " + code) + "  ·  " + who;
             }
-            return th ? "เล่นคนเดียว · 1-3 คน" : "SOLO · 1-3 PLAYERS";
+            return th ? "ช่วยกันเก็บบ้าน · 2-3 คน" : "CLEAN UP TOGETHER · 2-3 PLAYERS";
         }
 
         void Activate(MamaMenuItem it)
@@ -114,7 +117,7 @@ namespace MamasComing
             var fe = MamaFrontEnd.I;
             switch (it.action)
             {
-                case MamaMenuItem.Action.Play: if (NetGame.Online && NetSession.I && !NetGame.IsHost) break; MamaLaunch.ToGame(); break;
+                case MamaMenuItem.Action.Play: MamaLaunch.ToLobby(); break;
                 case MamaMenuItem.Action.Coop: MamaLaunch.ToLobby(); break;
                 case MamaMenuItem.Action.HowTo: if (MamaHowToPlay.I) MamaHowToPlay.I.Show(false); break;
                 case MamaMenuItem.Action.Options: MamaSettings.Toggle(); break;

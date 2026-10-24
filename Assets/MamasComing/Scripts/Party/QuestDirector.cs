@@ -78,6 +78,7 @@ namespace MamasComing
         public void OnFixed(Hazard h, PlayerController p)
         {
             FixedCount++;
+            MamaRound.Award(p, h, string.IsNullOrEmpty(h.doneEn) ? h.displayName : h.doneEn, 100);
             MamaAudio.Play("good", null, 0.75f);
             string who = p ? NetGame.NameOf(p) : null;
             string en = (who != null ? who + ": " : "") + (string.IsNullOrEmpty(h.doneEn) ? "Fixed!" : h.doneEn);
@@ -156,29 +157,34 @@ namespace MamasComing
         Font font; Sprite white;
         float hudT;
 
+        Text tabHint;
         void BuildHud()
         {
-            font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            font = MamaTheme.Body;
             white = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), Vector2.one * 0.5f);
             var cgo = new GameObject("QuestBoard", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
             cgo.transform.SetParent(transform, false);
             var cv = cgo.GetComponent<Canvas>(); cv.renderMode = RenderMode.ScreenSpaceOverlay; cv.sortingOrder = 60;
             var sc = cgo.GetComponent<CanvasScaler>(); sc.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; sc.referenceResolution = new Vector2(1920, 1080); sc.matchWidthOrHeight = 0.5f;
-            board = R("Board", cgo.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 1), new Vector2(24, -190), new Vector2(470, 470));
+            board = R("Board", cgo.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 1), new Vector2(24, -190), new Vector2(510, 655));
             boardTitle = Tx(R("Title", board, new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 1), new Vector2(6, 0), new Vector2(0, 34)), "", 24, MamaUI.Paper, TextAnchor.MiddleLeft);
             boardTitle.gameObject.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 0.6f);
             for (int i = 0; i < 8; i++)
             {
-                var row = R("Row" + i, board, new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 1), new Vector2(0, -38 - i * 50), new Vector2(0, 44));
+                var row = R("Row" + i, board, new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 1), new Vector2(0, -40 - i * 74), new Vector2(0, 68));
                 var bg = row.gameObject.AddComponent<Image>(); bg.sprite = white; bg.color = new Color(0.99f, 0.93f, 0.8f, 0.92f);
-                var bar = R("Bar", row, new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 0), Vector2.zero, new Vector2(0, 5)).gameObject.AddComponent<Image>();
+                var bar = R("Bar", row, new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 0), Vector2.zero, new Vector2(0, 9)).gameObject.AddComponent<Image>();
                 bar.sprite = white; bar.type = Image.Type.Filled; bar.fillMethod = Image.FillMethod.Horizontal;
-                var t = Tx(R("T", row, new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 0.5f), new Vector2(12, 2), new Vector2(-150, -6)), "", 19, MamaUI.Ink, TextAnchor.MiddleLeft);
-                var room = Tx(R("Room", row, new Vector2(1, 0), new Vector2(1, 1), new Vector2(1, 0.5f), new Vector2(-10, 2), new Vector2(140, -6)), "", 16, MamaUI.Edge, TextAnchor.MiddleRight);
+                var t = Tx(R("T", row, new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 0.5f), new Vector2(14, 9), new Vector2(-150, -16)), "", 19, MamaUI.Ink, TextAnchor.MiddleLeft);
+                var room = Tx(R("Room", row, new Vector2(1, 0), new Vector2(1, 1), new Vector2(1, 0.5f), new Vector2(-12, 9), new Vector2(125, -16)), "", 16, MamaUI.Edge, TextAnchor.MiddleRight);
                 var coop = Tx(R("Coop", row, new Vector2(1, 1), new Vector2(1, 1), new Vector2(1, 1), new Vector2(4, 8), new Vector2(46, 22)), "2P", 15, Color.white, TextAnchor.MiddleCenter);
                 var cbg = coop.gameObject.AddComponent<Outline>(); cbg.effectColor = MamaUI.Pink; cbg.effectDistance = new Vector2(2, -2);
                 rows.Add((row.gameObject, t, room, bar, bg, coop));
             }
+            cgo.AddComponent<GraphicRaycaster>();
+            var tab = MamaFlowUI.Button(cgo.transform, "TAB • Problems", Vector2.zero, new Vector2(420, 50), T("TAB  •  VIEW PROBLEMS", "TAB  •  ดูปัญหาในบ้าน"), MamaTheme.Teal, () => { var read = gm.GetComponent<MamaReadability>(); if (read) read.ToggleNotes(); });
+            var tr=(RectTransform)tab.transform; tr.anchorMin=tr.anchorMax=new Vector2(0,1);tr.pivot=new Vector2(0,1);tr.anchoredPosition=new Vector2(24,-132);
+            tabHint=tab.GetComponentInChildren<Text>();
             // neighbour meter (top centre, under the gear)
             var nm = R("Neighbors", cgo.transform, new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -98), new Vector2(360, 34));
             var nbg = nm.gameObject.AddComponent<Image>(); nbg.sprite = white; nbg.color = new Color(0.99f, 0.93f, 0.8f, 0.9f);
@@ -196,6 +202,7 @@ namespace MamasComing
             bool mini = MiniGame.I && MiniGame.I.Active;
             board.gameObject.SetActive(play && notes && !mini && !MamaSettings.Open);
             neighFill.transform.parent.gameObject.SetActive(play && (Neighbor > 35f || notes) && gm.state == GameManager.State.Playing && !MamaSettings.Open && !mini);
+            if (tabHint) { tabHint.transform.parent.gameObject.SetActive(play && !mini && !MamaSettings.Open); tabHint.text = notes ? T("TAB  •  CLOSE PROBLEMS", "TAB  •  ปิดรายการปัญหา") : T("TAB  •  VIEW PROBLEMS", "TAB  •  ดูปัญหาในบ้าน"); }
             if (!play) return;
 
             hudT -= Time.unscaledDeltaTime;
@@ -212,7 +219,7 @@ namespace MamasComing
                     var e = list[i];
                     rows[i].t.text = e.text;
                     rows[i].room.text = e.room >= 0 ? T(GameManager.RoomNames[e.room], Loc.T(GameManager.RoomNames[e.room])) : "";
-                    rows[i].bar.fillAmount = e.progress >= 0 ? e.progress : 0f;
+                    rows[i].bar.fillAmount = Mathf.Clamp01(e.urgency);
                     rows[i].bar.color = e.col;
                     rows[i].bg.color = Color.Lerp(new Color(0.99f, 0.93f, 0.8f, 0.92f), e.col, e.urgency > 0.85f ? 0.25f + 0.15f * Mathf.Sin(Time.unscaledTime * 8f) : 0.08f);
                     rows[i].coop.gameObject.SetActive(e.coop);
@@ -243,7 +250,7 @@ namespace MamasComing
         Text Tx(RectTransform r, string s, int size, Color c, TextAnchor a)
         {
             var t = r.gameObject.AddComponent<Text>(); t.font = font; t.text = s; t.fontSize = size; t.color = c; t.alignment = a; t.fontStyle = FontStyle.Bold;
-            t.raycastTarget = false; t.horizontalOverflow = HorizontalWrapMode.Wrap; t.verticalOverflow = VerticalWrapMode.Overflow; t.resizeTextForBestFit = true; t.resizeTextMinSize = 12; t.resizeTextMaxSize = size;
+            t.raycastTarget = false; t.horizontalOverflow = HorizontalWrapMode.Wrap; t.verticalOverflow = VerticalWrapMode.Truncate; t.resizeTextForBestFit = true; t.resizeTextMinSize = 12; t.resizeTextMaxSize = size;
             return t;
         }
     }

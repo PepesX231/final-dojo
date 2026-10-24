@@ -223,7 +223,14 @@ namespace DreamRush.Player
             float accLean = Mathf.Clamp(_accelS * accelLean, -10f, 12f) * (1f - _air01);
             float lean = Mathf.Lerp(0f, sprintLean, _sprint01) * _move01 - _skid01 * 22f + _air01 * (vy > 0 ? -6f : 8f) + accLean;
             // critically-damped-ish spring so stops get a tiny settle instead of a snap
-            float leanForce = (lean - _lean) * 160f - _leanVel * 18f; _leanVel += leanForce * dt; _lean += _leanVel * dt;
+            // Bounded substeps keep the spring stable during slow/background frames.
+            int steps = Mathf.Max(1, Mathf.CeilToInt(dt / (1f / 120f)));
+            float step = dt / steps;
+            for (int i = 0; i < steps; i++)
+            {
+                float leanForce = (lean - _lean) * 160f - _leanVel * 18f;
+                _leanVel += leanForce * step; _lean += _leanVel * step;
+            }
             _hunchNow = Mathf.Lerp(_hunchNow, hunch, k);
             float roll = c * Mathf.Lerp(bodyRoll, bodyRoll * 0.6f, _sprint01) * _move01 * (1f - _air01) + _bank;
             float twist = s * bodyTwist * _move01 * (1f - _sprint01 * 0.5f);

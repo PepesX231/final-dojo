@@ -11,6 +11,7 @@ namespace MamasComing
         GameManager gm;
         bool overview;
         bool hintVisible;
+        public void ToggleNotes() { overview = !overview; }
         public bool NotesVisible => overview && !hintVisible;
         MessyProp ghostItem;
         GameObject homeGhost;
@@ -102,6 +103,7 @@ namespace MamasComing
 
         public static string ItemMeaning(Pickup item)
         {
+            if (item is RottenFood) return Text("Carry this spoiled food to a trash bin. E or Q near the bin disposes of it.", "ถืออาหารเน่าไปที่ถังขยะ แล้วกด E หรือ Q เพื่อทิ้ง");
             if (item is CookPot pot) return pot.burn > 0.2f ? Text("Burnt evidence. A sink could clean it; a cupboard could conceal it.", "หม้อไหม้เป็นหลักฐาน อ่างล้างช่วยขัดได้ ตู้ก็อาจช่วยซ่อน") : Text("Clean again. It belongs on the kitchen stove.", "สะอาดแล้ว หม้อใบนี้อยู่บนเตาในครัว");
             if (item is Extinguisher ex) return Text("Hold LMB to spray. Leaves powder to clean. Charge: ", "คลิกซ้ายค้างเพื่อฉีด ทิ้งผงให้เก็บกวาด เหลือ: ") + Mathf.RoundToInt(ex.charge * 100) + "%";
             if (item is Lid) return Text("A lid cuts off air. Can it cover the pot before the flames grow?", "ฝาหม้อปิดกั้นอากาศ จะครอบหม้อทันก่อนไฟแรงไหม?");

@@ -1822,7 +1822,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 00e1ebe3a9f00f14aa6cb0c42f492301, type: 3}
+    m_Font: {fileID: 12800000, guid: 4fcfebe7af507a44788fcbb0f2a9b7db, type: 3}
     m_FontSize: 44
     m_FontStyle: 0
     m_BestFit: 0
@@ -1834,7 +1834,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u0E1B\u0E25\u0E48\u0E2D\u0E22\u0E43\u0E2B\u0E49\u0E02\u0E49\u0E32\u0E08\u0E31\u0E14\u0E01\u0E32\u0E23!"
+  m_Text: LEAVE IT TO ME!
 --- !u!222 &170655354
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2091,11 +2091,10 @@ MonoBehaviour:
   - {fileID: 531827142}
   items:
   - {fileID: 237189603}
-  - {fileID: 1409095025}
   - {fileID: 1468333674}
   - {fileID: 1647806310}
   - {fileID: 1828635132}
-  startItem: 0
+  startItem: 3
   status: {fileID: 2048125161}
   logo: {fileID: 1701244055}
   bubbleInterval: 1.4
@@ -3875,8 +3874,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u0E0B\u0E48\u0E2D\u0E21\u0E08\u0E23\u0E34\u0E07 \u0E2B\u0E23\u0E37\u0E2D\u0E41\u0E04\u0E48\u0E0B\u0E48\u0E2D\u0E19
-    \u0E40\u0E25\u0E37\u0E2D\u0E01\u0E40\u0E2D\u0E07"
+  m_Text: fix it or hide it. your call.
 --- !u!222 &306116722
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7434,7 +7432,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u0E04\u0E23\u0E48\u0E2D\u0E01..."
+  m_Text: zzz
 --- !u!222 &553515875
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8165,7 +8163,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u0E0A\u0E39\u0E48\u0E27..."
+  m_Text: shh...
 --- !u!222 &606803193
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9038,7 +9036,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u0E0A\u0E34\u0E25\u0E46..."
+  m_Text: chill...
 --- !u!222 &670083159
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18666,7 +18664,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1409095022
 Transform:
   m_ObjectHideFlags: 0
@@ -18917,8 +18915,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u0E22\u0E37\u0E19\u0E22\u0E31\u0E19:  ENTER  \xB7  SPACE  \xB7  E  \xB7 
-    \u0E04\u0E25\u0E34\u0E01  \xB7  (A)"
+  m_Text: "CONFIRM:  ENTER  \xB7  SPACE  \xB7  E  \xB7  CLICK  \xB7  (A)"
 --- !u!222 &1414529137
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19766,7 +19763,7 @@ Transform:
   m_GameObject: {fileID: 1468333670}
   serializedVersion: 2
   m_LocalRotation: {x: -0.0009133884, y: -0.05232799, z: 0.017428488, w: 0.99847746}
-  m_LocalPosition: {x: 0.08, y: 0.78, z: 0}
+  m_LocalPosition: {x: 0.083333336, y: 0.9766666, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -20204,8 +20201,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u0E40\u0E25\u0E37\u0E2D\u0E01:  W / S  \xB7  \u2191 / \u2193  \xB7  \u0E40\u0E21\u0E32\u0E2A\u0E4C 
-    \xB7  \u0E1B\u0E38\u0E48\u0E21\u0E25\u0E39\u0E01\u0E28\u0E23\u0E08\u0E2D\u0E22"
+  m_Text: "NAVIGATION:  W / S  \xB7  \u2191 / \u2193  \xB7  MOUSE  \xB7  D-PAD"
 --- !u!222 &1477969143
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20758,7 +20754,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 00e1ebe3a9f00f14aa6cb0c42f492301, type: 3}
+    m_Font: {fileID: 12800000, guid: 4fcfebe7af507a44788fcbb0f2a9b7db, type: 3}
     m_FontSize: 44
     m_FontStyle: 0
     m_BestFit: 0
@@ -20770,7 +20766,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u0E1B\u0E32\u0E23\u0E4C\u0E15\u0E35\u0E49!!"
+  m_Text: PARTY!!
 --- !u!222 &1529932133
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21634,7 +21630,7 @@ Transform:
   m_GameObject: {fileID: 1647806306}
   serializedVersion: 2
   m_LocalRotation: {x: -0.0017115764, y: 0.078440435, z: -0.021747638, w: 0.99668014}
-  m_LocalPosition: {x: -0.08, y: 0.55, z: 0}
+  m_LocalPosition: {x: 0.06666667, y: 0.6533333, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -23092,7 +23088,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u0E15\u0E31\u0E49\u0E07\u0E04\u0E48\u0E32:  ESC  \xB7  (B)"
+  m_Text: "OPTIONS:  ESC  \xB7  (B)"
 --- !u!222 &1832100615
 CanvasRenderer:
   m_ObjectHideFlags: 0

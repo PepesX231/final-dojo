@@ -17,7 +17,7 @@ namespace MamasComing
         public static bool IsTrash(Pickup item)
         {
             if (!(item is MessyProp mp) || mp.dragOnFloor) return false;
-            if (mp.displayName == "Trash bag" || mp.displayName == "Pizza box") return true;
+            if (mp is RottenFood || mp.displayName == "Trash bag" || mp.displayName == "Pizza box") return true;
             if (!mp.homeSet) return false;
             foreach (var b in Bins) if (b && Vector3.Distance(Flat(b.transform.position), Flat(mp.homePosition)) < 0.9f) return true;
             return false;
@@ -74,6 +74,8 @@ namespace MamasComing
             // Base drop skips MessyProp's old-home auto-settle and its duplicate pop.
             item.OnDropped(null, Vector3.zero);
             item.Settle(); stored++;
+            MamaRound.Award(p, item, item.displayName, 50);
+            if (item is RottenFood food) food.DisposeFood(p);
             MamaAudio.Play(item.displayName == "Trash bag" ? "bag_drop" : "place", transform.position, .7f);
             if (GameManager.I) GameManager.I.ui.Confirm(MamaReadability.Text(item.displayName + " thrown in the bin.", "ทิ้ง" + Loc.T(item.displayName) + "ลงถังแล้ว"));
             if (!wasOpen) { CancelInvoke(nameof(CloseLid)); Invoke(nameof(CloseLid), 0.7f); }

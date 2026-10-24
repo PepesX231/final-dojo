@@ -343,7 +343,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 64
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -913,7 +913,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 50
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -2065,7 +2065,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 50
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -2367,7 +2367,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 50
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -4513,7 +4513,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 72
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -5488,6 +5488,7 @@ MonoBehaviour:
   fitToSeat: 1
   backClear: 0.36
   normalizeHeight: 0
+  appleHeightScale: 0.8
   appleSource: {fileID: 184736119637861981, guid: c0c5e32174a36644fba2f29cfc9d3444, type: 3}
   builtKid: 1
   restP:
@@ -6963,7 +6964,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 46
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -7860,7 +7861,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -8718,7 +8719,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 72
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -9625,9 +9626,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16ffa9079735b0e4cace59cb27563268, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MamasComing.MamaLocText
-  en: "ENTER start  \xB7  Q / E fruit  \xB7  ESC back"
-  th: "ENTER \u0E40\u0E23\u0E34\u0E48\u0E21  \xB7  Q / E \u0E40\u0E1B\u0E25\u0E35\u0E48\u0E22\u0E19\u0E1C\u0E25\u0E44\u0E21\u0E49 
-    \xB7  ESC \u0E01\u0E25\u0E31\u0E1A"
+  en: "Q / E fruit  \u2022  ESC back"
+  th: "Q / E \u0E40\u0E1B\u0E25\u0E35\u0E48\u0E22\u0E19\u0E1C\u0E25\u0E44\u0E21\u0E49
+    \u2022  ESC \u0E01\u0E25\u0E31\u0E1A"
   latinFont: {fileID: 12800000, guid: 00e1ebe3a9f00f14aa6cb0c42f492301, type: 3}
   thaiFont: {fileID: 0}
   thaiSize: 0
@@ -9695,7 +9696,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "ENTER start  \xB7  Q / E fruit  \xB7  ESC back"
+  m_Text: "Q / E fruit  \u2022  ESC back"
 --- !u!222 &1247888077
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10035,6 +10036,7 @@ MonoBehaviour:
   fitToSeat: 1
   backClear: 0.36
   normalizeHeight: 0
+  appleHeightScale: 0.8
   appleSource: {fileID: 184736119637861981, guid: c0c5e32174a36644fba2f29cfc9d3444, type: 3}
   builtKid: 0
   restP:
@@ -10145,7 +10147,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 46
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -10668,6 +10670,7 @@ MonoBehaviour:
   fitToSeat: 1
   backClear: 0.36
   normalizeHeight: 0
+  appleHeightScale: 0.8
   appleSource: {fileID: 184736119637861981, guid: c0c5e32174a36644fba2f29cfc9d3444, type: 3}
   builtKid: 2
   restP:
@@ -11143,7 +11146,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 54
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -11344,7 +11347,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 46
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -12606,7 +12609,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 72
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -13329,7 +13332,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 46
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -13693,7 +13696,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 46
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -13880,7 +13883,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 46
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1

@@ -38,6 +38,7 @@ namespace MamasComing
                 Vector3 pos = stashPoint ? stashPoint.position : transform.position;
                 pos += new Vector3(Random.Range(-0.1f, 0.1f), 0f, Random.Range(-0.08f, 0.08f));
                 item.Stash(pos);
+                MamaRound.Award(p, item, "Hidden: " + item.displayName, 25);
                 if (GameManager.I) GameManager.I.Toast("Stashed the " + item.displayName.ToLower() + " " + stashPhrase + ". Out of sight...");
                 return;
             }
@@ -46,6 +47,8 @@ namespace MamasComing
 
         void Update()
         {
+            if (NetGame.IsAuthority && !IsOpen)
+                foreach (var pc in PlayerController.AllPlayers) if (pc && pc.Held is CookPot && Vector3.Distance(pc.transform.position, InteractPoint) < interactRadius + .5f) { IsOpen = true; break; }
             if (!doorPivot) return;
             float t = IsOpen ? openAngle : 0f;
             cur = Mathf.MoveTowards(cur, t, 420f * Time.deltaTime);

@@ -108,7 +108,7 @@ namespace MamasComing
             var args = System.Environment.GetCommandLineArgs();
             bool bot = Debug.isDebugBuild && (System.Array.IndexOf(args, "-mamabot") >= 0 || System.Array.IndexOf(args, "-mamaautostart") >= 0 || System.Array.IndexOf(args, "-mamaautostartsolo") >= 0);
             // from the menu: show the guide on the first round of this session only, then just start
-            if (!bot && gm && gm.state == GameManager.State.Title && !MamaFrontEnd.I && !(MamaLaunch.FromMenu && shownOnce)) { shownOnce = true; Show(); }
+            if (!bot && gm && gm.state == GameManager.State.Title && !MamaFrontEnd.I && !MamaLaunch.FromMenu && !shownOnce) { shownOnce = true; Show(); }
         }
         public void Show() => Show(true);
         /// startRound: closing the guide on the title starts the round (PLAY); false = just look at it.

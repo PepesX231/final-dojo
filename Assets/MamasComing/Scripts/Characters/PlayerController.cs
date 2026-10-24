@@ -69,6 +69,7 @@ namespace MamasComing
             if (!anim) anim = GetComponentInChildren<AppleProceduralAnimator>();
             if (!actions) actions = GetComponent<KidActionAnimator>();
             mpb = new MaterialPropertyBlock();
+            if (!GetComponent<KidSolidBody>()) gameObject.AddComponent<KidSolidBody>();
             if (!GetComponent<KidRoughhouse>()) gameObject.AddComponent<KidRoughhouse>();
             Body = GetComponent<KidBody>(); if (!Body && fallPivot) Body = gameObject.AddComponent<KidBody>();
             if (isLocal) KidLook.RememberApple(this);
@@ -309,14 +310,14 @@ namespace MamasComing
             Target = null;
             if (!controlsEnabled || Stunned || (MiniGame.I && MiniGame.I.Active)) return;
             // keep the current hold target while E is held so turning a valve isn't interrupted
-            if (holdTarget && MamaInput.InteractHeld && holdTarget.CanInteract(this)) { Target = holdTarget; return; }
+            if (holdTarget && MamaInput.InteractHeld && holdTarget.CanInteract(this) && HeldInteraction.Allows(this, holdTarget)) { Target = holdTarget; return; }
             float best = float.MaxValue;
             Vector3 pos = transform.position, fwd = transform.forward;
             foreach (var it in Interactable.All)
             {
                 if (!it || !it.isActiveAndEnabled) continue;
                 if (Held != null && ReferenceEquals(it, Held)) continue;
-                if (!it.CanInteract(this)) continue;
+                if (!it.CanInteract(this) || !HeldInteraction.Allows(this, it)) continue;
                 Vector3 d = it.InteractPoint - pos; d.y = 0f;
                 float dist = d.magnitude;
                 if (dist > it.interactRadius) continue;

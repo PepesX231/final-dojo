@@ -41,7 +41,7 @@ namespace MamasComing
 
             bool punch = MamaInput.ShoveDown || MamaInput.ClickDown && me.Held == null && me.HoldProgress <= 0f;
             if (punch && shoveCd <= 0f) Shove();
-            if (bumpCd <= 0f && me.PlanarSpeed > bumpSpeed) Bump();
+            if (bumpCd <= 0f && me.Sprinting && me.PlanarSpeed > bumpSpeed) Bump();
         }
 
         float swingT;
@@ -94,7 +94,7 @@ namespace MamasComing
                 float dist = d.magnitude; if (dist > 0.85f || dist < 0.01f) continue;
                 if (Vector3.Dot(v.normalized, d / dist) < 0.5f) continue;
                 // head-on, both sprinting: only ONE machine resolves the crash, so it never happens twice
-                if (o.PlanarSpeed > bumpSpeed * 0.8f && string.CompareOrdinal(NetGame.NameOf(me) ?? "", NetGame.NameOf(o) ?? "") > 0) continue;
+                if (o.Sprinting && o.PlanarSpeed > bumpSpeed * 0.8f && string.CompareOrdinal(NetGame.NameOf(me) ?? "", NetGame.NameOf(o) ?? "") > 0) continue;
                 bumpCd = 0.8f;
                 NetGame.Hit(o, d, 5.5f, 1.25f, true, transform.position);
                 me.Bonk(-d, 4.5f, 1.15f, true);
