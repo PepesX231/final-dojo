@@ -83,7 +83,7 @@ namespace MamasComing.Editor
             {
                 var parent=wheel.transform.parent;
                 foreach(var r in parent.GetComponentsInChildren<MeshRenderer>())if(r.name.StartsWith("Bike"))r.enabled=false;
-                var root=parent.Find("RecastBicycle");if(!root){root=new GameObject("RecastBicycle").transform;root.SetParent(parent,false);root.position=new Vector3(29.1f*HouseLayout.Scale,.02f,.4f*HouseLayout.Scale);root.localScale=Vector3.one*HouseLayout.Scale;}
+                var root=parent.Find("RecastBicycle");if(!root){root=new GameObject("RecastBicycle").transform;root.SetParent(parent,false);root.position=new Vector3(29.1f,.02f,.4f);}
                 Replace(root,"PROP_Bicycle");
             }
             var breaker=UnityEngine.Object.FindFirstObjectByType<BreakerPanel>();
@@ -91,13 +91,13 @@ namespace MamasComing.Editor
             {
                 var old=breaker.transform.Find("Box");if(old && old.GetComponent<Renderer>())old.GetComponent<Renderer>().enabled=false;
                 var art=Add(breaker.transform,"PROP_BreakerPanel");art.transform.localRotation=Quaternion.Euler(0,90,0);
-                art.transform.localScale=Vector3.one*1.15f*HouseLayout.Scale;
+                art.transform.localScale=Vector3.one*1.15f;
             }
             // A recognisable pump under the existing heater, without adding a new mechanic.
             var heater=UnityEngine.Object.FindFirstObjectByType<WaterHeaterHazard>();
             if(heater)
             {
-                var mount=heater.transform.Find("RecastPump");if(!mount){mount=new GameObject("RecastPump").transform;mount.SetParent(heater.transform,false);mount.localPosition=new Vector3(-.65f,0,-.15f)*HouseLayout.Scale;mount.localScale=Vector3.one*HouseLayout.Scale;}
+                var mount=heater.transform.Find("RecastPump");if(!mount){mount=new GameObject("RecastPump").transform;mount.SetParent(heater.transform,false);mount.localPosition=new Vector3(-.65f,0,-.15f);}
                 Replace(mount,"PROP_WaterPump");
             }
             var lounge=GameObject.Find("Rooms/LivingRoom");
@@ -106,7 +106,7 @@ namespace MamasComing.Editor
             {
                 var router=new GameObject("RecastRouter").transform;router.SetParent(lounge.transform,false);
                 var surface=tvStand.GetComponent<Renderer>().bounds;
-                router.position=new Vector3(surface.center.x,surface.max.y+.01f,surface.max.z-.2f*HouseLayout.Scale);router.localScale=Vector3.one*HouseLayout.Scale;Add(router,"PROP_Router");
+                router.position=new Vector3(surface.center.x,surface.max.y+.01f,surface.max.z-.2f);Add(router,"PROP_Router");
             }
             ImportMother();VibrantHouse();
             EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();
@@ -153,12 +153,12 @@ namespace MamasComing.Editor
         }
         static void MakeBin(Transform existing)
         {
-            Vector3 position=existing.position;position.y=HouseLayout.FloorYAt(position)+.02f;
+            Vector3 position=existing.position;position.y=.02f;
             var parent=existing.parent;string key="RecastBin_"+existing.name;
             var already=parent.Find(key);if(already)return;
             if(existing.GetComponent<Renderer>())existing.GetComponent<Renderer>().enabled=false;
             if(existing.GetComponent<Collider>())existing.GetComponent<Collider>().enabled=false;
-            var root=new GameObject(key).transform;root.SetParent(parent,false);root.position=position;root.localScale=Vector3.one*HouseLayout.Scale;   // fruit-scale house
+            var root=new GameObject(key).transform;root.SetParent(parent,false);root.position=position;
             Add(root,"PROP_OpenBin");
             var pivot=new GameObject("LidHinge").transform;pivot.SetParent(root,false);pivot.localPosition=new Vector3(0,.8f,-.31f);
             var lid=Add(pivot,"PROP_BinLid");

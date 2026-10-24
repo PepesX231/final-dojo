@@ -53,12 +53,11 @@ namespace MamasComing
         void LateUpdate()
         {
             if (!IsHeld || !puller) return;
-            float fy = HouseLayout.FloorYAt(puller.transform.position) + floorY;   // whichever storey the puller is on
             // the hands are just behind the kid: the rug trails behind as you walk away
             Vector3 hand = puller.transform.position - puller.transform.forward * 0.25f;
-            hand.y = fy;
-            Vector3 center = transform.position; center.y = fy;
-            Vector3 grabWorld = transform.TransformPoint(grabLocal); grabWorld.y = fy;
+            hand.y = floorY;
+            Vector3 center = transform.position; center.y = floorY;
+            Vector3 grabWorld = transform.TransformPoint(grabLocal); grabWorld.y = floorY;
 
             Vector3 toHand = hand - center; toHand.y = 0f;
             float d = toHand.magnitude;
@@ -70,12 +69,12 @@ namespace MamasComing
                 float yaw = Mathf.MoveTowardsAngle(transform.eulerAngles.y, wantYaw, 220f * Time.deltaTime * Mathf.Clamp01(puller.PlanarSpeed));
                 transform.rotation = Quaternion.Euler(0f, yaw, 0f);
                 // rope constraint: only pulled when the hands get further than the grab distance
-                grabWorld = transform.TransformPoint(grabLocal); grabWorld.y = fy;
+                grabWorld = transform.TransformPoint(grabLocal); grabWorld.y = floorY;
                 Vector3 slack = hand - grabWorld; slack.y = 0f;
                 if (slack.magnitude > 0.05f) center += slack;
             }
             wobble += Time.deltaTime * puller.PlanarSpeed * 6f;
-            transform.position = new Vector3(center.x, fy + Mathf.Abs(Mathf.Sin(wobble)) * 0.008f, center.z);
+            transform.position = new Vector3(center.x, floorY + Mathf.Abs(Mathf.Sin(wobble)) * 0.008f, center.z);
         }
 
         public override void OnDropped(PlayerController p, Vector3 velocity)
@@ -83,8 +82,7 @@ namespace MamasComing
             base.OnDropped(p, Vector3.zero);
             puller = null;
             Vector3 pos = transform.position;
-            float fy = HouseLayout.FloorYAt(transform.position) + floorY;
-            pos.y = fy;
+            pos.y = floorY;
             transform.position = pos;
             transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
             Body.isKinematic = true;

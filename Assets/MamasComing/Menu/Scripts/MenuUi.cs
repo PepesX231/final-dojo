@@ -9,11 +9,11 @@ namespace MamasComing.Menu
     /// Small code-built uGUI kit shared by the main menu and the lobby (same approach as MamaUI: no prefabs to break).
     public static class MenuUi
     {
-        public static readonly Color Ink = new Color(.07f, .06f, .07f);
-        public static readonly Color Paper = new Color(1f, .97f, .88f);
-        public static readonly Color Pink = new Color(1f, .27f, .55f);
-        public static readonly Color Teal = new Color(.36f, .89f, .42f);   // toxic green
-        public static readonly Color Lemon = new Color(.93f, .96f, .2f);   // acid yellow
+        public static readonly Color Ink = new Color(.18f, .09f, .16f);
+        public static readonly Color Paper = new Color(1f, .97f, .9f);
+        public static readonly Color Pink = new Color(1f, .33f, .5f);
+        public static readonly Color Teal = new Color(.16f, .76f, .72f);
+        public static readonly Color Lemon = new Color(1f, .8f, .18f);
         public static readonly Color Grape = new Color(.5f, .36f, .92f);
         public static readonly Color Shade = new Color(.12f, .05f, .12f, .55f);
 
@@ -40,27 +40,6 @@ namespace MamasComing.Menu
                 tex.SetPixels32(px); tex.Apply();
                 round = Sprite.Create(tex, new Rect(0, 0, S, S), new Vector2(.5f, .5f), 100f, 0, SpriteMeshType.FullRect, new Vector4(R, R, R, R));
                 return round;
-            }
-        }
-
-        static Texture2D halftone;
-        /// Tileable comic halftone dot (white dot on transparent) for screen overlays.
-        public static Texture2D Halftone
-        {
-            get
-            {
-                if (halftone) return halftone;
-                const int S = 32;
-                halftone = new Texture2D(S, S, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Repeat, filterMode = FilterMode.Bilinear };
-                var px = new Color32[S * S];
-                for (int y = 0; y < S; y++)
-                    for (int x = 0; x < S; x++)
-                    {
-                        float d = Vector2.Distance(new Vector2(x + .5f, y + .5f), new Vector2(S / 2f, S / 2f));
-                        px[y * S + x] = new Color32(255, 255, 255, (byte)(Mathf.Clamp01(7f - d) * 255));
-                    }
-                halftone.SetPixels32(px); halftone.Apply();
-                return halftone;
             }
         }
 
@@ -119,10 +98,10 @@ namespace MamasComing.Menu
         {
             var rt = Rect("Btn " + label, parent, anchor, pos, size);
             rt.localRotation = Quaternion.Euler(0, 0, tilt);
-            var drop = Rect("Drop", rt, new Vector2(.5f, .5f), new Vector2(6, -9), size); Panel(drop, Shade);
-            var faceRt = Rect("Face", rt, new Vector2(.5f, .5f), Vector2.zero, size);
-            var img = Panel(faceRt, fill, Ink, 5f, true);
-            var txt = Punchy(Label(faceRt, label, fontSize, Color.white), Ink, 3f);
+            var shadow = Rect("Drop", rt, new Vector2(.5f, .5f), new Vector2(6, -9), size); Panel(shadow, Shade);
+            var face = Rect("Face", rt, new Vector2(.5f, .5f), Vector2.zero, size);
+            var img = Panel(face, fill, Ink, 5f, true);
+            var txt = Punchy(Label(face, label, fontSize, Color.white), Ink, 3f);
             var b = rt.gameObject.AddComponent<PunchButton>();
             b.Init(img, txt, fill, onClick);
             return b;
@@ -150,21 +129,20 @@ namespace MamasComing.Menu
             if (!interactable) { MenuSfx.Play(MenuSfx.Kind.Nope); wiggle = 1.5f; return; }
             scale = 1.25f; MenuSfx.Play(MenuSfx.Kind.Click); click?.Invoke();
         }
-        /// Keyboard / code path (Enter key etc.).
-        public void Press() { if (interactable) OnPointerClick(null); }
 
         void Update()
         {
             float goal = !interactable ? 1f : down ? .9f : hover ? 1.08f : 1f;
             // spring toward the goal scale so clicks overshoot and wobble
-            float dt = Time.unscaledDeltaTime;
-            vel += (goal - scale) * 320f * dt; vel *= Mathf.Exp(-14f * dt);
-            scale += vel * dt;
-            wiggle = Mathf.MoveTowards(wiggle, 0f, dt * 3f);
-            if (!face) return;
-            var rt = face.rectTransform;
-            rt.localScale = new Vector3(scale, scale, 1f);
-            rt.localRotation = Quaternion.Euler(0, 0, Mathf.Sin(Time.unscaledTime * 30f) * 4f * wiggle);
+            vel += (goal - scale) * 320f * Time.unscaledDeltaTime; vel *= Mathf.Exp(-14f * Time.unscaledDeltaTime);
+            scale += vel * Time.unscaledDeltaTime;
+            wiggle = Mathf.MoveTowards(wiggle, 0f, Time.unscaledDeltaTime * 3f);
+            var face = this.face ? this.face.rectTransform : null;
+            if (face)
+            {
+                face.localScale = new Vector3(scale, scale, 1f);
+                face.localRotation = Quaternion.Euler(0, 0, Mathf.Sin(Time.unscaledTime * 30f) * 4f * wiggle);
+            }
         }
     }
 

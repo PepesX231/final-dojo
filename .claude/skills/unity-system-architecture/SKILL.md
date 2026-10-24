@@ -10,7 +10,7 @@ description: Review DREAM RUSH C# code and subsystem boundaries — assemblies, 
 
 ## Checklist
 **Boundaries (GDD §25.4)**
-- [ ] Input, movement, animation, camera, environmental effects, boss behaviour, win conditions and save data live in separate classes
+- [ ] Input, movement, animation, camera, card effects, boss behaviour, win conditions and save data live in separate classes
 - [ ] No class > ~400 lines without a reason; no "god" manager
 - [ ] Runtime asmdef does not reference UnityEditor (guard with `#if UNITY_EDITOR` only in rare cases)
 - [ ] DevBridge does not reference game assemblies

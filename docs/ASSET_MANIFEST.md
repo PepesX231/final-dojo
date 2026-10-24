@@ -34,14 +34,15 @@ Source อยู่ `ArtSource/`, ไฟล์เข้าเกมอยู่ 
 | BOSS_Chair (+rig, anim set §12.5) | **APPROVED (P0)** — `build_chair_boss.py` → `BOSS_Chair.fbx` 10.5k tris, flat parts (Body, 4 legs w/ hip pivots, eyes, pupils, brows, face); procedural anim set in `ChairAnimator` (idle tap, alert, trot/panic gait, hesitate, stumble, exhausted, rooted, frozen, offer seat, pulled, sat-on struggle, defeated, blink, pupil look-at). Review: `ArtSource/Renders/BOSS_Chair/*.png`, `docs/evidence/M7/m7_st_*.png`. Notes: no ink outline yet; grain slightly busy at 15 m | boss |
 | ENV_Arena (32×25) floor/bounds/low platform/balcony/cushion route | TODO | §14 |
 | PROP_MovableBlock, PROP_Cushion ×2, PROP_Switch | TODO | obstacle/shortcut methods |
+| Card props: glue target, flash camera stand, fishing hook point | TODO | Card experiment §13.6 |
 
 ## P1 — 2D / UI / Audio
 | ID | สถานะ |
 |---|---|
 | DEC_PaperCloud set, DEC_PaperStar, posters, illustrated plants, stickers | TODO |
 | FX_ChairPanic, FX_SpeedLines, FX_JumpDust, FX_LandPuff, FX_Surprise, FX_Glue, FX_Freeze, FX_Confetti | TODO |
-| UI: prompt, Sleep Stability, objective, boss bar, upgrade panel, run summary | **Graybox done** (code-built uGUI) · upgrade panel TODO (M7). Card frame/icons/Dream Law badges ถูกลบ 2026-10-23 |
-| Audio: bedroom amb/music, dream music, boss music (5 states), footsteps, jump, land, chair wood steps, victory, wake-up | TODO (ทุกไฟล์ต้องระบุแหล่ง+license) |
+| UI: prompt, card frame + 6 icons, Sleep Stability, objective, boss bar, upgrade panel, run summary | **Graybox done** (code-built uGUI; `CARD_*.png` ×6 + `LAW_*.png` ×3 จาก `make_card_icons.py`) · upgrade panel TODO (M7) |
+| Audio: bedroom amb/music, dream music, boss music (5 states), footsteps, jump, land, chair wood steps, card SFX, victory, wake-up | TODO (ทุกไฟล์ต้องระบุแหล่ง+license) |
 
 ## Source Library (ไม่ใช่ asset เกม)
 | ไฟล์ | ใช้ทำอะไร |

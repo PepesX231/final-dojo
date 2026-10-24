@@ -13,8 +13,6 @@ namespace MamasComing
         public float mouseSensitivity = 0.12f;
         public float follow = 10f;
         public bool inputEnabled;
-        [Tooltip("Mouse wheel zoom. Off: the camera still orbits, but the distance is locked.")]
-        public bool allowZoom = false;
         public float baseFog = 0.012f;
 
         Vector3 pivot;
@@ -81,7 +79,7 @@ namespace MamasComing
                 yaw += md.x * mouseSensitivity + st.x * 150f * dt;
                 pitch -= md.y * mouseSensitivity * 0.7f + st.y * 100f * dt;
                 pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
-                float z = allowZoom ? MamaInput.Zoom : 0f;   // orbit freely, but the distance stays fixed (same framing for everyone)
+                float z = MamaInput.Zoom;
                 if (Mathf.Abs(z) > 0.01f) distance = Mathf.Clamp(distance - Mathf.Sign(z) * 0.7f, minDistance, maxDistance);
             }
 

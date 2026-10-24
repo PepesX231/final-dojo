@@ -1,7 +1,5 @@
 # Milestone Reports — P0
 
-> **Note 2026-10-23:** the DREAM RUSH card system (card draw/selection, active cards, Dream Laws, Lucky Pillow rerolls) has been removed. Card mentions below are historical records of earlier milestones, not the current game. See `docs/CARD_REMOVAL_REPORT.md`.
-
 ## 2026-10-23 — MAMA'S COMING! readability pass (current game)
 
 - Replaced the competing always-on checklist/markers with a compact goal, contextual item descriptions, optional held-H ideas and a Tab overview. Teddy names its bedroom/bed/pillow and gains a matching home silhouette nearby; off-screen optional destination labels stay visible. Oil fire offers environmental clues and alternative tools. New text switches between Thai/English. Reduced bloom/saturation in a cloned runtime profile and improved UI contrast.
@@ -898,32 +896,3 @@ Followed the user's revised saturated cartoon brief and supplied Pinterest/house
 Added carry contact/cradle profiles, real hollow disposal bins with a hinged lid and bag acceptance, ten licensed CC0 foley overrides, revised 108 bpm procedural music and callout ducking, warm lifetime fire gradients, and corrected the live-clone blink material bug exposed by the expanded review. Authoring preserves the existing house and rules; the upright teddy and hollow-bin colliders are documented exceptions to collider preservation.
 
 Final staged virtual-input review **63/63 passed**, zero compile errors/four existing warnings. Includes actual E/Q interactions, hand-contact and torso-clearance samples, bin deposit, mother moods, foley loading, fire resolution, bilingual compact HUD and three offline avatars deliberately cloned during a source blink. Independent staged art views accompany normal game screenshots in `docs/evidence/mama-recast/`. Full implementation, recovery history and remaining work are in `docs/MAMA_RECAST_IMPLEMENTATION.md`. No human/online playtest or final-art/performance certification is claimed.
-
-
-## 2026-10-24 — Fruit kids: sculpted models, tumbling knock-downs, test keys, locked camera zoom
-
-- Committed the Codex fruit-kid work from the shared editor folder: sculpted kid models/prefabs (Art/Sculpted, Prefabs/Characters/Sculpted, MamaSculptKids, SculptKidMotion) now used by Resources/MamaKidCatalog; ReadableFruitGait foot/glove walk layer; KidBody rolls the curled fruit in the direction it travels; dev keys 1–5 / F6 / F7 pick fruit, F8 tests a slip; quiet debug hint.
-- ThirdPersonCamera: orbit unchanged, mouse-wheel zoom locked (allowZoom off). MamaFightReview added (staged Play-mode check).
-- Tests run in the shared editor: Assembly-CSharp and Assembly-CSharp-Editor compile with 0 errors; MamaFightReview 24/24 (fruit swap + heights 1.07–1.14 m, distinct walk sway, punch knock-back 1.9 m + drop, curl/pop-up recovery, slip); MamaUxReview 62/62. Branch compiled again on top of latest main (menu/lobby) with 0 errors.
-- Not covered: human playtest, two-machine online test, lobby picker -> KidLook.Selected hand-off at runtime. House-study files remain uncommitted (owned by the house-redesign work).
-
-## 2026-10-24 — Fruit test controls, tumbling and separate two-storey house study
-
-- Added development keys 1–5/F6/F7 to switch fruit with empty hands, and F8 to test slips. Quiet main-game context hints expose these keys.
-- Replaced the fixed face-down knockdown pose with distance-driven whole-fruit rotation and centre/support correction. Low grip lets the collision-controlled motor slide; limbs and inverse-hull outlines retract, then recover.
-- Authored `MamaHouseStudy.unity`, a separate compact furnished L-plan with two floors, walkable stair ramp, floor visibility and F9 labelled plans. Existing hand-authored MamasKitchen and build order are preserved.
-- Added 12 playable prototype chores using item delivery, a repair dependency chain, separate timing sweeps and 22-second latches. These are study tasks, not released main-round/networked quests.
-- Validation: runtime/Editor compilation without errors or warnings; staged study input/contract review covers all five fruit selections and W movement, tumble/recovery, stair traversal, task restrictions/completion, timing/latch conditions and plan switching. Final evidence and limitations: `docs/MAMA_HOUSE_STUDY.md`, `docs/evidence/mama-house-study/`.
-- Art inspection caught untextured imported study props, a baked material-less shadow quad in the base prefab, floating gallery frames and lingering limb outlines; the study generator/whole-body layer now handle these.
-- Remaining: human fun/layout review, floor-aware disaster simulations and mother route, co-op synchronization/real two-machine test, animation/art polish, standalone performance. Camera evidence excludes HUD.
-
-
-## 2026-10-24 — Roofed house revision after user visual feedback
-
-- Installed/read external level-design skill and reference, then rebuilt only MamaHouseStudy: 808 walkable square units vs 259 previously (3.12x), two storeys, complete main/wing/porch roofs, closed gables, chimney, real window openings, new room circulation and supported furniture assemblies.
-- Authored 50 executable study-task instances across delivery, staged repair, timing and relay mechanics. They are prototype instances using shared mechanics, not 50 bespoke minigames or an integrated online main-game quest pack.
-- Added ReadableFruitGait to handle both bone-based Banana and object-animated fruit feet/gloves; real W-input frame samples validate alternating feet, foot lift and body sway for all five fruits. Existing carry action layer remains later in execution order.
-- Fixed moved-prop visibility across storeys and supported delivery points. Visual inspection also caught and repaired roof gable mesh normal/buffer reuse.
-- Final staged house review 175 passed; original main UX/input 62 passed; Banana carry/rig 33 passed; both game assemblies compile with 0 errors and 0 warnings. Main scene/build settings preserved. No commit/push in this follow-up.
-- Evidence, skill provenance, task catalog, dimensions, limitations and final images/animated walks: docs/MAMA_HOUSE_V2_REVIEW.md and docs/evidence/mama-house-v2/.
-- Remaining: human fun/art/transition review, main-round floor-aware disaster and Mother route integration, actual two-machine shared task state, standalone performance checks.

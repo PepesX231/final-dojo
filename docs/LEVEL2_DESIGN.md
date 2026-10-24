@@ -63,7 +63,7 @@ HP 1400 · posture 300 · 6 moons for Pip.
 | DASH THRUST | attack during / ≤0.25 s after a roll | piercing lunge, punish Gear Roller recovery |
 | COUNTER ×2 | attack ≤0.8 s after a DREAM DODGE | rewards perfect timing |
 | DREAM BURST | V / pad Y with a full DREAM meter (hits +7, perfect dodge +25) | crowd reset, launches everyone |
-The blade now sits in Pip's right mitt (BladeRig turns the arm with the swing). (The old card binding on D-pad up was removed with the card system on 2026-10-23.)
+The blade now sits in Pip's right mitt (BladeRig turns the arm with the swing). Gamepad: card use moved to D-pad up (RB fired both).
 
 ### 8.2 Enemy roster (EnemyBase: HP, flash, knock-back, juggles, stun, ground-following, leash)
 | Enemy | Silhouette | Behaviour | Counter |

@@ -19,10 +19,7 @@ namespace MamasComing.EditorTools
         const string TexDir = Root + "/Textures";
         const string ScenePath = Root + "/Scenes/MamasKitchen.unity";
         const string PlayerPrefab = "Assets/MamasComing/Prefabs/Characters/PF_AppleKid.prefab";
-        // Fruit-scale house: the original human-scale plan below is still authored in its old units and every
-        // helper maps it through P() (x2, and the bedroom moves upstairs). Shell/stairs/gadgets use raw world units.
-        const float S = HouseLayout.Scale;
-        const float WallH = HouseLayout.WallH, WallT = 0.15f * S, DoorH = 2.2f * S, UpY = HouseLayout.UpperY;
+        const float WallH = 2.8f, WallT = 0.15f, DoorH = 2.2f;
 
         static Dictionary<string, Material> mats;
         static Shader lit;
@@ -64,7 +61,6 @@ namespace MamasComing.EditorTools
                 gHouse = G("House"); gRooms = G("Rooms"); gProps = G("Props"); gSystems = G("Systems"); gOutside = G("Outside");
 
                 Shell();
-                UpperFloor();
                 LivingRoom();
                 Hallway();
                 Bedroom();
@@ -77,8 +73,6 @@ namespace MamasComing.EditorTools
                 PartyWing();
                 PartyHazards();
                 PartyDetails();
-                Gadgets();
-                SettlePickups();
                 Kid();
                 Mom();
                 Systems();
@@ -95,8 +89,8 @@ namespace MamasComing.EditorTools
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             var list = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
-            // keep the existing order (main menu and lobby come first); only add the level if it is missing
-            if (!list.Exists(s => s.path == ScenePath)) list.Add(new EditorBuildSettingsScene(ScenePath, true));
+            list.RemoveAll(s => s.path == ScenePath);
+            list.Insert(0, new EditorBuildSettingsScene(ScenePath, true));
             EditorBuildSettings.scenes = list.ToArray();
             AssetDatabase.SaveAssets();
             Debug.Log("[Mama's Coming] House built: " + ScenePath);
@@ -117,14 +111,264 @@ namespace MamasComing.EditorTools
             RenderSettings.ambientSkyColor = C("A796C8"); RenderSettings.ambientEquatorColor = C("F2A47E"); RenderSettings.ambientGroundColor = C("5E4352");
             var scene = EditorSceneManager.GetActiveScene();
             EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
-            // the art thread's bright comic look (ToyToon materials, volume, sky) goes on last
-            try { Debug.Log("[Mama's Coming] " + MamasComing.Style.Editor.MamaToonStyleTool.ApplyActiveScene()); } catch (System.Exception ex) { Debug.LogError("[Mama's Coming] MamaToonStyleTool failed: " + ex); }
-            SettlePickups();   // the art passes swap prop meshes: drop them onto their supports again
-            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-            Debug.Log("[Mama's Coming] Friend passes re-applied (recast models + Mother Apple + polish + comic look).");
+            Debug.Log("[Mama's Coming] Friend passes re-applied (recast models + Mother Apple + polish).");
         }
 
-        // shell, stairs, upper floor and roof: MamaLevelBuilderHouse.cs
+        // =====================================================================  SHELL
+        static void Shell()
+        {
+            Cube("FloorCollider", gHouse, V(15f, -0.1f, 7f), V(30.4f, 0.2f, 14.4f), M("Hidden", C("777777")), true).GetComponent<Renderer>().enabled = false;
+
+            Floor("Living", 0, 0, 13, 6, Tex("WoodWarm", 1), V2(13, 6));
+            Floor("Laundry", 13, 0, 17, 6, Tex("TileGrey", 4), V2(4 / 0.6f, 6 / 0.6f));
+            Floor("Dining", 17, 0, 22, 6, Tex("WoodWarm", 1), V2(5, 6));
+            Floor("Hallway", 0, 6, 30, 8, Tex("WoodLight", 2), V2(30, 2));
+            Floor("Garage", 22, 0, 30, 6, Tex("TileGrey", 4), V2(8 / 0.9f, 6 / 0.9f));
+            Floor("GameRoom", 22, 8, 30, 14, Tex("WoodWarm", 1), V2(8, 6));
+            Floor("Bedroom", 0, 8, 7, 14, Tex("WoodLight", 2), V2(7, 6));
+            Floor("Bathroom", 7, 8, 12, 14, Tex("TileBathWarm", 13), V2(5 / 0.5f, 6 / 0.5f));
+            Floor("Kitchen", 12, 8, 22, 14, Tex("Checker", 0), V2(10 / 1.2f, 6 / 1.2f));
+
+            Material wLiving = Wall("Living", Tex("StripeMint", 6)), wHall = Wall("Hall", Tex("StripeButter", 7)), wBed = Wall("Bed", Tex("StripeLilac", 8)),
+                wBath = Wall("Bath", Tex("WallTile", 9)), wKit = Wall("Kitchen", Tex("StripeOrange", 10)), wLaun = Wall("Laundry", Tex("StripeSky", 11)),
+                wDin = Wall("Dining", Tex("StripePeach", 12)), wOut = M("Siding", C("FFF1D6")),
+                wGar = M("GarageWall", C("D8D2C6")), wGame = M("GameRoomWall", C("5B4B8A"));
+
+            // exterior
+            WallZ(0f, 0f, 6f, null, wOut, wLiving);
+            WallZ(0f, 6f, 8f, null, wOut, wHall);
+            WallZ(0f, 8f, 14f, null, wOut, wBed);
+            WallZ(22f, 0f, 6f, null, wDin, wGar);
+            WallZ(22f, 8f, 14f, null, wKit, wGame);
+            WallZ(30f, 0f, 6f, null, wGar, wOut);
+            WallZ(30f, 6f, 8f, null, wHall, wOut);
+            WallZ(30f, 8f, 14f, new[] { V2(10f, 11.5f) }, wGame, wOut, true);
+            WallX(0f, 22f, 30f, null, wOut, wGar);
+            WallX(14f, 22f, 30f, new[] { V2(25.5f, 27f) }, wGame, wOut, new[] { true });
+            WallX(6f, 22f, 30f, new[] { V2(23.2f, 24.6f) }, wGar, wHall);
+            WallX(8f, 22f, 30f, new[] { V2(23.5f, 25.5f) }, wHall, wGame);
+            WallX(0f, 0f, 13f, new[] { V2(2f, 3.5f), V2(8f, 9.2f) }, wOut, wLiving, new[] { true, false });
+            WallX(0f, 13f, 17f, null, wOut, wLaun);
+            WallX(0f, 17f, 22f, new[] { V2(19f, 20.5f) }, wOut, wDin, new[] { true });
+            WallX(14f, 0f, 7f, new[] { V2(4f, 5.4f) }, wBed, wOut, new[] { true });
+            WallX(14f, 7f, 12f, new[] { V2(10.3f, 11.3f) }, wBath, wOut, new[] { true });
+            WallX(14f, 12f, 22f, new[] { V2(16.3f, 17.7f) }, wKit, wOut, new[] { true });
+
+            // interior
+            WallX(6f, 0f, 13f, new[] { V2(4f, 6f) }, wLiving, wHall);
+            WallX(6f, 13f, 17f, new[] { V2(14.4f, 15.6f) }, wLaun, wHall);
+            WallX(6f, 17f, 22f, new[] { V2(18.5f, 20.5f) }, wDin, wHall);
+            WallX(8f, 0f, 7f, new[] { V2(2.4f, 3.6f) }, wHall, wBed);
+            WallX(8f, 7f, 12f, new[] { V2(8.9f, 10.1f) }, wHall, wBath);
+            WallX(8f, 12f, 22f, new[] { V2(15f, 17f) }, wHall, wKit);
+            WallZ(7f, 8f, 14f, null, wBed, wBath);
+            WallZ(12f, 8f, 14f, null, wBath, wKit);
+            WallZ(13f, 0f, 6f, null, wLiving, wLaun);
+            WallZ(17f, 0f, 6f, null, wLaun, wDin);
+
+            // thresholds & sunken bathroom (water has to pile up before it pours out)
+            GroundOff(7.1f, 8.1f, 11.9f, 13.9f, -0.0005f);
+            GroundOff(8.9f, 7.9f, 10.1f, 8.1f, 0.001f);
+            GroundOff(8.4f, 10.0f, 10.4f, 12.0f, -0.0015f);
+            GroundOff(8.9f, 10.5f, 9.9f, 11.5f, -0.003f);
+            Cube("BathThreshold", gHouse, V(9.5f, 0.006f, 8f), V(1.2f, 0.012f, 0.18f), M("Marble", C("F2EEE6"), 0.6f));
+
+            // interior doors (open, for looks)
+            InteriorDoor(V(2.4f, 0, 8f), 1.2f, true, C("F2C6DE"));
+            InteriorDoor(V(8.9f, 0, 8f), 1.2f, true, C("BFE8F0"));
+            InteriorDoor(V(14.4f, 0, 6f), 1.2f, false, C("CFE3FF"));
+
+            // front door
+            var door = G("FrontDoor", gHouse, V(8f, 0f, 0f));
+            var piv = G("Pivot", door, V(8f, 0f, 0f));
+            Cube("Slab", piv, V(8.6f, 1.05f, 0f), V(1.18f, 2.1f, 0.08f), M("DoorTeal", C("3FB7B0")), true);
+            Cube("PanelTop", piv, V(8.6f, 1.55f, 0.05f), V(0.8f, 0.6f, 0.02f), M("DoorPanel", C("5ED1C9")));
+            Cube("PanelBottom", piv, V(8.6f, 0.55f, 0.05f), V(0.8f, 0.6f, 0.02f), M("DoorPanel", C("5ED1C9")));
+            Sph("Knob", piv, V(9.05f, 1.0f, 0.07f), Vector3.one * 0.08f, M("Brass", C("F2C14E"), 0.7f, 0.6f));
+            frontDoor = door.gameObject.AddComponent<Door>();
+            frontDoor.pivot = piv; frontDoor.openAngle = 100f;
+            Vent(V(8.6f, 1f, 0.3f), 0.9f, 0.9f, null, frontDoor, Vector3.back, 1.1f);
+        }
+
+        static Material Tex(string n, int kind) => MTex(n, MakeTex(n, kind), kind >= 6 ? new Vector2(5f, 1f) : Vector2.one, kind == 5 || kind == 0 ? 0.45f : 0.25f);
+        static Material Wall(string n, Material m) => m;
+
+        static void Floor(string n, float x0, float z0, float x1, float z1, Material m, Vector2 tiling)
+        {
+            var mm = M("Floor_" + n, Color.white, m.GetFloat("_Smoothness"));
+            var src = m.GetTexture("_BaseMap");
+            mm.SetTexture("_BaseMap", src);
+            texFix.Add(new KeyValuePair<Material, string>(mm, src ? src.name : m.name));
+            mm.SetTextureScale("_BaseMap", tiling);
+            Cube("Floor_" + n, gRooms, V((x0 + x1) / 2, -0.01f, (z0 + z1) / 2), V(x1 - x0, 0.02f, z1 - z0), mm);
+        }
+
+        static void GroundOff(float x0, float z0, float x1, float z1, float off)
+        {
+            groundRects.Add(new Vector4(x0, z0, x1, z1)); groundOffs.Add(off);
+        }
+
+        /// <summary>Wall along X at z, from x0 to x1, with openings. matA faces -Z (south), matB faces +Z.</summary>
+        static void WallX(float z, float x0, float x1, Vector2[] gaps, Material matA, Material matB, bool[] windowFlags = null)
+        {
+            var cuts = new List<float> { x0 };
+            if (gaps != null) foreach (var g in gaps) { cuts.Add(g.x); cuts.Add(g.y); }
+            cuts.Add(x1);
+            for (int i = 0; i + 1 < cuts.Count; i += 2)
+            {
+                float a = cuts[i], b = cuts[i + 1];
+                if (b - a > 0.01f) WallPieceX(z, a, b, 0f, WallH, matA, matB, true);
+            }
+            if (gaps != null)
+                for (int g = 0; g < gaps.Length; g++)
+                {
+                    bool win = windowFlags != null && g < windowFlags.Length && windowFlags[g];
+                    float a = gaps[g].x, b = gaps[g].y;
+                    if (win)
+                    {
+                        WallPieceX(z, a, b, 0f, 0.95f, matA, matB, true);
+                        WallPieceX(z, a, b, 2.25f, WallH, matA, matB, false);
+                        WindowX(z, a, b);
+                    }
+                    else
+                    {
+                        WallPieceX(z, a, b, DoorH, WallH, matA, matB, false);
+                        Trim(V((a + b) / 2, DoorH + 0.04f, z), V(b - a + 0.16f, 0.08f, WallT + 0.06f));
+                        Trim(V(a - 0.04f, DoorH / 2, z), V(0.08f, DoorH, WallT + 0.06f));
+                        Trim(V(b + 0.04f, DoorH / 2, z), V(0.08f, DoorH, WallT + 0.06f));
+                    }
+                }
+        }
+
+        static void WallZ(float x, float z0, float z1, Vector2[] gaps, Material matA, Material matB, bool windowsAll = false)
+        {
+            var cuts = new List<float> { z0 };
+            if (gaps != null) foreach (var g in gaps) { cuts.Add(g.x); cuts.Add(g.y); }
+            cuts.Add(z1);
+            for (int i = 0; i + 1 < cuts.Count; i += 2)
+            {
+                float a = cuts[i], b = cuts[i + 1];
+                if (b - a > 0.01f) WallPieceZ(x, a, b, 0f, WallH, matA, matB, true);
+            }
+            if (gaps != null)
+                foreach (var g in gaps)
+                {
+                    if (windowsAll)
+                    {
+                        WallPieceZ(x, g.x, g.y, 0f, 0.95f, matA, matB, true);
+                        WallPieceZ(x, g.x, g.y, 2.25f, WallH, matA, matB, false);
+                        WindowZ(x, g.x, g.y);
+                    }
+                    else WallPieceZ(x, g.x, g.y, DoorH, WallH, matA, matB, false);
+                }
+        }
+
+        static void WallPieceX(float z, float a, float b, float y0, float y1, Material ma, Material mb, bool blocks)
+        {
+            var grp = G("Wall", gHouse, V((a + b) / 2, (y0 + y1) / 2, z));
+            var cw = grp.gameObject.AddComponent<CutawayWall>();
+            cw.normal = Vector3.forward; cw.halfExtent = new Vector2((b - a) / 2, WallH / 2);
+            grp.position = V((a + b) / 2, WallH / 2, z);
+            float h = y1 - y0, cy = (y0 + y1) / 2;
+            Cube("SideS", grp, V((a + b) / 2, cy, z - WallT / 4), V(b - a, h, WallT / 2), ma, true);
+            Cube("SideN", grp, V((a + b) / 2, cy, z + WallT / 4), V(b - a, h, WallT / 2), mb, true);
+            if (blocks && y0 < 0.01f)
+            {
+                blockRects.Add(new Vector4(a, z - WallT / 2, b, z + WallT / 2));
+                Cube("Base", grp, V((a + b) / 2, 0.06f, z), V(b - a, 0.12f, WallT + 0.03f), M("Baseboard", C("FFFFFF")));
+            }
+            if (y1 >= WallH - 0.01f) Cube("Top", grp, V((a + b) / 2, WallH, z), V(b - a, 0.06f, WallT + 0.04f), M("TopTrim", C("FFF4E0")));
+        }
+
+        static void WallPieceZ(float x, float a, float b, float y0, float y1, Material ma, Material mb, bool blocks)
+        {
+            var grp = G("Wall", gHouse, V(x, WallH / 2, (a + b) / 2));
+            var cw = grp.gameObject.AddComponent<CutawayWall>();
+            cw.normal = Vector3.right; cw.halfExtent = new Vector2((b - a) / 2, WallH / 2);
+            float h = y1 - y0, cy = (y0 + y1) / 2;
+            Cube("SideW", grp, V(x - WallT / 4, cy, (a + b) / 2), V(WallT / 2, h, b - a), ma, true);
+            Cube("SideE", grp, V(x + WallT / 4, cy, (a + b) / 2), V(WallT / 2, h, b - a), mb, true);
+            if (blocks && y0 < 0.01f)
+            {
+                blockRects.Add(new Vector4(x - WallT / 2, a, x + WallT / 2, b));
+                Cube("Base", grp, V(x, 0.06f, (a + b) / 2), V(WallT + 0.03f, 0.12f, b - a), M("Baseboard", C("FFFFFF")));
+            }
+            if (y1 >= WallH - 0.01f) Cube("Top", grp, V(x, WallH, (a + b) / 2), V(WallT + 0.04f, 0.06f, b - a), M("TopTrim", C("FFF4E0")));
+        }
+
+        static void Trim(Vector3 p, Vector3 s) => Cube("Trim", gHouse, p, s, M("Trim", C("FFFFFF")));
+
+        static void WindowX(float z, float a, float b)
+        {
+            var root = G("Window", gHouse, V((a + b) / 2, 1.6f, z));
+            var frame = M("WindowFrame", C("8FD3F5"));
+            var glass = MT("Glass", new Color(0.75f, 0.92f, 1f, 0.22f), 0.95f);
+            float w = b - a, cx = (a + b) / 2;
+            Cube("Sill", root, V(cx, 0.97f, z), V(w + 0.2f, 0.06f, WallT + 0.18f), frame, true);
+            Cube("Head", root, V(cx, 2.23f, z), V(w + 0.1f, 0.06f, WallT + 0.06f), frame);
+            Cube("L", root, V(a + 0.03f, 1.6f, z), V(0.06f, 1.3f, WallT + 0.06f), frame);
+            Cube("R", root, V(b - 0.03f, 1.6f, z), V(0.06f, 1.3f, WallT + 0.06f), frame);
+            Cube("UpperGlass", root, V(cx, 1.92f, z + 0.03f), V(w - 0.06f, 0.6f, 0.02f), glass);
+            var sash = G("Sash", root, V(cx, 1.3f, z - 0.03f));
+            Cube("Glass", sash, V(cx, 1.3f, z - 0.03f), V(w - 0.08f, 0.6f, 0.02f), glass);
+            Cube("Bar", sash, V(cx, 1.6f, z - 0.03f), V(w - 0.06f, 0.05f, 0.05f), frame);
+            Cube("Bar", sash, V(cx, 1.0f, z - 0.03f), V(w - 0.06f, 0.05f, 0.05f), frame);
+            var curtain = M("Curtain", C("FFB3C1"));
+            float side = z > 7 ? -0.12f : 0.12f;
+            Cube("CurtainL", root, V(a - 0.1f, 1.55f, z + side), V(0.25f, 1.5f, 0.04f), curtain);
+            Cube("CurtainR", root, V(b + 0.1f, 1.55f, z + side), V(0.25f, 1.5f, 0.04f), curtain);
+            Cyl("Rod", root, V(cx, 2.35f, z + side), V(0.03f, (w + 0.7f) / 2, 0.03f), M("Brass", C("F2C14E"), 0.7f, 0.6f), false, V(0, 0, 90));
+            var win = root.gameObject.AddComponent<Window>();
+            win.displayName = "Window"; win.sash = sash; win.closedLocal = sash.localPosition; win.openLocal = sash.localPosition + V(0, 0.6f, 0);
+            win.interactRadius = 1.7f;
+            win.interactAnchor = G("Anchor", root, V(cx, 0, z + (z > 7 ? -0.6f : 0.6f)));
+            Vent(V(cx, 1f, z + (z > 7 ? -0.3f : 0.3f)), 1.0f, 0.7f, win, null, z > 7 ? Vector3.forward : Vector3.back, w);
+            if (Mathf.Abs(z - 14f) < 0.01f && cx > 15f && cx < 18f) kitchenWinN = win;
+        }
+
+        static void WindowZ(float x, float a, float b)
+        {
+            var root = G("Window", gHouse, V(x, 1.6f, (a + b) / 2));
+            var frame = M("WindowFrame", C("8FD3F5"));
+            var glass = MT("Glass", new Color(0.75f, 0.92f, 1f, 0.22f), 0.95f);
+            float w = b - a, cz = (a + b) / 2;
+            Cube("Sill", root, V(x, 0.97f, cz), V(WallT + 0.18f, 0.06f, w + 0.2f), frame, true);
+            Cube("Head", root, V(x, 2.23f, cz), V(WallT + 0.06f, 0.06f, w + 0.1f), frame);
+            Cube("UpperGlass", root, V(x + 0.03f, 1.92f, cz), V(0.02f, 0.6f, w - 0.06f), glass);
+            var sash = G("Sash", root, V(x - 0.03f, 1.3f, cz));
+            Cube("Glass", sash, V(x - 0.03f, 1.3f, cz), V(0.02f, 0.6f, w - 0.08f), glass);
+            Cube("Bar", sash, V(x - 0.03f, 1.6f, cz), V(0.05f, 0.05f, w - 0.06f), frame);
+            var win = root.gameObject.AddComponent<Window>();
+            win.displayName = "Window"; win.sash = sash; win.closedLocal = sash.localPosition; win.openLocal = sash.localPosition + V(0, 0.6f, 0);
+            win.interactRadius = 1.7f;
+            win.interactAnchor = G("Anchor", root, V(x - 0.9f, 0, cz));
+            Vent(V(x - 0.3f, 1f, cz), 1.0f, 0.7f, win, null, Vector3.right, w);
+            kitchenWinE = win;
+        }
+
+        static void InteriorDoor(Vector3 hinge, float w, bool alongX, Color col)
+        {
+            var g = G("InteriorDoor", gHouse, hinge);
+            var m = M("Door_" + ColorUtility.ToHtmlStringRGB(col), col);
+            if (alongX)
+            {
+                // swung open into the room on +Z side, resting against the wall
+                // swung fully open, resting flat against the wall on the +Z side
+                Cube("Slab", g, hinge + V(-w / 2, 1.05f, 0.11f), V(w - 0.05f, 2.1f, 0.05f), m, true);
+                Sph("Knob", g, hinge + V(-w + 0.12f, 1.0f, 0.16f), Vector3.one * 0.07f, M("Brass", C("F2C14E"), 0.7f, 0.6f));
+            }
+            else
+            {
+                Cube("Slab", g, hinge + V(-w / 2, 1.05f, -0.11f), V(w - 0.05f, 2.1f, 0.05f), m, true);
+                Sph("Knob", g, hinge + V(-w + 0.12f, 1.0f, -0.16f), Vector3.one * 0.07f, M("Brass", C("F2C14E"), 0.7f, 0.6f));
+            }
+        }
+
+        static void Vent(Vector3 p, float r, float rate, Window w, Door d, Vector3 outward, float width)
+        {
+            var v = G("SmokeVent", gSystems, p).gameObject.AddComponent<SmokeVent>();
+            v.radius = Mathf.Max(1.2f, r); v.rate = Mathf.Max(1.4f, rate); v.window = w; v.door = d; v.outward = outward; v.openingWidth = width;
+        }
 
         // =====================================================================  LIVING ROOM (x0..13, z0..6)
         static void LivingRoom()
@@ -137,7 +381,7 @@ namespace MamasComing.EditorTools
             Cube("Field", carpet, V(3.2f, 0.008f, 3.0f), V(4.0f, 0.012f, 3.2f), M("CarpetField", C("F2CC8F")));
             Cube("Medallion", carpet, V(3.2f, 0.01f, 3.0f), V(1.6f, 0.012f, 1.2f), M("CarpetMed", C("81B29A")));
             var cc = carpet.gameObject.AddComponent<CoverObject>();
-            cc.halfSize = V2(2.2f, 1.8f) * S; cc.absorbRate = 0.6f; cc.capacityLiters = 18f; cc.hidesWater = true;
+            cc.halfSize = V2(2.2f, 1.8f); cc.absorbRate = 0.6f; cc.capacityLiters = 18f; cc.hidesWater = true;
             cc.tintRenderers = carpet.GetComponentsInChildren<Renderer>();
             carpetT = carpet;
 
@@ -260,8 +504,8 @@ namespace MamasComing.EditorTools
             Cyl("Body", al, V(16.0f, 2.74f, 7.0f), V(0.22f, 0.025f, 0.22f), M("AlarmWhite", C("F7F7F2")));
             var led = Sph("LED", al, V(16.0f, 2.71f, 7.06f), Vector3.one * 0.035f, ME("LED", C("FF2222"), new Color(3f, 0.1f, 0.1f)));
             var ll = new GameObject("LEDLight").AddComponent<Light>();
-            ll.transform.SetParent(al, false); ll.transform.position = P(V(16.0f, 2.5f, 7.0f));
-            ll.type = LightType.Point; ll.color = Color.red; ll.range = 3f * S; ll.intensity = 2.5f; ll.enabled = false;
+            ll.transform.SetParent(al, false); ll.transform.position = V(16.0f, 2.5f, 7.0f);
+            ll.type = LightType.Point; ll.color = Color.red; ll.range = 3f; ll.intensity = 2.5f; ll.enabled = false;
             alarm = al.gameObject.AddComponent<SmokeAlarm>();
             alarm.displayName = "Smoke alarm"; alarm.threshold = 0.18f; alarm.led = led.GetComponent<Renderer>(); alarm.ledLight = ll;
             alarm.interactRadius = 1.6f; alarm.interactAnchor = G("Anchor", al, V(16.0f, 0, 7.0f));
@@ -328,7 +572,7 @@ namespace MamasComing.EditorTools
             var rug = G("BedroomRug", t, V(3.4f, 0.008f, 11.0f));
             Cyl("Rug", rug, V(3.4f, 0.006f, 11.0f), V(2.2f, 0.006f, 2.2f), M("RugPurple", C("B39DDB")));
             Cyl("RugIn", rug, V(3.4f, 0.009f, 11.0f), V(1.6f, 0.006f, 1.6f), M("RugCream", C("FFE6C7")));
-            var rcov = rug.gameObject.AddComponent<CoverObject>(); rcov.halfSize = V2(1f, 1f) * S; rcov.absorbRate = 0.3f; rcov.capacityLiters = 6f;
+            var rcov = rug.gameObject.AddComponent<CoverObject>(); rcov.halfSize = V2(1f, 1f); rcov.absorbRate = 0.3f; rcov.capacityLiters = 6f;
 
             Frame(t, V(3.2f, 1.9f, 13.92f), 0.5f, 0.7f, Vector3.back, C("43CFC4"));
             Frame(t, V(0.08f, 1.8f, 10.0f), 0.8f, 0.55f, Vector3.right, C("FF6F61"));
@@ -373,7 +617,7 @@ namespace MamasComing.EditorTools
             tap = tub.gameObject.AddComponent<WaterTap>();
             tap.displayName = "Bathtub tap"; tap.interactRadius = 1.4f;
             tap.interactAnchor = G("Anchor", tub, V(7.8f, 0, 12.75f));
-            tap.tubWater = water.transform; tap.tubWaterFullY = water.transform.localPosition.y; tap.tubWaterEmptyY = water.transform.localPosition.y - 0.42f * S;
+            tap.tubWater = water.transform; tap.tubWaterFullY = water.transform.localPosition.y; tap.tubWaterEmptyY = water.transform.localPosition.y - 0.42f;
             tap.stream = stream; tap.overflowSheet = spill.gameObject; tap.handle = handle; tap.brokenHandle = broken;
             tap.overflowPoints = new[] { G("Over1", tub, V(7.7f, 0, 12.92f)), G("Over2", tub, V(8.55f, 0, 12.92f)), G("Over3", tub, V(9.4f, 0, 12.92f)) };
             tap.litersPerSecond = 1.5f; tap.tubCapacity = 160f; tap.tubLevel = 160f;
@@ -413,7 +657,7 @@ namespace MamasComing.EditorTools
             // Bath mat (soaks a bit) + towel rack + hamper
             var mat = G("Bath mat", t, V(8.5f, 0.008f, 12.45f));
             Cube("Mat", mat, V(8.5f, 0.008f, 12.45f), V(1.0f, 0.016f, 0.55f), M("BathMat", C("FF8FB1")));
-            var mcov = mat.gameObject.AddComponent<CoverObject>(); mcov.halfSize = V2(0.5f, 0.28f) * S; mcov.absorbRate = 0.2f; mcov.capacityLiters = 1.5f;
+            var mcov = mat.gameObject.AddComponent<CoverObject>(); mcov.halfSize = V2(0.5f, 0.28f); mcov.absorbRate = 0.2f; mcov.capacityLiters = 1.5f;
             Cyl("TowelBar", t, V(7.12f, 1.25f, 10.4f), V(0.02f, 0.45f, 0.02f), chrome, false, V(90, 0, 0));
             MakeTowel(V(7.2f, 1.0f, 10.4f), V(0, 90, 0), C("FFD447"), true, "Bath towel");
             var hm = G("Laundry hamper", t, V(8.0f, 0, 9.0f));
@@ -483,11 +727,9 @@ namespace MamasComing.EditorTools
             BoxCol(pot.gameObject, V(0, 0.14f, 0), V(0.45f, 0.28f, 0.45f));
             pot.renderers = new[] { pb.GetComponent<Renderer>(), pr.GetComponent<Renderer>() };
             pot.curry = curry; pot.burn = 0.45f; pot.tool = ToolType.Pot; pot.holdOffset = V(0, -0.15f, 0.1f);
-            raw = true;   // the pot keeps its own size: offsets from it are real metres
             pot.lidSocket = G("LidSocket", pot.transform, pot.transform.position + V(0, 0.27f, 0));
             pot.interactRadius = 1.5f;
             pot.fire = MakeFire("Pot fire", pot.transform.position + V(0, 0.28f, 0), FireType.Grease, 0.28f, 0.9f, pot.transform, 1.0f);
-            raw = false;
             pot.fire.growth = 0.007f; pot.fire.spreadThreshold = 0.6f; pot.fire.spreadDelay = 18f; pot.fire.smokeRate = 1.8f;
 
             // things the fire can spread to
@@ -588,7 +830,7 @@ namespace MamasComing.EditorTools
             var blades = new GameObject("Blades").transform; blades.SetParent(head, false); blades.localPosition = V(0, 0, 0.04f);
             for (int i = 0; i < 3; i++) L(PrimitiveType.Cube, "Blade", blades, V(Mathf.Sin(i * 2.094f) * 0.13f, Mathf.Cos(i * 2.094f) * 0.13f, 0), V(0.11f, 0.24f, 0.01f), M("FanBlade", C("7FD3F0"), 0.5f), false, V(0, 0, -i * 120f));
             var fan = fanRoot.gameObject.AddComponent<Fan>();
-            fan.displayName = "Fan"; fan.head = head; fan.blades = blades; fan.interactRadius = 1.4f; fan.range = 6f * S;
+            fan.displayName = "Fan"; fan.head = head; fan.blades = blades; fan.interactRadius = 1.4f; fan.range = 6f;
 
             Cyl("TrashBin", t, V(20.0f, 0.3f, 8.5f), V(0.4f, 0.3f, 0.4f), M("Bin", C("4CAF6E")), true);
             Plant(t, V(13.7f, 0.92f, 13.55f), 0.6f, C("D9534F"));
@@ -811,7 +1053,7 @@ namespace MamasComing.EditorTools
                 L(PrimitiveType.Cube, "Cover", book.transform, V(0, 0.02f, 0), V(0.2f, 0.04f, 0.27f), M("Book" + (10 + i), bk[i]));
                 L(PrimitiveType.Cube, "Pages", book.transform, V(0.005f, 0.02f, 0), V(0.19f, 0.032f, 0.26f), M("Pages", C("FFFDF4")));
                 BoxCol(book.gameObject, V(0, 0.02f, 0), V(0.2f, 0.04f, 0.27f));
-                SetHome(book, V(4.4f + i * 0.25f, 0.79f + i * 0.045f, 13.45f), V(0, 90, 0), V(7.0f + i * 0.4f, 0.03f, 6.6f + (i % 2) * 0.3f), V(0, i * 50f, 0));
+                SetHome(book, V(4.4f + i * 0.25f, 0.79f + i * 0.045f, 13.45f), V(0, 90, 0), book.transform.position, V(0, i * 50f, 0));
             }
             var rnd = new System.Random(5);
             for (int i = 0; i < 5; i++)
@@ -856,7 +1098,6 @@ namespace MamasComing.EditorTools
         static void MakeChair(Vector3 pos, float yaw, string name)
         {
             var ch = Prop<MessyProp>(name, pos, 4f, "Chair");
-            scalePickup = true;   // chairs are furniture: they grow with the house even though kids can drag them
             var wood = M("ChairWood", C("FF7A59"));
             L(PrimitiveType.Cube, "Seat", ch.transform, V(0, 0.45f, 0), V(0.44f, 0.05f, 0.44f), wood, true);
             L(PrimitiveType.Cube, "Cushion", ch.transform, V(0, 0.485f, 0.01f), V(0.38f, 0.03f, 0.38f), M("ChairCushion", C("FFE07A")));
@@ -864,11 +1105,10 @@ namespace MamasComing.EditorTools
             L(PrimitiveType.Cube, "Back", ch.transform, V(0, 0.8f, -0.2f), V(0.44f, 0.12f, 0.05f), wood, true);
             L(PrimitiveType.Cube, "PostL", ch.transform, V(-0.18f, 0.65f, -0.2f), V(0.05f, 0.4f, 0.05f), wood, true);
             L(PrimitiveType.Cube, "PostR", ch.transform, V(0.18f, 0.65f, -0.2f), V(0.05f, 0.4f, 0.05f), wood, true);
-            scalePickup = false;
-            ch.tool = ToolType.Chair; ch.dragOnFloor = true; ch.holdOffset = V(0, 0, 0.15f * S); ch.carrySpeedMultiplier = 0.75f; ch.displaceTolerance = 0.6f;
+            ch.tool = ToolType.Chair; ch.dragOnFloor = true; ch.holdOffset = V(0, 0, 0.15f); ch.carrySpeedMultiplier = 0.75f; ch.displaceTolerance = 0.6f;
             ch.momLine = "Why is this chair all the way over HERE?";
-            var crb = ch.GetComponent<Rigidbody>(); crb.automaticCenterOfMass = false; crb.centerOfMass = V(0, 0.2f * S, 0);
-            var cov = ch.gameObject.AddComponent<CoverObject>(); cov.halfSize = V2(0.25f, 0.25f) * S;
+            var crb = ch.GetComponent<Rigidbody>(); crb.automaticCenterOfMass = false; crb.centerOfMass = V(0, 0.2f, 0);
+            var cov = ch.gameObject.AddComponent<CoverObject>(); cov.halfSize = V2(0.25f, 0.25f);
             AtHome(ch, V(0, yaw, 0));
         }
 
@@ -894,8 +1134,8 @@ namespace MamasComing.EditorTools
         {
             var cab = root.gameObject.AddComponent<Cabinet>();
             cab.displayName = display; cab.stashPhrase = phrase; cab.interactRadius = 1.5f; cab.hasDoor = door;
-            var zg = new GameObject("HideZone"); zg.transform.SetParent(root, false); zg.transform.SetPositionAndRotation(P(zoneCenter), Rq(zoneCenter, Quaternion.identity));
-            var bc = zg.AddComponent<BoxCollider>(); bc.size = raw ? zoneSize : zoneSize * S; bc.isTrigger = true;
+            var zg = new GameObject("HideZone"); zg.transform.SetParent(root, false); zg.transform.position = zoneCenter;
+            var bc = zg.AddComponent<BoxCollider>(); bc.size = zoneSize; bc.isTrigger = true;
             var hz = zg.AddComponent<HideZone>(); hz.cabinet = cab; hz.momCheckChance = chance;
             cab.zone = hz;
             cab.stashPoint = G("StashPoint", root, stashPos);
@@ -909,7 +1149,7 @@ namespace MamasComing.EditorTools
             var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
             PrefabUtility.UnpackPrefabInstance(go, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             go.name = "Kid (PF_Player)";
-            go.transform.SetPositionAndRotation(P(V(4.4f, 0f, 3.0f)) + V(0, 0.02f, 0), Quaternion.Euler(0, -90f, 0));
+            go.transform.SetPositionAndRotation(V(4.4f, 0.02f, 3.0f), Quaternion.Euler(0, -90f, 0));
             var motor = go.GetComponent<DreamRush.Player.PlayerMotor3D>();
             string cfgPath = Root + "/KidMotorConfig.asset";
             var cfg = AssetDatabase.LoadAssetAtPath<DreamRush.Player.PlayerMotorConfig>(cfgPath);
@@ -918,7 +1158,7 @@ namespace MamasComing.EditorTools
                 cfg = Object.Instantiate(motor.Config);
                 AssetDatabase.CreateAsset(cfg, cfgPath);
             }
-            cfg.walkSpeed = 4.2f; cfg.sprintSpeed = 7.0f; cfg.jumpHeight = 1.0f;   // the fruit-scale house is twice as big cfg.rotationSpeedDegrees = 600f;
+            cfg.walkSpeed = 3.2f; cfg.sprintSpeed = 5.6f; cfg.jumpHeight = 0.8f; cfg.rotationSpeedDegrees = 600f;
             EditorUtility.SetDirty(cfg);
             motor.Config = cfg;
 
@@ -940,8 +1180,7 @@ namespace MamasComing.EditorTools
         static void Mom()
         {
             var root = new GameObject("Mom");
-            root.transform.position = P(V(8.6f, 0f, -2.6f));
-            charMode = true;
+            root.transform.position = V(8.6f, 0f, -2.6f);
             var vis = new GameObject("Visual").transform; vis.SetParent(root.transform, false);
             var skin = M("Skin", C("FFD2B0"), 0.3f); var dress = M("MomDress", C("A777E3"), 0.2f); var hair = M("MomHair", C("F2852E"), 0.3f);
             L(PrimitiveType.Capsule, "LegL", vis, V(-0.1f, 0.15f, 0), V(0.12f, 0.12f, 0.12f), skin);
@@ -964,57 +1203,36 @@ namespace MamasComing.EditorTools
             L(PrimitiveType.Sphere, "EyeL", head, V(-0.08f, 0.13f, 0.172f), V(0.04f, 0.05f, 0.02f), M("Eye", C("1A1416"), 0.8f));
             L(PrimitiveType.Sphere, "EyeR", head, V(0.08f, 0.13f, 0.172f), V(0.04f, 0.05f, 0.02f), M("Eye", C("1A1416"), 0.8f));
             L(PrimitiveType.Sphere, "Mouth", head, V(0, 0.03f, 0.175f), V(0.07f, 0.025f, 0.02f), M("Mouth", C("B5424A")));
-            charMode = false;
             mom = root.AddComponent<MomController>();
-            mom.visual = vis; mom.head = head; mom.walkSpeed = 2.6f;
+            mom.visual = vis; mom.head = head;
             var rg = G("MomRoute", gSystems);
-            raw = true;   // the route is authored on the final two-storey plan (stair legs are slopes)
-            float U = UpY;
             mom.route = new[]
             {
-                IP(rg, "Entrance", V(17.2f, 0, 2.6f), 8.0f, true, false, "I'm hooome~! Sweetie?"),
-                IP(rg, "Living room", V(10f, 0, 5.8f), 9.0f, true, true, "Were you watching TV all day?"),
-                IP(rg, "Hallway", V(10f, 0, 14f), 5.2f, true, false, null),
-                IP(rg, "Hall middle", V(19f, 0, 14f), 5.2f, true, false, null),
-                IP(rg, "Bathroom", V(19f, 0, 19.2f), 7.2f, true, true, "I need to wash my hands..."),
-                IP(rg, "BathBack", V(19f, 0, 14f), 0f, false, false, null),
-                IP(rg, "Hall east", V(32f, 0, 14f), 5.2f, true, false, null),
-                IP(rg, "Kitchen", V(32f, 0, 20.4f), 8.4f, true, true, "Let me put the groceries away..."),
-                IP(rg, "Stove", V(29.2f, 0, 24.2f), 5.0f, true, false, "Now, how did the curry turn out?"),
-                IP(rg, "KitchenOut", V(30f, 0, 14f), 0f, false, false, null),
-                IP(rg, "Laundry", V(30f, 0, 8f), 5.6f, true, true, "Let me start a load of laundry..."),
-                IP(rg, "LaundryOut", V(30f, 0, 14f), 0f, false, false, null),
-                IP(rg, "Dining", V(39f, 0, 9.2f), 6.0f, true, false, null),
-                IP(rg, "DiningOut", V(39f, 0, 14f), 0f, false, false, null),
-                IP(rg, "Hall far east", V(49f, 0, 14f), 4.8f, true, false, null),
-                IP(rg, "Game room", V(52f, 0, 21.2f), 8.8f, true, true, "What's this room doing like THIS?"),
-                IP(rg, "GameOut", V(49f, 0, 14f), 0f, false, false, null),
-                IP(rg, "Garage", V(48f, 0, 6.8f), 7.2f, true, true, "Let me put the bags in the garage..."),
-                IP(rg, "GarageOut", V(47.8f, 0, 14f), 0f, false, false, null),
-                IP(rg, "Staircase door", V(6f, 0, 14f), 0f, false, false, null),
-                IP(rg, "Staircase", V(6f, 0, 20f), 5.0f, true, false, "Now let me check upstairs..."),
-                IP(rg, "Stair foot", V(0.9f, 0, 26.1f), 0f, false, false, null),
-                IP(rg, "Stair top", V(13.4f, U, 26.1f), 0f, false, false, null),
-                IP(rg, "Landing", V(13.6f, U, 21f), 5.0f, true, false, null),
-                IP(rg, "Upstairs hall", V(13.6f, U, 14f), 5.0f, true, false, null),
-                IP(rg, "BedDoor", V(10.8f, U, 14f), 0f, false, false, null),
-                IP(rg, "Bedroom", V(8f, U, 8.4f), 7.6f, true, true, "Let me see your room..."),
-                IP(rg, "BedDoorBack", V(10.8f, U, 14f), 0f, false, false, null),
-                IP(rg, "MomDoor", V(22.2f, U, 14f), 0f, false, false, null),
-                IP(rg, "Mom's room", V(22.2f, U, 6.5f), 7.6f, true, true, "Did someone touch my things?!"),
-                IP(rg, "MomDoorBack", V(22.2f, U, 14f), 0f, false, false, null),
-                IP(rg, "LoftDoor", V(19.2f, U, 14f), 0f, false, false, null),
-                IP(rg, "Party loft", V(21f, U, 21f), 8.4f, true, true, "And what is going on up HERE?"),
-                IP(rg, "LoftBack", V(19.2f, U, 14f), 0f, false, false, null),
-                IP(rg, "Down: hall", V(13.6f, U, 14f), 0f, false, false, null),
-                IP(rg, "Down: landing", V(13.6f, U, 21f), 0f, false, false, null),
-                IP(rg, "Down: top", V(13.4f, U, 26.1f), 0f, false, false, null),
-                IP(rg, "Down: foot", V(0.9f, 0, 26.1f), 0f, false, false, null),
-                IP(rg, "Down: staircase", V(6f, 0, 20f), 0f, false, false, null),
-                IP(rg, "Back to hall", V(6f, 0, 14f), 0f, false, false, null),
-                IP(rg, "Sofa", V(9.2f, 0, 5.2f), 6.0f, true, false, "Ahh~ finally, time to sit down..."),
+                IP(rg, "Entrance", V(8.6f, 0, 1.3f), 4.0f, true, false, "I'm hooome~! Sweetie?"),
+                IP(rg, "Living room", V(5.0f, 0, 2.9f), 4.5f, true, true, "Were you watching TV all day?"),
+                IP(rg, "Hallway", V(5.0f, 0, 7.0f), 2.6f, true, false, null),
+                IP(rg, "BedDoorOut", V(3.0f, 0, 7.0f), 0f, false, false, null),
+                IP(rg, "Bedroom", V(3.0f, 0, 9.8f), 3.8f, true, true, "Let me see your room..."),
+                IP(rg, "BedDoorBack", V(3.0f, 0, 7.0f), 0f, false, false, null),
+                IP(rg, "Hall middle", V(9.5f, 0, 7.0f), 2.6f, true, false, null),
+                IP(rg, "Bathroom", V(9.5f, 0, 9.6f), 3.6f, true, true, "I need to wash my hands..."),
+                IP(rg, "BathBack", V(9.5f, 0, 7.0f), 0f, false, false, null),
+                IP(rg, "Hall east", V(16.0f, 0, 7.0f), 2.6f, true, false, null),
+                IP(rg, "Kitchen", V(16.0f, 0, 10.2f), 4.2f, true, true, "Let me put the groceries away..."),
+                IP(rg, "Stove", V(14.6f, 0, 12.3f), 2.5f, true, false, "Now, how did the curry turn out?"),
+                IP(rg, "KitchenOut", V(15.0f, 0, 7.0f), 0f, false, false, null),
+                IP(rg, "Laundry", V(15.0f, 0, 4.0f), 2.8f, true, true, "Let me start a load of laundry..."),
+                IP(rg, "LaundryOut", V(15.0f, 0, 7.0f), 0f, false, false, null),
+                IP(rg, "Dining", V(19.5f, 0, 4.6f), 3.0f, true, false, null),
+                IP(rg, "DiningOut", V(19.5f, 0, 7.0f), 0f, false, false, null),
+                IP(rg, "Hall far east", V(24.5f, 0, 7.0f), 2.4f, true, false, null),
+                IP(rg, "Game room", V(26.0f, 0, 10.6f), 4.4f, true, true, "What's this room doing like THIS?"),
+                IP(rg, "GameOut", V(24.5f, 0, 7.0f), 0f, false, false, null),
+                IP(rg, "Garage", V(24.0f, 0, 3.4f), 3.6f, true, true, "Let me put the bags in the garage..."),
+                IP(rg, "GarageOut", V(23.9f, 0, 7.0f), 0f, false, false, null),
+                IP(rg, "Back to hall", V(5.0f, 0, 7.0f), 0f, false, false, null),
+                IP(rg, "Sofa", V(4.6f, 0, 2.6f), 3.0f, true, false, "Ahh~ finally, time to sit down..."),
             };
-            raw = false;
         }
 
         static MomController.InspectPoint IP(Transform parent, string n, Vector3 p, float r, bool inspect, bool hides, string line) =>
@@ -1026,17 +1244,15 @@ namespace MamasComing.EditorTools
             // flood sim
             var fsGo = new GameObject("FloodSim"); fsGo.transform.SetParent(gSystems, false);
             var fs = fsGo.AddComponent<FloodSim>();
-            // covers the 60 x 28 m ground floor; water never reaches the upper floor
-            const float fCell = 0.3f; const int fW = 204, fH = 97;
-            fs.origin = V2(-0.5f, -0.5f); fs.cell = fCell; fs.width = fW; fs.height = fH;
+            fs.origin = V2(-0.5f, -0.5f); fs.cell = 0.2f; fs.width = 156; fs.height = 76;
             fs.walls = new List<Vector4>(blockRects);
             fs.groundRects = new List<Vector4>(groundRects); fs.groundOffsets = new List<float>(groundOffs);
             var plane = GameObject.CreatePrimitive(PrimitiveType.Quad);
             Object.DestroyImmediate(plane.GetComponent<Collider>());
             plane.name = "WaterSurface"; plane.transform.SetParent(fsGo.transform, false);
-            plane.transform.position = V(-0.5f + fW * fCell / 2, 0.006f, -0.5f + fH * fCell / 2);
+            plane.transform.position = V(-0.5f + 156 * 0.2f / 2, 0.006f, -0.5f + 76 * 0.2f / 2);
             plane.transform.rotation = Quaternion.Euler(90, 0, 0);
-            plane.transform.localScale = V(fW * fCell, fH * fCell, 1);
+            plane.transform.localScale = V(156 * 0.2f, 76 * 0.2f, 1);
             var pr = plane.GetComponent<MeshRenderer>(); pr.sharedMaterial = puddleMat; pr.shadowCastingMode = ShadowCastingMode.Off;
             fs.surface = pr;
             splashFx = MakeSplash(fsGo.transform);
@@ -1045,7 +1261,7 @@ namespace MamasComing.EditorTools
             // smoke sim
             var smGo = new GameObject("SmokeSim"); smGo.transform.SetParent(gSystems, false);
             var sm = smGo.AddComponent<SmokeSim>();
-            sm.origin = V2(-0.5f, -0.5f); sm.cell = 0.75f; sm.width = 82; sm.height = 39; sm.walls = new List<Vector4>(blockRects); sm.ceiling = WallH;
+            sm.origin = V2(-0.5f, -0.5f); sm.cell = 0.5f; sm.width = 63; sm.height = 31; sm.walls = new List<Vector4>(blockRects);
             sm.smokeFx = MakeSmokePS(smGo.transform);
 
             // hood vent (weak) + windows registered automatically
@@ -1056,9 +1272,9 @@ namespace MamasComing.EditorTools
             ui.circleSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
             var gm = gmGo.AddComponent<GameManager>();
             gm.player = kid; gm.mom = mom; gm.tap = tap; gm.mainValve = valve; gm.stove = stove; gm.pot = pot; gm.alarm = alarm;
-            gm.frontDoor = frontDoor; gm.ui = ui; gm.livingRoomCarpet = carpetT; gm.totalTime = 720f;   // a bigger house and ~50 problems
-            gm.floodSeeds = new[] { P(V(9.5f, 0, 11.6f)), P(V(8.6f, 0, 9.4f)), P(V(10.8f, 0, 12.4f)), P(V(9.5f, 0, 7.2f)) };
-            gm.floodSeedRadius = 1.6f * S; gm.floodSeedDepth = 0.0042f; gm.startHeat = 15f; gm.startSmoke = 3f;
+            gm.frontDoor = frontDoor; gm.ui = ui; gm.livingRoomCarpet = carpetT; gm.totalTime = 540f;
+            gm.floodSeeds = new[] { V(9.5f, 0, 11.6f), V(8.6f, 0, 9.4f), V(10.8f, 0, 12.4f), V(9.5f, 0, 7.2f) };
+            gm.floodSeedRadius = 1.6f; gm.floodSeedDepth = 0.0042f; gm.startHeat = 15f; gm.startSmoke = 3f;
 
             // camera
             var camGo = new GameObject("Main Camera"); camGo.tag = "MainCamera";
@@ -1067,8 +1283,7 @@ namespace MamasComing.EditorTools
             var acd = camGo.AddComponent<UniversalAdditionalCameraData>();
             acd.renderPostProcessing = true; acd.antialiasing = AntialiasingMode.SubpixelMorphologicalAntiAliasing;
             var tpc = camGo.AddComponent<ThirdPersonCamera>();
-            tpc.target = kid.transform; tpc.yaw = 0f; tpc.pitch = 50f; tpc.distance = 9f; tpc.maxDistance = 14f;
-            camGo.AddComponent<FloorCutaway>();
+            tpc.target = kid.transform; tpc.yaw = 0f; tpc.pitch = 50f; tpc.distance = 7f;
             Quaternion rot = Quaternion.Euler(tpc.pitch, tpc.yaw, 0f);
             camGo.transform.SetPositionAndRotation(kid.transform.position + tpc.offset - rot * Vector3.forward * tpc.distance, rot);
             gm.cam = tpc;
@@ -1133,7 +1348,7 @@ namespace MamasComing.EditorTools
 
         static ParticleSystem NewPS(string name, Transform parent, Vector3 pos, Material mat, int max)
         {
-            var go = new GameObject(name); go.transform.SetParent(parent, false); go.transform.position = P(pos);
+            var go = new GameObject(name); go.transform.SetParent(parent, false); go.transform.position = pos;
             var ps = go.AddComponent<ParticleSystem>();
             ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             var main = ps.main; main.simulationSpace = ParticleSystemSimulationSpace.World; main.maxParticles = max; main.playOnAwake = true; main.loop = true;
@@ -1143,7 +1358,7 @@ namespace MamasComing.EditorTools
 
         static FireSource MakeFire(string label, Vector3 pos, FireType type, float radius, float maxSize, Transform parent, float light)
         {
-            var go = new GameObject(label); go.transform.SetParent(parent, true); go.transform.position = P(pos);
+            var go = new GameObject(label); go.transform.SetParent(parent, true); go.transform.position = pos;
             var f = go.AddComponent<FireSource>();
             f.label = label; f.type = type; f.radius = radius; f.maxFlameSize = maxSize;
             var flames = NewPS("Flames", go.transform, pos, ParticleMat("FX_Flame", true), 300);
@@ -1180,7 +1395,7 @@ namespace MamasComing.EditorTools
             f.embers = embers;
 
             var l = new GameObject("Glow").AddComponent<Light>();
-            l.transform.SetParent(go.transform, false); l.transform.position = P(pos + V(0, 0.4f, 0));
+            l.transform.SetParent(go.transform, false); l.transform.position = pos + V(0, 0.4f, 0);
             l.type = LightType.Point; l.color = C("FF8A3A"); l.range = 5f; l.intensity = 0f; l.enabled = false;
             f.glow = l; f.baseLight = 6f * light;
             return f;
@@ -1271,32 +1486,11 @@ namespace MamasComing.EditorTools
             AssetDatabase.CreateFolder(parent, System.IO.Path.GetFileName(path));
         }
 
-        // ---------------------------------------------------------------- plan mapping (old human-scale units -> fruit-scale house)
-        struct Xf { public Vector3 from, to; public float yaw; }
-        /// The kid's bedroom is lifted onto the upper floor and turned round so its door faces the upstairs hall.
-        static readonly Xf BedroomUp = new Xf { from = new Vector3(3.5f, 0f, 11f), to = new Vector3(7f, UpY, 6f), yaw = 180f };
-        /// The DJ corner of the game room is rebuilt in the upstairs party loft.
-        static readonly Xf LoftDJ = new Xf { from = new Vector3(26f, 0f, 11f), to = new Vector3(22f, UpY, 22f), yaw = 0f };
-        static bool raw, charMode, scalePickup;
-        static Xf? forced;
-
-        static Xf XfAt(Vector3 p)
-        {
-            if (forced.HasValue) return forced.Value;
-            if (p.x >= -0.05f && p.x <= 7.0f && p.z >= 8.0f && p.z <= 14.05f) return BedroomUp;
-            return default;
-        }
-        /// Old plan point -> world point.
-        static Vector3 P(Vector3 p) { if (raw) return p; var x = XfAt(p); return x.to + Quaternion.Euler(0f, x.yaw, 0f) * ((p - x.from) * S); }
-        static Quaternion Rq(Vector3 oldPos, Quaternion q) => raw ? q : Quaternion.Euler(0f, XfAt(oldPos).yaw, 0f) * q;
-        /// Yaw of the room a world (already mapped) point sits in.
-        static float YawAtWorld(Vector3 w) => w.y > HouseLayout.UpperThreshold && w.x < 14f && w.z < 12f ? BedroomUp.yaw : 0f;
-
         static Transform G(string n, Transform parent = null, Vector3 pos = default)
         {
             var t = new GameObject(n).transform;
             if (parent) t.SetParent(parent, false);
-            t.SetPositionAndRotation(P(pos), Rq(pos, Quaternion.identity));
+            t.position = pos;
             return t;
         }
 
@@ -1304,7 +1498,7 @@ namespace MamasComing.EditorTools
         {
             var l = new GameObject(n).AddComponent<Light>();
             l.transform.SetParent(parent, false);
-            l.transform.position = P(p); l.type = LightType.Point; l.color = c; l.range = raw ? range : range * S; l.intensity = intensity; l.shadows = LightShadows.None;
+            l.transform.position = p; l.type = LightType.Point; l.color = c; l.range = range; l.intensity = intensity; l.shadows = LightShadows.None;
             if (parent == gRooms) l.gameObject.AddComponent<PoweredLight>();
         }
 
@@ -1358,9 +1552,7 @@ namespace MamasComing.EditorTools
             var g = GameObject.CreatePrimitive(t);
             g.name = n;
             if (parent) g.transform.SetParent(parent, false);
-            g.transform.SetPositionAndRotation(P(pos), Rq(pos, Quaternion.Euler(euler)));
-            // world-space size: parents made by G() are unscaled, so localScale is the size
-            g.transform.localScale = raw ? scale : scale * S;
+            g.transform.position = pos; g.transform.rotation = Quaternion.Euler(euler); g.transform.localScale = scale;
             g.GetComponent<Renderer>().sharedMaterial = m;
             if (!col) Object.DestroyImmediate(g.GetComponent<Collider>());
             return g;
@@ -1375,9 +1567,7 @@ namespace MamasComing.EditorTools
         {
             var g = GameObject.CreatePrimitive(t);
             g.name = n; g.transform.SetParent(parent, false);
-            // carried props and characters keep their own size; fixtures grow with the house
-            float k = raw || charMode || (!scalePickup && parent.GetComponentInParent<Pickup>()) ? 1f : S;
-            g.transform.localPosition = lpos * k; g.transform.localRotation = Quaternion.Euler(euler); g.transform.localScale = scale * k;
+            g.transform.localPosition = lpos; g.transform.localRotation = Quaternion.Euler(euler); g.transform.localScale = scale;
             g.GetComponent<Renderer>().sharedMaterial = m;
             if (!col) Object.DestroyImmediate(g.GetComponent<Collider>());
             return g;
@@ -1389,7 +1579,7 @@ namespace MamasComing.EditorTools
         {
             var root = new GameObject(name);
             root.transform.SetParent(gProps, false);
-            root.transform.SetPositionAndRotation(P(pos), Rq(pos, Quaternion.identity));
+            root.transform.position = pos;
             var rb = root.AddComponent<Rigidbody>();
             rb.mass = mass; rb.interpolation = RigidbodyInterpolation.Interpolate; rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             var c = root.AddComponent<T>();
@@ -1399,14 +1589,14 @@ namespace MamasComing.EditorTools
 
         static void AtHome(MessyProp p, Vector3 euler = default)
         {
-            p.transform.rotation = Quaternion.Euler(0f, raw ? 0f : YawAtWorld(p.transform.position), 0f) * Quaternion.Euler(euler);
+            p.transform.rotation = Quaternion.Euler(euler);
             p.homePosition = p.transform.position; p.homeRotation = p.transform.rotation; p.homeSet = true;
         }
 
         static void SetHome(MessyProp p, Vector3 homePos, Vector3 homeEuler, Vector3 startPos, Vector3 startEuler)
         {
-            p.homePosition = P(homePos); p.homeRotation = Rq(homePos, Quaternion.Euler(homeEuler)); p.homeSet = true;
-            p.transform.SetPositionAndRotation(P(startPos), Rq(startPos, Quaternion.Euler(startEuler)));
+            p.homePosition = homePos; p.homeRotation = Quaternion.Euler(homeEuler); p.homeSet = true;
+            p.transform.SetPositionAndRotation(startPos, Quaternion.Euler(startEuler));
         }
 
         static void Frame(Transform p, Vector3 c, float w, float h, Vector3 n, Color col)

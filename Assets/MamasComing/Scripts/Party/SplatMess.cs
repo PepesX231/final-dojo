@@ -21,7 +21,7 @@ namespace MamasComing
 
         public static SplatMess Spawn(SplatKind k, Vector3 at, float size, Material m)
         {
-            at.y = HouseLayout.FloorYAt(at) + 0.014f + AllSplats.Count * 0.0002f;
+            at.y = 0.014f + AllSplats.Count * 0.0002f;
             var g = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             Object.Destroy(g.GetComponent<Collider>());
             g.name = k + " splat";

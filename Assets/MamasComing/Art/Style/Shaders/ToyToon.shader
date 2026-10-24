@@ -158,13 +158,11 @@ Shader "MamasComing/ToyToon"
                 float scale = max(_MC_Grain.y, 0.01);
                 half3 w = pow(abs(n), 4); w /= (w.x + w.y + w.z);
                 float3 p = positionWS / scale;
-                // r = brush grain (mean 0.5), g = grime stains/drips (0 clean .. 1 filthy)
-                half2 gx = SAMPLE_TEXTURE2D(_MC_PaintTex, sampler_MC_PaintTex, p.zy).rg;
-                half2 gy = SAMPLE_TEXTURE2D(_MC_PaintTex, sampler_MC_PaintTex, p.xz).rg;
-                half2 gz = SAMPLE_TEXTURE2D(_MC_PaintTex, sampler_MC_PaintTex, p.xy).rg;
-                half2 g = gx * w.x + gy * w.y + gz * w.z;
-                half3 grime = lerp(half3(1,1,1), half3(0.82h, 0.74h, 0.7h), saturate(g.y * _MC_Grain.z * _DetailStrength));
-                return (1.0h + (g.x - 0.5h) * s) * grime;
+                half gx = SAMPLE_TEXTURE2D(_MC_PaintTex, sampler_MC_PaintTex, p.zy).r;
+                half gy = SAMPLE_TEXTURE2D(_MC_PaintTex, sampler_MC_PaintTex, p.xz).r;
+                half gz = SAMPLE_TEXTURE2D(_MC_PaintTex, sampler_MC_PaintTex, p.xy).r;
+                half g = gx * w.x + gy * w.y + gz * w.z;
+                return 1.0h + (g - 0.5h) * s;
             }
 
             half4 frag(Varyings i, bool facing : SV_IsFrontFace) : SV_Target

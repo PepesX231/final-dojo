@@ -41,7 +41,7 @@ namespace MamasComing.Style
             Color rim = s.rimColor.value; rim.a = s.rimStrength.value;
             Shader.SetGlobalVector(Rim, rim);
             Shader.SetGlobalVector(Halftone, new Vector4(s.halftoneStrength.value, s.halftoneCell.value, 0.785f, 0));
-            Shader.SetGlobalVector(Grain, new Vector4(s.paintGrain.value, s.paintGrainScale.value, s.grime.value, 0));
+            Shader.SetGlobalVector(Grain, new Vector4(s.paintGrain.value, s.paintGrainScale.value, 0, 0));
             Shader.SetGlobalVector(Ink, new Vector4(game ? s.inkStrength.value : 0f, s.inkThickness.value, s.depthThreshold.value, s.normalThreshold.value));
             Color ink = s.inkColor.value; ink.a = s.inkKeepsColor.value;
             Shader.SetGlobalVector(InkColor, ink);

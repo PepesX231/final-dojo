@@ -16,7 +16,7 @@ constant, which keeps the mash-up coherent instead of random.
 | 1 | **The Pop-up Picture Book** | soft storybook 3D (our Applebook look) | **pop-up pages**: hinged pages flip up into stairs → fold back on a timer → catapult pages fling you | 4:00 |
 | 2 | **The Paper Theater** | 2.5D diorama, golden spotlights, tilt-shift DOF (HD-2D spirit) | **side-scrolling stage sets**: sliding cardboard sets → crumbling cardboard bridge → step "behind the scenery" to swap layers | 3:30 |
 | 3 | **The Toy Galaxy** | floating toy planetoids in a nebula (Galaxy spirit) | **launch cushions**: bounce → chained launches between islands → moving target islands | 3:30 |
-| 4 | **The Phantom Shelf-tops** | red/black/white comic panels, halftone, bold slashes (Persona spirit) | **the chase**: the chair runs ahead; books and toys roll at you; getting hit = lose distance | 3:00 |
+| 4 | **The Phantom Shelf-tops** | red/black/white comic panels, halftone, bold slashes (Persona spirit) | **the chase**: the chair runs ahead; books and toys roll at you; getting hit = lose distance; Dream Laws flip the rules | 3:00 |
 | 5 | **Cathedral of the Throne** | gothic fog, candles, giant hall, ominous boss card (Souls parody) | **boss: THE CHAIR, Throne of Refusal** in 3 phases | 5:00 |
 
 Total first clear ≈ 20 min. The main path stays forgiving (Astro Bot rule); harder optional routes hold the
@@ -72,8 +72,8 @@ Optional: a hidden page behind the sofa leads to Dream Star 1; a high catapult a
 - A winding path on the tops of giant bookshelves at night, in red/black/white with halftone skies and bold slashes.
 - The chair runs a spline ahead of you. If it gets more than 18 m ahead for 5 s, "IT GOT AWAY!" plays and you
   retry from the chase start.
-- Hazards it throws back: rolling books (jump them). A hit = knockback + the chair gains distance (the pitch).
-  (The earlier Dream Law "NO RUNNING" idea was removed with the card system on 2026-10-23.)
+- Hazards it throws back: rolling books (jump them), toppling dominoes, and a Dream Law that turns NO RUNNING on
+  for 8 s. A hit = knockback + the chair gains distance (the pitch).
 - It ends when the chair crashes through stained glass into the Cathedral.
 
 ### Ch5 Cathedral of the Throne (BOSS) — origin (0,0,1600)
@@ -90,13 +90,13 @@ Optional: a hidden page behind the sofa leads to Dream Star 1; a high catapult a
 | **P2** 33–66% | + **Cushion Volley**: fires 3 cushions in arcs · + **Musical Chairs**: 4 decoy chairs pop out and shuffle for 4 s | red landing circles 1 s before impact · music-box jingle | dodge the circles; the *real* chair is the one with the gingham cushion (decoys have plain seats); sitting on a decoy poofs it and knocks you back |
 | **P3** 66–100% | **Throne Climb**: the chair hops to the top of the Throne Tower and throws pillows down while the book stack rotates | the chair pulls back its leg, 0.5 s | climb the rotating books; at the top it is exhausted → sit 2 s → win |
 
-- There are no cards (removed 2026-10-23). The chair is beaten by movement, reading telegraphs, using the arena and
-  manually sitting on it.
+- Every card still works through Dream Logic (glue roots it, the flash freezes it, the rod even pulls it down off the
+  tower).
 - At the end the boss turns silly (Astro Bot rule): it bursts into tears, offers its seat, and confetti falls.
 
 ## What stays from P0
 
-The chair AI (flee, fatigue, openings, sit 2 s), Sleep Stability, bed upgrades, save, audio —
+The chair AI (flee, fatigue, openings, sit 2 s), cards, Dream Laws, Sleep Stability, bed upgrades, save, audio —
 all reused. The new level adds content and skills on top of them.
 
 ## Build order
