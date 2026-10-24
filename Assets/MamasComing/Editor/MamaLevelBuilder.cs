@@ -95,8 +95,8 @@ namespace MamasComing.EditorTools
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             var list = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
-            list.RemoveAll(s => s.path == ScenePath);
-            list.Insert(0, new EditorBuildSettingsScene(ScenePath, true));
+            // keep the existing order (main menu and lobby come first); only add the level if it is missing
+            if (!list.Exists(s => s.path == ScenePath)) list.Add(new EditorBuildSettingsScene(ScenePath, true));
             EditorBuildSettings.scenes = list.ToArray();
             AssetDatabase.SaveAssets();
             Debug.Log("[Mama's Coming] House built: " + ScenePath);
