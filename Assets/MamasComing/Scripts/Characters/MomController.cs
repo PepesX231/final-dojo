@@ -29,9 +29,16 @@ namespace MamasComing
         float wait, bobT, bonk;
         bool looking;
 
+        [Tooltip("Owner: the walk-through was boring - Mom hurries, and the whole check never takes longer than this (s).")]
+        public float maxInspectTime = 22f;
+        float elapsed;
+
         public void Begin()
         {
             Active = true;
+            elapsed = 0f;
+            walkSpeed = Mathf.Max(walkSpeed, 3.6f);   // she is in a hurry (was 1.6)
+            lookTime = Mathf.Min(lookTime, 1.1f);     // quick glance per room (was 2.2)
             Done = false;
             idx = 0;
             looking = false;
@@ -44,9 +51,19 @@ namespace MamasComing
             float dt = Time.deltaTime;
             if (bonk > 0f) bonk -= dt;
 
+            if (Active && !Done && (route == null || route.Length == 0)) { Done = true; if (GameManager.I) GameManager.I.MomFinished(); }
+            if (Active && !Done && route != null && route.Length > 0 && (elapsed += dt) > maxInspectTime)
+            {
+                // out of time: she checks the rest of the rooms at once and wraps up
+                for (int i = looking ? idx + 1 : idx; i < route.Length; i++) if (route[i] != null && route[i].inspect && route[i].point && GameManager.I) GameManager.I.MomInspect(route[i], this);
+                if (head) head.localRotation = Quaternion.identity;
+                idx = route.Length; Done = true; looking = false;
+                if (GameManager.I) GameManager.I.MomFinished();
+            }
             if (Active && !Done && route != null && route.Length > 0)
             {
                 var ip = route[idx];
+                if (ip == null || !ip.point) { idx++; if (idx >= route.Length) { Done = true; if (GameManager.I) GameManager.I.MomFinished(); } return; }
                 Vector3 tgt = ip.point.position; tgt.y = transform.position.y;
                 if (!looking)
                 {

@@ -8,6 +8,8 @@ namespace MamasComing
     [Serializable] public class MamaRoundData
     {
         public bool ended, won; public string title, body, stats, reason;
+        /// Outcome for the score summary (always shown, win or lose): 0 perfect, 1 almost clean, 2 suspicious, 3 busted, 4 game over (fire trucks...).
+        public int grade, fixedN, foundN, hiddenN; public List<string> foundTop = new List<string>();
         public Vector3 cause; public List<MamaScore> players = new List<MamaScore>();
         public int[] votes = { 0, 0, 0 };
         /// Every credited job in the order it happened (for the results bar-graph replay).

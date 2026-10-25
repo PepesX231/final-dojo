@@ -24,7 +24,8 @@ namespace MamasComing
                 for(float t=0;t<2.6f;t+=Time.unscaledDeltaTime)
                 { float u=Mathf.SmoothStep(0,1,t/2.6f); cam.transform.SetPositionAndRotation(Vector3.Lerp(from,to,u),Quaternion.Slerp(rot,Quaternion.LookRotation(focus-to),u)); yield return null; }
             }
-            votes.gameObject.SetActive(true);
+            // the score summary comes up right after this (it has the Lobby / Play again vote)
+            var go=MamaFlowUI.Text(canvas.transform,"Next",new Vector2(0,-470),new Vector2(900,40),MamaFlowUI.T("Score summary coming up...","กำลังไปหน้าสรุปคะแนน..."),24,MamaTheme.Cream,TextAnchor.MiddleCenter);
         }
     }
 }

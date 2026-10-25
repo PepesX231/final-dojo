@@ -208,8 +208,14 @@ namespace MamasComing
             state = State.MomHome;
             if (frontDoor) frontDoor.Open();
             MamaAudio.Play("door", frontDoor ? frontDoor.transform.position : (Vector3?)null, 1f);
-            if (mom) mom.Begin();
-            ui.Call("*CLICK* The door opens... MOM IS HOME! Act natural!", MamaUI.Red);
+            ui.Call("*CLICK* The door opens... MOM IS HOME!", MamaUI.Red);
+            // owner: no more waiting while Mom walks every room - she looks at the whole house at once and we cut to the summary
+            if (NetGame.IsAuthority)
+            {
+                if (MiniGame.I && MiniGame.I.Active) MiniGame.I.Cancel();
+                if (mom && mom.route != null) foreach (var ip in mom.route) if (ip != null && ip.inspect && ip.point) MomInspect(ip, mom);
+                endDelay = 1.6f;
+            }
         }
 
         public void MomSay(string line) { ui.MomSay(line); NetGame.Broadcast(NetGame.Msg.MomSay, line, null, 0); }
@@ -302,7 +308,7 @@ namespace MamasComing
                 Found(ex, "Why are you holding the FIRE EXTINGUISHER?!", 2, true);
         }
 
-        public void MomFinished() { endDelay = 2.5f; }
+        public void MomFinished() { if (endDelay <= 0f) endDelay = 1.2f; }
 
         Vector3 lastFailure; string lastFailureLine; int lastFailureSeverity;
         readonly List<(string what, int sev)> foundWhat = new List<(string, int)>();
@@ -379,9 +385,19 @@ namespace MamasComing
                 stats += "\n\nMom noticed:";
                 for (int i = 0; i < foundLines.Count && i < 7; i++) stats += "\n- " + foundLines[i];
             }
-            MamaRound.Finish(col == MamaUI.Teal || col == MamaUI.Orange, title, body, stats, FailurePosition(), FailureExplanation());
+            // only a real disaster (fire trucks) is a game over - everything else is a score: how much we fixed vs what Mom found
+            MamaRound.Finish(!fireDept, title, body, stats, FailurePosition(), FailureExplanation());
+            FillOutcome(fireDept ? 4 : potAvalanche ? 3 : found.Count == 0 ? 0 : !major && suspicion <= 1 ? 1 : !major && suspicion <= 3 ? 2 : 3, fixedCount, faked);
             NetSession.Ensure(); NetSession.I.PublishResults();
         }
+
+        void FillOutcome(int grade, int fixedCount, int hidden)
+        {
+            var d = MamaRound.Data; d.grade = grade; d.fixedN = fixedCount; d.hiddenN = hidden; d.foundN = foundWhat.Count;
+            var list = new List<(string what, int sev)>(foundWhat); list.Sort((a, b) => b.sev.CompareTo(a.sev));
+            d.foundTop = new List<string>(); for (int i = 0; i < list.Count && i < 4; i++) d.foundTop.Add(list[i].what);
+        }
+        int FixedSoFar() { TrackProblems(); int n = 0; foreach (var m in everProblem) if (!MessRegistry.Alive(m) || !m.IsProblem) n++; return n; }
 
         /// Title -> intro. Host runs it locally and tells clients to do the same.
         public void StartRound()
@@ -419,7 +435,7 @@ namespace MamasComing
         {
             var list = new List<(string what, int sev)>(foundWhat); list.Sort((a, b) => b.sev.CompareTo(a.sev));
             bool th = Loc.Thai;
-            string s = th ? "แพ้เพราะแม่เจอหลักฐาน " + list.Count + " อย่าง" : "You lost: Mom found " + list.Count + (list.Count == 1 ? " problem" : " problems");
+            string s = th ? "แม่เจอหลักฐาน " + list.Count + " อย่าง" : "Mom found " + list.Count + (list.Count == 1 ? " problem" : " problems");
             s += th ? " (ความสงสัย " + suspicion + ")" : " (suspicion " + suspicion + ")";
             for (int i = 0; i < list.Count && i < 3; i++) s += "\n• " + list[i].what + (list[i].sev >= 3 ? (th ? "  [ร้ายแรง!]" : "  [MAJOR!]") : "");
             if (list.Count > 3) s += th ? "\n...และอีก " + (list.Count - 3) + " อย่าง" : "\n...and " + (list.Count - 3) + " more";
@@ -452,6 +468,7 @@ namespace MamasComing
             state = State.Ending; player.controlsEnabled = false; if (cam) cam.inputEnabled = false; LockCursor(false);
             MamaAudio.Play("lose", null, 0.85f);
             MamaRound.Finish(false, "BUSTED!", "", "", FailurePosition(), FailureExplanation());
+            FillOutcome(4, FixedSoFar(), 0);
             NetSession.Ensure(); NetSession.I.PublishResults();
         }
 
@@ -461,6 +478,7 @@ namespace MamasComing
             if (!NetGame.IsAuthority) return;
             state = State.Ending; player.controlsEnabled = false;
             MamaRound.Finish(win, win ? "HOUSE HEROES!" : "BUSTED!", "", "", FailurePosition(), FailureExplanation());
+            FillOutcome(win ? 0 : 4, FixedSoFar(), 0);
             NetSession.Ensure(); NetSession.I.PublishResults();
         }
 

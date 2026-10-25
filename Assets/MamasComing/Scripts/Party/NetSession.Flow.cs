@@ -184,9 +184,10 @@ namespace MamasComing
             if (!NetGame.IsAuthority) return;
             if (State == Mode.Host) { var w = Begin(); w.Write(FlowResult); w.Write(transitionEpoch); w.Write(JsonUtility.ToJson(MamaRound.Data)); SendAll("mc/flow", w, NetworkDelivery.ReliableSequenced); }
             PresentResults();
-            if (MamaRound.Data.won) StartCoroutine(ShowRankingSoon());
+            // owner: always end on the score summary - a loss first shows why (defeat camera) for a few seconds
+            StartCoroutine(ShowRankingSoon(MamaRound.Data.won ? .8f : 5.5f));
         }
-        IEnumerator ShowRankingSoon() { yield return new WaitForSecondsRealtime(.8f); LoadLevelForAll(MamaLaunch.RankingScene); }
+        IEnumerator ShowRankingSoon(float delay) { int epoch = transitionEpoch; yield return new WaitForSecondsRealtime(delay); if (epoch == transitionEpoch && !Loading) LoadLevelForAll(MamaLaunch.RankingScene); }
         void PresentResults()
         {
             var gm = GameManager.I;

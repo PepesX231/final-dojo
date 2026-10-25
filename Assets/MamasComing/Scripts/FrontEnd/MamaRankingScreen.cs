@@ -182,7 +182,25 @@ namespace MamasComing
 
             // ---------------------------------------------------------- right: celebration title + hint + YOU marker
             title = MamaUIKit.Rect("Celebration", c.transform, MamaUIKit.TC, MamaUIKit.CC, new Vector2(330, -110), new Vector2(1100, 130), -2f);
-            var tt = MamaUIKit.Txt(title, MamaFlowUI.T("HOUSE SAVED!", "บ้านรอดแล้ว!"), null, MamaTheme.Display, 86, new Color(1f, .97f, .88f), TextAnchor.MiddleCenter, 5f, new Color(.55f, .25f, .12f));
+            var tt = MamaUIKit.Txt(title, OutcomeTitle(), null, MamaTheme.Display, 86, new Color(1f, .97f, .88f), TextAnchor.MiddleCenter, 5f, OutcomeColor());
+            tt.resizeTextForBestFit = true; tt.resizeTextMinSize = 40; tt.resizeTextMaxSize = 86;
+            // the round in one line - always shown, win or lose: what we fixed vs what Mom caught
+            var rd = MamaRound.Data;
+            if (rd != null)
+            {
+                var sum = Label(c.transform, "Outcome summary", new Vector2(330, 272), new Vector2(1100, 50),
+                    MamaFlowUI.T("Fixed " + rd.fixedN + "   •   Mom found " + rd.foundN + "   •   Hidden " + rd.hiddenN, "แก้สำเร็จ " + rd.fixedN + "   •   แม่เจอ " + rd.foundN + "   •   ซ่อนเนียน " + rd.hiddenN),
+                    32, new Color(1f, .97f, .9f), TextAnchor.MiddleCenter, MamaTheme.Bold);
+                var so = sum.gameObject.AddComponent<Outline>(); so.effectColor = new Color(.4f, .18f, .1f, .85f); so.effectDistance = new Vector2(2, -2);
+                if (rd.foundTop != null && rd.foundTop.Count > 0)
+                {
+                    var caught = Label(c.transform, "Outcome caught", new Vector2(330, 228), new Vector2(1100, 40),
+                        MamaFlowUI.T("Mom saw: ", "แม่เห็น: ") + string.Join(", ", rd.foundTop) + (rd.foundN > rd.foundTop.Count ? " ..." : ""),
+                        24, new Color(1f, .9f, .8f), TextAnchor.MiddleCenter, MamaTheme.Bold);
+                    caught.resizeTextForBestFit = true; caught.resizeTextMinSize = 16; caught.resizeTextMaxSize = 24;
+                    var co = caught.gameObject.AddComponent<Outline>(); co.effectColor = new Color(.4f, .18f, .1f, .85f); co.effectDistance = new Vector2(2, -2);
+                }
+            }
             var hint = Label(c.transform, "Move hint", new Vector2(330, 335), new Vector2(1000, 44), MamaFlowUI.T("WASD move  •  SPACE jump  •  celebrate together!", "WASD เดิน  •  SPACE กระโดด  •  ฉลองกับเพื่อนได้เลย!"), 26, new Color(1f, .97f, .9f, .9f), TextAnchor.MiddleCenter, MamaTheme.Bold);
             var hs = hint.gameObject.AddComponent<Outline>(); hs.effectColor = new Color(.55f, .25f, .1f, .8f); hs.effectDistance = new Vector2(2, -2);
             youBadge = Card(c.transform, "You marker", MamaUIKit.BL, Vector2.zero, new Vector2(84, 44), YouGreen, 4f, false);
@@ -191,6 +209,24 @@ namespace MamasComing
             var arrow = MamaUIKit.Rect("Arrow", youBadge, MamaUIKit.BC, MamaUIKit.CC, new Vector2(0, -6), new Vector2(18, 18), 45f); Rounded(arrow, YouGreen, null, 6f);
 
             if(ranked.Count>0) Select(ranked[0].slot);
+        }
+
+        static string OutcomeTitle()
+        {
+            var d = MamaRound.Data; int g = d == null ? 0 : d.grade;
+            switch (g)
+            {
+                case 0: return MamaFlowUI.T("PERFECT ALIBI!", "เนียนสุดๆ! แม่ไม่รู้เลย");
+                case 1: return MamaFlowUI.T("ALMOST CLEAN!", "เกือบเนียนแล้ว!");
+                case 2: return MamaFlowUI.T("MOM IS SUSPICIOUS...", "แม่เริ่มสงสัยแล้ว...");
+                case 3: return MamaFlowUI.T("BUSTED!", "โดนแม่จับได้!");
+                default: return MamaFlowUI.T("GAME OVER!", "เกมโอเวอร์!");
+            }
+        }
+        static Color OutcomeColor()
+        {
+            var d = MamaRound.Data; int g = d == null ? 0 : d.grade;
+            return g <= 1 ? new Color(.12f, .45f, .40f) : g == 2 ? new Color(.62f, .38f, .08f) : new Color(.62f, .14f, .12f);
         }
 
         void Select(int slot)
