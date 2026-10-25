@@ -148,7 +148,8 @@ namespace MamasComing
 
             if (state == State.Playing || state == State.MomHome)
             {
-                if (MamaInput.EscDown) MamaSettings.Toggle();
+                if (MamaAdminMenu.Open) { }   // the F9 menu owns the mouse / Esc while it is up (clicking used to re-lock the cursor and eat the button press)
+                else if (MamaInput.EscDown) MamaSettings.Toggle();
                 else if (!MamaSettings.Open && !MamaHowToPlay.Open && !(MiniGame.I && MiniGame.I.Active) && Cursor.lockState != CursorLockMode.Locked && MamaInput.ClickDown && !MamaSettings.BlockStart) LockCursor(true);
             }
 

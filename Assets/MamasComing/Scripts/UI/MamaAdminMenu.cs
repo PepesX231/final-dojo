@@ -11,8 +11,8 @@ namespace MamasComing
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot() { if (inst) return; var go = new GameObject("Admin menu (F9)"); DontDestroyOnLoad(go); inst = go.AddComponent<MamaAdminMenu>(); }
 
-        public static bool Open => inst && inst.panel;
-        GameObject panel; bool hadControls; CursorLockMode prevLock; bool prevVis;
+        public static bool Open => inst && (inst.panel || Time.frameCount <= inst.closedFrame + 1);   // also the frame it closed, so the same Esc doesn't open Settings
+        GameObject panel; int closedFrame = -9; bool hadControls; CursorLockMode prevLock; bool prevVis;
 
         static bool CanUse()
         {
@@ -64,7 +64,7 @@ namespace MamasComing
 
         void Close(bool restore = true)
         {
-            if (panel) Destroy(panel); panel = null;
+            if (panel) { Destroy(panel); closedFrame = Time.frameCount; } panel = null;
             var gm = GameManager.I;
             if (restore && gm && gm.player && hadControls && gm.state != GameManager.State.Ending) gm.player.controlsEnabled = true;
             if (restore && gm && gm.state != GameManager.State.Ending) { Cursor.lockState = prevLock; Cursor.visible = prevVis; }
