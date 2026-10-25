@@ -19,6 +19,7 @@ namespace MamasComing
         void Start()
         {
             gm = GetComponent<GameManager>();
+            MamaVfx.Prepare();
             foreach(var fire in FireSource.All)
             {
                 if(!fire || !fire.flames)continue;

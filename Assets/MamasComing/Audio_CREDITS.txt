@@ -1,0 +1,41 @@
+MAMA'S COMING! - sound effects
+
+All sources are CC0 (public domain): Kenney (www.kenney.nl) audio packs and
+OpenGameArt.org CC0 packs (rubberduck's 100 CC0 SFX / 100 CC0 SFX 2 / 100 CC0 metal & wood / 30 CC0 loops /
+40 CC0 water-splash-slime / 25 CC0 mud, 'Swishes sound pack', 'Fire crackling', 'Steam release sounds',
+'Car engine start'). Trimmed, re-mixed and levelled for the game.
+
+bad          3 var  <- interface-sounds
+car          1 var  <- car-engine-start-01
+click        3 var  <- ui-audio
+crack        5 var  <- impact-sounds
+creak        3 var  <- rpg-audio
+door         2 var  <- rpg-audio
+fire         1 var  <- fire-crackling
+flare        2 var  <- oga/swishes-sound-pack + oga/fire-crackling (mixed)
+good         2 var  <- interface-sounds
+gurgle       3 var  <- 40-cc0-water-splash-slime-sfx
+gurgleLoop   1 var  <- 40-cc0-water-splash-slime-sfx
+hiss         1 var  <- steam-release-sounds
+hum          1 var  <- 30-cc0-sfx-loops
+pop          4 var  <- interface-sounds
+ratchet      4 var  <- 100-cc0-metal-and-wood-sfx
+ring         1 var  <- oga/100-cc0-sfx bell (re-struck)
+rip          3 var  <- 100-cc0-sfx
+sizzle       1 var  <- fire-crackling
+slam         6 var  <- 100-cc0-metal-and-wood-sfx, rpg-audio
+slap         5 var  <- impact-sounds
+sparkle      1 var  <- fire-crackling
+splash       6 var  <- 40-cc0-water-splash-slime-sfx
+squeak       2 var  <- 100-cc0-metal-and-wood-sfx
+squish       6 var  <- 25-cc0-mud-sfx
+steam        4 var  <- steam-release-sounds
+step         8 var  <- impact-sounds
+swish        5 var  <- rpg-audio
+thud         5 var  <- impact-sounds
+thwop        3 var  <- 100-cc0-sfx, 25-cc0-mud-sfx
+water        1 var  <- 100-cc0-sfx-2
+whir         1 var  <- 100-cc0-sfx-2
+whoosh       8 var  <- swishes-sound-pack
+wring        4 var  <- 40-cc0-water-splash-slime-sfx
+zap          2 var  <- digital-audio

@@ -175,6 +175,25 @@ namespace MamasComing.Editor
             if (n == "show") typeof(MamaAdminMenu).GetMethod("Show", f).Invoke(m, null);
             else typeof(MamaAdminMenu).GetMethod("Do", f).Invoke(m, new object[] { int.Parse(n) });
         }
+        public static void Music()
+        {
+            var a = MamaAudio.I; if (!a) { Debug.Log("[BugProbe] no MamaAudio"); return; }
+            var f = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance; var t = typeof(MamaAudio);
+            var cur = (AudioSource)t.GetField("musicCur", f).GetValue(a);
+            var tr = (System.Collections.IDictionary)t.GetField("tracks", f).GetValue(a); var vr = (System.Collections.IDictionary)t.GetField("variants", f).GetValue(a);
+            Debug.Log("[BugProbe] music track=" + t.GetField("musicTrack", f).GetValue(a) + " clip=" + (cur && cur.clip ? cur.clip.name : "-") + " playing=" + (cur && cur.isPlaying) + " vol=" + (cur ? cur.volume.ToString("F2") : "-") + " t=" + (cur ? cur.time.ToString("F1") : "-") + " tracks=" + tr.Count + " variantSets=" + vr.Count + " musicVol=" + MamaSettings.MusicVol + " sfxVol=" + MamaSettings.SfxVol);
+        }
+        public static void Vfx(string kind)
+        {
+            var pc = Kid(); if (!pc) return; var cf = Camera.main.transform.forward; cf.y = 0; cf.Normalize(); var p = pc.transform.position - cf * 2.2f; var cr = Camera.main.transform.right;
+            switch (kind)
+            {
+                case "puff": MamaVfx.Puff(p); break; case "splash": MamaVfx.Splash(p); break; case "impact": MamaVfx.Impact(p + Vector3.up * .8f); break;
+                case "fixed": MamaVfx.Fixed(p); break; case "zap": MamaVfx.Zap(p + Vector3.up * .5f); break; case "fire": MamaVfx.FireBurst(p); break;
+                case "steam": MamaVfx.Steam(p); break; case "confetti": MamaVfx.Confetti(p + Vector3.up); break;
+                case "all": MamaVfx.Splash(p - cr * 2.4f); MamaVfx.Impact(p - cr * .8f + Vector3.up * .8f); MamaVfx.Fixed(p + cr * .8f); MamaVfx.Zap(p + cr * 2.4f + Vector3.up * .5f); MamaVfx.FireBurst(p + cr * 4f); MamaVfx.Puff(p - cr * 4f); break;
+            }
+        }
         public static void TripPower() { PowerGrid.Trip("probe", "probe"); }
         /// Edit mode: "name,x,y,z,yaw" moves a scene object and saves the scene.
         public static void Place(string arg)

@@ -107,9 +107,12 @@ namespace MamasComing
         /// For problems that can come back (power outage).
         public void Rearm() { Fixed = false; Failed = false; Active = false; Progress = 0f; RefreshVisuals(); }
 
+        bool fixVfxShown;
         protected virtual void Update()
         {
             float dt = Time.deltaTime;
+            if (Fixed && !fixVfxShown) { fixVfxShown = true; if (GameManager.I && GameManager.I.Live) MamaVfx.Fixed(InteractPoint); }   // sparkle + confetti on every peer
+            else if (!Fixed) fixVfxShown = false;
             bool running = Urgent && Powered;
             if (loop) { loop.mute = MamaSettings.SfxVol <= 0f; loop.volume = Mathf.MoveTowards(loop.volume, running ? loopVolume * MamaSettings.SfxVol : 0f, Time.unscaledDeltaTime * 1.5f); }
             if (!Urgent || !Sim) { VisualTick(dt, running); return; }

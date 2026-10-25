@@ -11,7 +11,12 @@ namespace MamasComing
         readonly Dictionary<string, AudioClip> clips = new Dictionary<string, AudioClip>();
         readonly List<AudioSource> pool = new List<AudioSource>();
         AudioSource music, waterLoop, fireLoop, hissLoop, drainLoop;
-        public float musicVolume = 0.22f;
+        public float musicVolume = 0.42f;
+        // recorded foley: every file "name~N" is one more variation of "name" (picked at random so nothing repeats)
+        readonly Dictionary<string, List<AudioClip>> variants = new Dictionary<string, List<AudioClip>>();
+        // the score (Resources/MamaMusic): menu, house_calm, house_tense, mom_home, ranking - crossfaded by game state
+        readonly Dictionary<string, AudioClip> tracks = new Dictionary<string, AudioClip>();
+        AudioSource musicB, musicCur, musicPrev; string musicTrack; float stingDuck, wantT; string wantCache; bool rankingScene;
         float hissT, drainT; Drain[] drains;
         System.Random rng = new System.Random(7);
 
@@ -28,8 +33,18 @@ namespace MamasComing
             I = this;
             if (FindFirstObjectByType<AudioListener>() == null && Camera.main != null) Camera.main.gameObject.AddComponent<AudioListener>();
             BuildClips();
-            foreach(var clip in Resources.LoadAll<AudioClip>("MamaFoley")) clips[clip.name]=clip;
-            music = MakeSrc("Music", false); music.clip = clips["music"]; music.loop = true; music.volume = musicVolume; music.Play();
+            foreach (var clip in Resources.LoadAll<AudioClip>("MamaFoley"))
+            {
+                string b = clip.name.Split('~')[0];
+                if (!variants.TryGetValue(b, out var l)) variants[b] = l = new List<AudioClip>();
+                l.Add(clip);
+                if (!clip.name.Contains("~") || !clips.ContainsKey(b)) clips[b] = clip;
+            }
+            foreach (var clip in Resources.LoadAll<AudioClip>("MamaMusic")) tracks[clip.name] = clip;
+            music = MakeSrc("Music", false); musicB = MakeSrc("Music B", false); musicCur = music;
+            foreach (var m in new[] { music, musicB }) { m.loop = true; m.volume = 0f; m.ignoreListenerPause = true; }
+            if (tracks.Count == 0) { music.clip = clips["music"]; music.volume = musicVolume; music.Play(); }   // fallback: the old synth loop
+            rankingScene = FindFirstObjectByType<MamaRankingScreen>() != null;
             waterLoop = MakeLoop("Water", "water");
             fireLoop = MakeLoop("Fire", "fire");
             hissLoop = MakeLoop("Hiss", "hiss");
@@ -58,11 +73,14 @@ namespace MamasComing
 
         public static void PlayLocal(string name, Vector3? pos = null, float vol = 1f, float pitch = 1f)
         {
+            if (pos.HasValue) MamaVfx.ForSound(name, pos.Value, vol);   // every positioned sound gets its matching burst
             if (I == null) Ensure();
             if (I == null || !I.clips.TryGetValue(name, out var c)) return;
             AudioSource s = null;
             foreach (var p in I.pool) if (!p.isPlaying) { s = p; break; }
             if (s == null) s = I.pool[0];
+            if (I.variants.TryGetValue(name, out var vs) && vs.Count > 1) c = vs[I.rng.Next(vs.Count)];
+            if (name == "win" || name == "lose") I.stingDuck = c.length;   // the jingle gets the stage
             s.clip = c; s.volume = Mathf.Clamp01(vol * MamaSettings.SfxVol); s.pitch = pitch * (0.96f + (float)I.rng.NextDouble() * 0.08f);
             if (pos.HasValue) { s.spatialBlend = 0.75f; s.transform.position = pos.Value; }
             else { s.spatialBlend = 0f; }
@@ -102,8 +120,44 @@ namespace MamasComing
             drainLoop.volume = Mathf.MoveTowards(drainLoop.volume, drainT > 0 ? 0.4f * MamaSettings.SfxVol : 0f, Time.unscaledDeltaTime * 2f);
             foreach (var source in pool) source.mute = MamaSettings.SfxVol <= 0f;
             bool focus=GameManager.I && GameManager.I.ui && GameManager.I.ui.ImportantMessage;
-            float targetMusic=musicVolume*MamaSettings.MusicVol*(focus?.48f:.85f);
-            music.volume=Mathf.Lerp(music.volume,targetMusic,Time.unscaledDeltaTime*(focus?12f:2f));
+            float udt = Time.unscaledDeltaTime;
+            stingDuck -= udt;
+            float targetMusic=musicVolume*MamaSettings.MusicVol*(focus?.48f:.85f)*(stingDuck>0f?.2f:1f);
+            if (tracks.Count == 0) { music.volume=Mathf.Lerp(music.volume,targetMusic,udt*(focus?12f:2f)); return; }
+            string want = WantedTrack();
+            if (want != musicTrack && tracks.TryGetValue(want, out var tc))
+            {
+                var next = musicCur == music ? musicB : music;
+                if (musicPrev && musicPrev != musicCur) musicPrev.Stop();
+                next.clip = tc; next.volume = 0f; next.time = 0f; next.Play();
+                musicPrev = musicCur; musicCur = next; musicTrack = want;
+            }
+            musicCur.volume = Mathf.MoveTowards(musicCur.volume, targetMusic, udt * (focus || stingDuck > 0f ? 1.5f : .35f));
+            if (musicPrev && musicPrev != musicCur) { musicPrev.volume = Mathf.MoveTowards(musicPrev.volume, 0f, udt * .45f); if (musicPrev.volume <= .001f) { musicPrev.Stop(); musicPrev = null; } }
+        }
+
+        /// Which piece of the score fits right now.
+        string WantedTrack()
+        {
+            wantT -= Time.unscaledDeltaTime;
+            if (wantT > 0f && wantCache != null) return wantCache;
+            wantT = .25f;
+            string w;
+            var gm = GameManager.I;
+            if (rankingScene) w = "ranking";
+            else if (MamaFrontEnd.Active) w = "menu";
+            else if (gm)
+            {
+                switch (gm.state)
+                {
+                    case GameManager.State.Playing: w = gm.TimeLeft <= 90f ? "house_tense" : "house_calm"; break;   // Mom is close: same theme, double time
+                    case GameManager.State.MomHome: w = "mom_home"; break;
+                    case GameManager.State.Ending: w = MamaRound.Data != null && MamaRound.Data.won ? "ranking" : "mom_home"; break;
+                    default: w = "house_calm"; break;
+                }
+            }
+            else w = musicTrack ?? "menu";
+            return wantCache = w;
         }
 
         // ================================================================== synthesis
