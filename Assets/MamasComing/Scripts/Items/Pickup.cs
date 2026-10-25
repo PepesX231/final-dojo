@@ -104,6 +104,17 @@ namespace MamasComing
             return minY == float.MaxValue ? 0f : Mathf.Max(0f, transform.position.y - minY);
         }
 
+        /// Online client: the host says nobody (or someone else) holds this - let go of it cleanly
+        /// without throwing it, so it can be grabbed again (E prompt, colliders, no parent).
+        public void NetRelease()
+        {
+            IsHeld = false;
+            grabT = 1f;
+            transform.SetParent(null, true);
+            SetCols(true);
+            if (Body) { Body.isKinematic = true; Body.interpolation = RigidbodyInterpolation.None; }
+        }
+
         public void Stash(Vector3 pos)
         {
             IsHeld = false;

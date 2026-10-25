@@ -30,7 +30,17 @@ namespace MamasComing
 
         void Awake()
         {
-            if (copyButton) copyButton.onClick.AddListener(CopyCode);
+            if (copyButton)
+            {
+                copyButton.onClick.AddListener(CopyCode);
+                // owner: make the copy button obvious - inside the room panel, right of "ROOM CODE"
+                var rt = (RectTransform)copyButton.transform;
+                rt.anchorMin = rt.anchorMax = new Vector2(0, 1); rt.pivot = new Vector2(0, 1);
+                rt.anchoredPosition = new Vector2(250, -10); rt.sizeDelta = new Vector2(170, 40);
+                if (copyLabel) { var lr = copyLabel.rectTransform; lr.sizeDelta = new Vector2(164, 36); copyLabel.resizeTextForBestFit = true; copyLabel.resizeTextMinSize = 14; copyLabel.resizeTextMaxSize = 22; }
+            }
+            // clicking the code itself copies it too
+            if (roomCode) { roomCode.raycastTarget = true; var cb = roomCode.GetComponent<Button>(); if (!cb) cb = roomCode.gameObject.AddComponent<Button>(); cb.transition = Selectable.Transition.None; cb.onClick.AddListener(CopyCode); }
             foreach (var b in buttons) if (b) { b.Hovered = h => Hover(h); b.Clicked = c => Activate(c); }
         }
 
@@ -103,7 +113,8 @@ namespace MamasComing
             string codeNow = NetSession.I ? NetSession.I.JoinCode : "";
             if (copyButton) copyButton.gameObject.SetActive(NetGame.Online && !string.IsNullOrEmpty(codeNow));
             if (copiedT > 0f) copiedT -= Time.unscaledDeltaTime;
-            if (copyLabel) copyLabel.text = copiedT > 0f ? (th ? "คัดลอกแล้ว!" : "COPIED!") : (th ? "คัดลอก" : "COPY");
+            if (copyLabel) copyLabel.text = copiedT > 0f ? (th ? "คัดลอกแล้ว!" : "COPIED!") : (th ? "คัดลอกรหัส" : "COPY CODE");
+            if (visible && NetGame.Online && !string.IsNullOrEmpty(codeNow) && (Keyboard.current != null && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed) && Keyboard.current.cKey.wasPressedThisFrame)) CopyCode();
             int sel = KidLook.Selected;
             if (fruitName) fruitName.text = th ? KidLook.NamesTh[sel] : Pretty(KidLook.Names[sel]);
             if (fruitHint) fruitHint.text = th ? "Q / E เปลี่ยนผลไม้" : "Q / E  change fruit";

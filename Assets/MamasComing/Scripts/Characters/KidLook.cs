@@ -50,6 +50,7 @@ namespace MamasComing
         }
 
         static string appleTuning;
+        static Vector3 appleLP, appleLS = Vector3.one; static Quaternion appleLR = Quaternion.identity;
 
         /// Keep a rest-pose copy of the scene kid's apple model, so a kid that changed fruit can change back
         /// (and remote apples can be shown while we play a banana). Call before the model animates (Awake).
@@ -61,6 +62,7 @@ namespace MamasComing
             appleTemplate = Object.Instantiate(old.gameObject);
             old.gameObject.SetActive(true);
             appleTemplate.name = old.name;
+            appleLP = old.localPosition; appleLR = old.localRotation; appleLS = old.localScale;
             Object.DontDestroyOnLoad(appleTemplate);
             if (pc.actions) appleTuning = JsonUtility.ToJson(pc.actions);
         }
@@ -79,9 +81,9 @@ namespace MamasComing
             else if (Catalog && Catalog.Prefab(id)) { srcRoot = Catalog.Prefab(id).transform; foreach (var t in srcRoot.GetComponentsInChildren<Transform>(true)) if (t.name.StartsWith("CHR_")) { src = t.gameObject; break; } }
             if (!src) return false;
 
-            Vector3 lp = src == appleTemplate ? old.localPosition : src.transform.localPosition;
-            Quaternion lr = src == appleTemplate ? old.localRotation : src.transform.localRotation;
-            Vector3 ls = src == appleTemplate ? old.localScale : src.transform.localScale;
+            Vector3 lp = src == appleTemplate ? appleLP : src.transform.localPosition;
+            Quaternion lr = src == appleTemplate ? appleLR : src.transform.localRotation;
+            Vector3 ls = src == appleTemplate ? appleLS : src.transform.localScale;
             old.gameObject.SetActive(false); old.name = "_old"; Object.Destroy(old.gameObject);
             var go = Object.Instantiate(src, visual, false);
             go.name = src.name; go.transform.localPosition = lp; go.transform.localRotation = lr; go.transform.localScale = ls;

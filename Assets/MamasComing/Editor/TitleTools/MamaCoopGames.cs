@@ -14,7 +14,19 @@ namespace MamasComing.Editor
         const string Kitchen = "Assets/MamasComing/Scenes/MamasKitchen.unity";
         const string Dir = "Assets/MamasComing/Art/CoopGames/";
 
-        [MenuItem("Mama's Coming/Rebuild co-op games")]
+        /// Owner: the unicorn + dance-off were not fun -> taken out of the house (code kept dormant).
+        [MenuItem("Mama's Coming/Remove co-op games")]
+        public static void Remove()
+        {
+            if (EditorApplication.isPlaying) EditorApplication.isPlaying = false;
+            var scene = EditorSceneManager.OpenScene(Kitchen, OpenSceneMode.Single);
+            int n = 0;
+            foreach (var go in scene.GetRootGameObjects()) if (go.name == "Coop games") { Object.DestroyImmediate(go); n++; }
+            EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
+            Debug.Log("[CoopGames] removed " + n);
+        }
+
+        [MenuItem("Mama's Coming/Rebuild co-op games (old)")]
         public static void Build()
         {
             if (EditorApplication.isPlaying) { Debug.LogWarning("[CoopGames] stop Play mode first"); return; }

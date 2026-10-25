@@ -249,6 +249,9 @@ namespace MamasComing
             var go = Instantiate(localKid.gameObject, SpawnFor(slot), Quaternion.identity);
             go.name = "Kid P" + (slot + 1) + " (remote)";
             var pc = go.GetComponent<PlayerController>();
+            // the clone copies whatever our kid was carrying (an item parented to the hands) - remove those copies
+            foreach (var extra in go.GetComponentsInChildren<Pickup>(true)) { extra.gameObject.SetActive(false); Destroy(extra.gameObject); }
+            go.transform.localScale = localKid.transform.localScale;
             pc.isLocal = false; pc.controlsEnabled = false;
             if (pc.Motor) pc.Motor.enabled = false;
             var cc = go.GetComponent<CharacterController>(); if (cc) cc.enabled = false;
@@ -293,7 +296,7 @@ namespace MamasComing
             var go = new GameObject("NetworkManager"); DontDestroyOnLoad(go);
             var utp = go.AddComponent<UnityTransport>();
             nm = go.AddComponent<NetworkManager>();
-            nm.NetworkConfig = new NetworkConfig { NetworkTransport = utp, ConnectionApproval = false, EnableSceneManagement = false, TickRate = 30 };
+            nm.NetworkConfig = new NetworkConfig { NetworkTransport = utp, ConnectionApproval = false, EnableSceneManagement = false, TickRate = 60 };
             return nm;
         }
 
@@ -485,8 +488,12 @@ namespace MamasComing
             {
                 if (kv.Key == mySlot || !kv.Value || !remote.TryGetValue(kv.Key, out var rs)) continue;
                 var pc = kv.Value;
-                pc.transform.position = Vector3.Lerp(pc.transform.position, rs.pos, 1f - Mathf.Exp(-14f * dt));
-                pc.transform.rotation = Quaternion.Slerp(pc.transform.rotation, Quaternion.Euler(0, rs.yaw, 0), 1f - Mathf.Exp(-14f * dt));
+                // aim slightly ahead along their facing (covers the network delay), then ease there
+                Quaternion face = Quaternion.Euler(0, rs.yaw, 0);
+                Vector3 aim = rs.pos + face * Vector3.forward * (rs.speed * Mathf.Clamp(Time.time - rs.t, 0f, 0.08f));
+                if ((pc.transform.position - aim).sqrMagnitude > 16f) pc.transform.position = aim;   // far off (respawn / teleport): snap
+                else pc.transform.position = Vector3.Lerp(pc.transform.position, aim, 1f - Mathf.Exp(-20f * dt));
+                pc.transform.rotation = Quaternion.Slerp(pc.transform.rotation, face, 1f - Mathf.Exp(-20f * dt));
                 if (rs.kid >= 0 && rs.kid != rs.shownKid) { rs.shownKid = rs.kid; KidLook.Apply(pc, rs.kid); }   // wear the fruit they picked
                 pc.RemoteTick(rs.speed, rs.sprint, rs.stunned, rs.down);
                 if (State == Mode.Client && rs.use && pc.Held is Extinguisher ext) ext.RenderSpray(pc, dt);
@@ -596,7 +603,7 @@ namespace MamasComing
             if (m == null || m.DeclaringType != typeof(Pickup)) return;   // special pickups (bucket, pot) keep the host-only path
             int idx = reg.IndexOf(pk); if (idx < 0) return;
             p.PickUp(pk); lastHeld = pk;
-            pending[idx] = Time.time + 1.0f;
+            pending[idx] = Time.time + 1.5f;
         }
 
         // ================================================================== actions (client -> host)
@@ -625,7 +632,7 @@ namespace MamasComing
                     if (target is Pickup pk && pk.IsHeld && pc.Held != pk) return;
                     if (!target.CanInteract(pc) || !HeldInteraction.Allows(pc, target)) return;
                     Vector3 reach = target.InteractPoint - pc.transform.position; reach.y = 0f;
-                    if (reach.magnitude > target.interactRadius + 0.8f) return;
+                    if (reach.magnitude > target.interactRadius + 2f) return;   // generous: the host sees friends a little late
                     bool problem = target is IMess before && before.IsProblem;
                     target.Interact(pc);
                     if (problem && target is IMess after && !after.IsProblem) MamaRound.Award(pc, target, target.displayName, 100);
@@ -726,10 +733,12 @@ namespace MamasComing
                     if (localKid.Held != p) { if (localKid.Held) { hostRelease = true; localKid.ReleaseHeld(); } localKid.PickUp(p); lastHeld = p; }
                     continue;
                 }
-                if (localKid.Held == p && holder != mySlot && !(pending.TryGetValue(reg.IndexOf(p), out float until) && Time.time < until)) { hostRelease = true; localKid.ReleaseHeld(); p.Body.isKinematic = true; }
+                if (localKid.Held == p && holder != mySlot && !(pending.TryGetValue(reg.IndexOf(p), out float until) && Time.time < until)) { hostRelease = true; localKid.ReleaseHeld(); p.NetRelease(); }
                 if (pending.TryGetValue(reg.IndexOf(p), out float u2) && Time.time < u2) continue;
                 if (p.Body && !p.Body.isKinematic) p.Body.isKinematic = true;
-                foreach (var avatar in avatars) if (avatar.Key != mySlot && avatar.Value && avatar.Value.Held == p && holder != avatar.Key) avatar.Value.ReleaseHeld();
+                foreach (var avatar in avatars) if (avatar.Key != mySlot && avatar.Value && avatar.Value.Held == p && holder != avatar.Key) { avatar.Value.ReleaseHeld(); p.NetRelease(); }
+                // nobody holds it on the host, but it is still marked held here (lost release) -> unstick it so it can be picked up again
+                if (holder == 255 && p.IsHeld && localKid.Held != p) { bool someone = false; foreach (var av in avatars) if (av.Value && av.Value.Held == p) someone = true; if (!someone) p.NetRelease(); }
                 if (holder != 255 && avatars.TryGetValue(holder, out var pc) && pc)
                 {
                     if (pc.Held != p) pc.PickUp(p);

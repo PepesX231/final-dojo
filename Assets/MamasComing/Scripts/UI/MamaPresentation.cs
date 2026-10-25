@@ -34,6 +34,7 @@ namespace MamasComing
                 }
                 if(runtimeProfile.TryGet<Tonemapping>(out var tone))tone.mode.Override(TonemappingMode.Neutral);
                 if(runtimeProfile.TryGet<Vignette>(out var vignette))vignette.intensity.Override(.12f);
+                SoftEvening(runtimeProfile);
             }
             if (!gm.stove) return;
             oilLabel = new GameObject("Oil warning", typeof(RectTransform), typeof(Canvas));
@@ -47,6 +48,32 @@ namespace MamasComing
             oilText.color = new Color(0.2f, 0.18f, 0.14f); oilText.raycastTarget = false;
             oilText.text = MamaReadability.Text("OIL FIRE\nNO WATER", "ไฟน้ำมัน\nห้ามสาดน้ำ");
             oilLabel.transform.position = gm.stove.burner.position + Vector3.up * 0.7f;
+        }
+
+        /// Owner: softer, cooler, "early evening" look. Gentle on purpose - the house layout and colours stay recognisable.
+        void SoftEvening(VolumeProfile prof)
+        {
+            if (!prof.TryGet<WhiteBalance>(out var wb)) wb = prof.Add<WhiteBalance>(true);
+            wb.active = true; wb.temperature.Override(-16f); wb.tint.Override(5f);              // cool blue with a hint of lilac
+            if (!prof.TryGet<SplitToning>(out var split)) split = prof.Add<SplitToning>(true);
+            split.active = true; split.shadows.Override(new Color(.42f, .50f, .72f)); split.highlights.Override(new Color(1f, .80f, .66f)); split.balance.Override(-15f);   // blue shadows, peach sunset highlights
+            if (prof.TryGet<ColorAdjustments>(out var c)) { c.contrast.Override(4f); c.saturation.Override(6f); c.postExposure.Override(.55f); }   // softer contrast
+            if (prof.TryGet<Bloom>(out var bloom)) { bloom.intensity.Override(.38f); bloom.threshold.Override(.9f); bloom.scatter.Override(.75f); }   // dreamy glow on lights
+            if (prof.TryGet<Vignette>(out var v)) { v.intensity.Override(.16f); v.smoothness.Override(.6f); v.color.Override(new Color(.10f, .12f, .25f)); }
+
+            // low, warm evening sun + cool sky fill
+            foreach (var l in FindObjectsByType<Light>(FindObjectsSortMode.None))
+            {
+                if (l.type != LightType.Directional) continue;
+                l.color = new Color(1f, .78f, .60f); l.intensity *= .82f; l.shadowStrength = Mathf.Min(l.shadowStrength, .65f);
+            }
+            if (RenderSettings.ambientMode == UnityEngine.Rendering.AmbientMode.Trilight)
+            {
+                RenderSettings.ambientSkyColor = Color.Lerp(RenderSettings.ambientSkyColor, new Color(.55f, .62f, .85f), .5f);
+                RenderSettings.ambientEquatorColor = Color.Lerp(RenderSettings.ambientEquatorColor, new Color(.72f, .66f, .78f), .5f);
+                RenderSettings.ambientGroundColor = Color.Lerp(RenderSettings.ambientGroundColor, new Color(.35f, .36f, .48f), .5f);
+            }
+            else RenderSettings.ambientLight = Color.Lerp(RenderSettings.ambientLight, new Color(.62f, .68f, .90f), .45f);
         }
 
         void LateUpdate()
