@@ -168,6 +168,13 @@ namespace MamasComing.Editor
             var gm = GameManager.I;
             Debug.Log("[BugProbe] t=" + (gm ? gm.TimeLeft.ToString("F0") : "?") + " state=" + (gm ? gm.state.ToString() : "?") + " | " + s0);
         }
+        public static void Admin(string n)
+        {
+            var m = Object.FindFirstObjectByType<MamaAdminMenu>(); if (!m) { Debug.Log("[BugProbe] no admin menu"); return; }
+            var f = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+            if (n == "show") typeof(MamaAdminMenu).GetMethod("Show", f).Invoke(m, null);
+            else typeof(MamaAdminMenu).GetMethod("Do", f).Invoke(m, new object[] { int.Parse(n) });
+        }
         public static void TripPower() { PowerGrid.Trip("probe", "probe"); }
         /// Edit mode: "name,x,y,z,yaw" moves a scene object and saves the scene.
         public static void Place(string arg)

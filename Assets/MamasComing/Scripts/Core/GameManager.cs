@@ -127,7 +127,6 @@ namespace MamasComing
                 case State.Playing:
                     TimeLeft -= Time.deltaTime;
                     if (MamaInput.DevSkip) TimeLeft = Mathf.Min(TimeLeft, 3f);
-                    if (MamaInput.SkipToResults) { SkipToResults(); break; }
                     Calls();
                     if (NetGame.IsAuthority) FireDepartmentCheck();
                     FloodWarnings();
@@ -138,7 +137,6 @@ namespace MamasComing
                     if (!NetGame.IsAuthority) break;
                     FireDepartmentCheck();
                     CheckHeldEvidence();
-                    if (MamaInput.SkipToResults) { SkipToResults(); break; }
                     if (endDelay > 0f) { endDelay -= Time.deltaTime; if (endDelay <= 0f) ShowEnding(); }
                     break;
 
@@ -432,11 +430,28 @@ namespace MamasComing
         public void SkipToResults()
         {
             if (!NetGame.IsAuthority || state == State.Ending || state == State.Title) return;
+            InspectAllNow();
+            ShowEnding();
+        }
+
+        /// Mom walks in and checks every room instantly (admin menu shortcuts).
+        void InspectAllNow()
+        {
             if (MiniGame.I && MiniGame.I.Active) MiniGame.I.Cancel();
             TimeLeft = 0f;
             if (state != State.MomHome) MomArrives();
             if (mom && mom.route != null) foreach (var ip in mom.route) if (ip != null && ip.inspect && ip.point) MomInspect(ip, mom);
-            ShowEnding();
+        }
+
+        /// Admin menu: show the defeat screen right now, with the real reasons (what Mom finds in the house as it is).
+        public void AdminLose()
+        {
+            if (!NetGame.IsAuthority || state == State.Ending || state == State.Title) return;
+            InspectAllNow();
+            state = State.Ending; player.controlsEnabled = false; if (cam) cam.inputEnabled = false; LockCursor(false);
+            MamaAudio.Play("lose", null, 0.85f);
+            MamaRound.Finish(false, "BUSTED!", "", "", FailurePosition(), FailureExplanation());
+            NetSession.Ensure(); NetSession.I.PublishResults();
         }
 
         public void PresentMom() { if (NetGame.IsAuthority && state != State.Ending) { state = State.Playing; TimeLeft = 0; MomArrives(); } }

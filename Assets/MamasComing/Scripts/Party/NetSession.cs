@@ -73,7 +73,7 @@ namespace MamasComing
             I = this;
             if (!GetComponent<MamaShowcase>()) gameObject.AddComponent<MamaShowcase>();
             SceneManager.sceneLoaded += SceneLoaded;
-            NetGame.SendInteract = (t, p) => SendAct(0, t, null);
+            NetGame.SendInteract = (t, p) => { PredictGrab(t, p); SendAct(0, t, null); };
             NetGame.SendHit = SendHitMsg;
             NetGame.SendAnim = SendFxAnim;
             NetGame.SendPop = SendFxPop;
@@ -190,6 +190,8 @@ namespace MamasComing
             foreach (var t in SyncTypes) foreach (var c in FindObjectsByType(t, FindObjectsInactive.Include, FindObjectsSortMode.None)) if (!comps.Contains((Component)c)) comps.Add((Component)c);
             comps.Sort((a, b) => string.CompareOrdinal(PathOf(a.transform) + "|" + a.GetType().Name, PathOf(b.transform) + "|" + b.GetType().Name));
             synced = comps;
+            hazardsSorted = new List<Hazard>(FindObjectsByType<Hazard>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+            hazardsSorted.Sort((a, b) => string.CompareOrdinal(PathOf(a.transform), PathOf(b.transform)));
             foreach (var avatar in avatars.Values) if (avatar && !avatar.isLocal) Destroy(avatar.gameObject);
             avatars.Clear();
             if (localKid) { localKid.isLocal = true; KidLook.Apply(localKid, KidLook.Selected); avatars[mySlot] = localKid; }
@@ -504,7 +506,7 @@ namespace MamasComing
             if (State == Mode.Host)
             {
                 worldT -= dt; fieldT -= dt;
-                if (worldT <= 0f && slotOf.Count > 1 && GameManager.I) { worldT = 0.1f; SendWorld(); }
+                if (worldT <= 0f && slotOf.Count > 1 && GameManager.I) { worldT = 0.05f; SendWorld(); }   // 20 Hz (was 10): items / problems react faster on friends' screens
                 if (fieldT <= 0f && slotOf.Count > 1 && GameManager.I) { fieldT = 0.25f; SendField(); }
                 if (sounds.Count > 0) { if (slotOf.Count > 1) SendSounds(); sounds.Clear(); }
             }
@@ -571,6 +573,30 @@ namespace MamasComing
                 var w = Begin(); w.Write((byte)slot); w.Write((byte)kid);
                 foreach (var kv in slotOf) if (kv.Key != sender && kv.Key != nm.LocalClientId) Send("mc/pick", kv.Key, w, NetworkDelivery.ReliableSequenced);
             }
+        }
+
+        // the hazard list used to be searched + sorted on every world packet (20x a second, on both sides) - cached per scene
+        List<Hazard> hazardsSorted;
+        List<Hazard> SortedHazards()
+        {
+            if (hazardsSorted == null || hazardsSorted.Exists(h => !h))
+            {
+                hazardsSorted = new List<Hazard>(FindObjectsByType<Hazard>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+                hazardsSorted.Sort((a, b) => string.CompareOrdinal(PathOf(a.transform), PathOf(b.transform)));
+            }
+            return hazardsSorted;
+        }
+
+        /// Client: grab a free item in our own hands right away instead of waiting a round trip for the host.
+        /// The host still decides - if it says no, the next world update takes it back out of our hands.
+        void PredictGrab(Interactable t, PlayerController p)
+        {
+            if (State != Mode.Client || !p || !p.isLocal || p.Held || !(t is Pickup pk) || pk.IsHeld || !t.CanInteract(p)) return;
+            var m = t.GetType().GetMethod("Interact", new[] { typeof(PlayerController) });
+            if (m == null || m.DeclaringType != typeof(Pickup)) return;   // special pickups (bucket, pot) keep the host-only path
+            int idx = reg.IndexOf(pk); if (idx < 0) return;
+            p.PickUp(pk); lastHeld = pk;
+            pending[idx] = Time.time + 1.0f;
         }
 
         // ================================================================== actions (client -> host)
@@ -655,8 +681,7 @@ namespace MamasComing
             w.Write((short)synced.Count);
             foreach (var c in synced) WriteFields(w, c);
             w.Write((short)Hazard.All.Count);
-            var hz = new List<Hazard>(FindObjectsByType<Hazard>(FindObjectsInactive.Include, FindObjectsSortMode.None));
-            hz.Sort((a, b) => string.CompareOrdinal(PathOf(a.transform), PathOf(b.transform)));
+            var hz = SortedHazards();
             w.Write((short)hz.Count); foreach (var h in hz) h.WriteState(w);
             // splats
             var sp = SplatMess.AllSplats; w.Write((short)sp.Count);
@@ -715,8 +740,7 @@ namespace MamasComing
             int ns = r.ReadInt16();
             for (int i = 0; i < ns && i < synced.Count; i++) ReadFields(r, synced[i]);
             r.ReadInt16(); int nh = r.ReadInt16();
-            var hz = new List<Hazard>(FindObjectsByType<Hazard>(FindObjectsInactive.Include, FindObjectsSortMode.None));
-            hz.Sort((a, b) => string.CompareOrdinal(PathOf(a.transform), PathOf(b.transform)));
+            var hz = SortedHazards();
             for (int i = 0; i < nh; i++) { if (i < hz.Count) hz[i].ReadState(r); else { r.ReadBoolean(); r.ReadBoolean(); r.ReadBoolean(); r.ReadSingle(); } }
             int nsp = r.ReadInt16();
             while (clientSplats.Count < nsp) clientSplats.Add(SplatMess.Spawn(SplatKind.Confetti, Vector3.zero, 1f, SplatMess.MatFor(SplatKind.Confetti)));

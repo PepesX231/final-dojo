@@ -78,7 +78,7 @@ namespace MamasComing
         void RefreshPolishedCopy()
         {
             if (!notesKey) return;
-            notesKey.text = MamaReadability.Text("TAB Notes · H Hint · F1 Guide · F9 Skip to results", "TAB ภาพรวม · H คำใบ้ · F1 วิธีเล่น · F9 ข้ามไปสรุปคะแนน");
+            notesKey.text = MamaReadability.Text("TAB Notes · H Hint · F1 Guide · F9 Admin (host)", "TAB ภาพรวม · H คำใบ้ · F1 วิธีเล่น · F9 แอดมิน (เจ้าของห้อง)");
             goalSub.text = MamaReadability.Text("Stop the cause → put away → Mom inspects", "ปิดต้นเหตุ → เก็บของ → รอแม่ตรวจ");
             var card = titleGO.transform.Find("Card");
             card.Find("Sub").GetComponentInChildren<Text>().text = MamaReadability.Text(
