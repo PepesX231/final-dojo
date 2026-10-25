@@ -14,8 +14,6 @@ namespace MamasComing
         {
             foreach (var go in scene.GetRootGameObjects())
                 if (go.name == "Coop games") { go.SetActive(false); Object.DestroyImmediate(go); }
-            foreach (var h in Object.FindObjectsByType<DanceOffHazard>(FindObjectsInactive.Include, FindObjectsSortMode.None)) { h.gameObject.SetActive(false); Object.DestroyImmediate(h.gameObject); }
-            foreach (var h in Object.FindObjectsByType<UnicornHazard>(FindObjectsInactive.Include, FindObjectsSortMode.None)) { h.gameObject.SetActive(false); Object.DestroyImmediate(h.gameObject); }
         }
     }
 }

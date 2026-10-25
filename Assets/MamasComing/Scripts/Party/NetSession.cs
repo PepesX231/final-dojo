@@ -499,6 +499,8 @@ namespace MamasComing
                 if (State == Mode.Client && rs.use && pc.Held is Extinguisher ext) ext.RenderSpray(pc, dt);
                 // their hold-actions (cranking a valve, lifting the sofa...) look the same on every screen
                 if (pc.actions && rs.holdTarget >= 0 && rs.holdTarget < reg.Count && reg[rs.holdTarget]) pc.actions.Hold(pc.HoldClipFor(reg[rs.holdTarget]));
+                // friends' screens: show that this kid is holding a co-op handle (valve / station) right now
+                if (State == Mode.Client && Time.time - rs.t < .5f && rs.holdTarget >= 0 && rs.holdTarget < reg.Count && reg[rs.holdTarget] is ICoopMark mark) mark.MarkHeld(pc);
                 if (State == Mode.Host && Time.time - rs.t < .5f && GameManager.I && GameManager.I.Live)
                 {
                     if (rs.use && pc.Held && GameManager.I && GameManager.I.Live) pc.Held.UseHeld(pc, dt);

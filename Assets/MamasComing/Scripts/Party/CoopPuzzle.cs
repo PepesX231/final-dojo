@@ -40,6 +40,14 @@ namespace MamasComing
         public virtual void Holding(CoopStation s, PlayerController p) { if (s.index < who.Length) { who[s.index] = p; seen[s.index] = Time.time; } }
         public virtual void Pressed(CoopStation s, PlayerController p) { if (s.index < who.Length) { who[s.index] = p; seen[s.index] = Time.time; } }
         public abstract string StationPrompt(CoopStation s, PlayerController p);
+        /// Does this station want E held (true) or tapped (false)? Puzzles can mix both (one holds, one works).
+        public virtual bool StationHolds(CoopStation s) => holdMode;
+        /// Floating text over a station (null = the default "STAND HERE n").
+        public virtual string StationLabel(CoopStation s, out Color c) { c = Color.white; return null; }
+        /// Display-only mark from the network: a friend is holding this station (no game logic).
+        public void Seen(CoopStation s, PlayerController p) { if (who != null && s.index < who.Length) { who[s.index] = p; seen[s.index] = Time.time; } }
+        /// Is somebody else on any other station right now?
+        public bool FriendOnOther(CoopStation s, PlayerController p) => who != null && OtherManned(s, p);
         public bool IsManned(int i) => who != null && i >= 0 && i < who.Length && who[i] && Time.time - seen[i] < .25f;
 
         /// Somebody's on the OTHER station already?

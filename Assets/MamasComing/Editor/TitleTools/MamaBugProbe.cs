@@ -136,13 +136,6 @@ namespace MamasComing.Editor
             Debug.Log("[BugProbe] puzzle kind=" + t.GetField("kind", f).GetValue(Puzzles.I) + " timeLeft=" + t.GetField("timeLeft", f).GetValue(Puzzles.I) + " limit=" + t.GetField("limit", f).GetValue(Puzzles.I) + " step=" + t.GetField("step", f).GetValue(Puzzles.I) + " a=" + t.GetField("a", f).GetValue(Puzzles.I) + " mgActive=" + (MiniGame.I && MiniGame.I.Active));
         }
         public static void PuzzleFreeze(string av) { if (!Puzzles.I) return; var f = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance; typeof(Puzzles).GetField("a", f).SetValue(Puzzles.I, F(av)); typeof(Puzzles).GetField("b", f).SetValue(Puzzles.I, 0f); }
-        public static void Uni()
-        {
-            var u = Object.FindFirstObjectByType<UnicornHazard>(); if (!u) return; var f = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
-            var who = (PlayerController[])typeof(CoopPuzzle).GetField("who", f).GetValue(u); var seen = (float[])typeof(CoopPuzzle).GetField("seen", f).GetValue(u);
-            string w = ""; for (int i = 0; i < who.Length; i++) w += (who[i] ? who[i].name : "-") + "@" + (Time.time - seen[i]).ToString("F2") + " ";
-            Debug.Log("[BugProbe] uni act=" + u.Active + " fix=" + u.Fixed + " urgent=" + u.Urgent + " air=" + typeof(UnicornHazard).GetField("air", f).GetValue(u) + " who=" + w + " sim=" + (GameManager.I == null || GameManager.I.SimRunning) + " auth=" + NetGame.IsAuthority);
-        }
         public static void Clock() { Debug.Log("[BugProbe] timeScale=" + Time.timeScale + " dt=" + Time.deltaTime + " frame=" + Time.frameCount + " solver=" + (GameObject.Find("AutoSolve") != null) + " gm=" + (GameManager.I ? GameManager.I.state.ToString() : "-") + " settings=" + MamaSettings.Open + " howto=" + MamaHowToPlay.Open); }
         public static void World()
         {

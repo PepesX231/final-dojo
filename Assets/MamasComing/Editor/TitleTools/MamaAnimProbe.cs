@@ -109,7 +109,7 @@ namespace MamasComing.Editor
             CoopPuzzle pz;
             void Start()
             {
-                foreach (var c in Object.FindObjectsByType<CoopPuzzle>(FindObjectsSortMode.None)) if (which == "dance" ? c is DanceOffHazard : c is UnicornHazard) pz = c;
+                foreach (var c in Object.FindObjectsByType<CoopPuzzle>(FindObjectsSortMode.None)) if (c.name.ToLower().Contains(which)) pz = c;
                 var pc = Kid(); if (!pz || !pc) { Destroy(gameObject); return; }
                 Place(pc, pz.stations[0]); if (dummy && both) Place(dummy, pz.stations[1]);
             }
@@ -121,7 +121,7 @@ namespace MamasComing.Editor
                 if (pz.holdMode) { pz.Holding(pz.stations[0], pc); if (both && dummy) pz.Holding(pz.stations[1], dummy); }
                 else
                 {
-                    float beat = 60f / ((DanceOffHazard)pz).bpm; float ph = Time.time % beat;
+                    float beat = 1f; float ph = Time.time % beat;
                     if (ph < Time.deltaTime) { pz.Pressed(pz.stations[0], pc); if (both && dummy) pz.Pressed(pz.stations[1], dummy); }
                 }
                 if (t > 7f || pz.Fixed) { Debug.Log("[AnimProbe] coop " + which + " fixed=" + pz.Fixed); Destroy(gameObject); }
