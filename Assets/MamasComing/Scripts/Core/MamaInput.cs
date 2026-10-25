@@ -78,6 +78,8 @@ namespace MamasComing
         /// <summary>Dev shortcut: F5 makes Mom arrive almost immediately.</summary>
         /// <summary>Dev shortcut: F6 switches your kid to the next fruit (until the lobby picker sets it).</summary>
         public static bool DevNextKid => Keyboard.current != null && Keyboard.current.f6Key.wasPressedThisFrame;
+        /// F9: jump straight to the end of the round (Mom inspects, results + score ranking).
+        public static bool SkipToResults => Keyboard.current != null && Keyboard.current.f9Key.wasPressedThisFrame;
         public static bool DevSkip => Keyboard.current != null && Keyboard.current.f5Key.wasPressedThisFrame;
     }
 }

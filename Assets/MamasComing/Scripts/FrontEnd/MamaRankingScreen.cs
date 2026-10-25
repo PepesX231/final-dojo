@@ -78,7 +78,7 @@ namespace MamasComing
             var r = MamaRound.Ranked(); int rank = r.FindIndex(x => x.slot == slot); if (rank < 0) rank = slot;
             var p = Podium[Mathf.Clamp(rank, 0, Podium.Length - 1)]; return p + Vector3.up * .05f;
         }
-        void Awake() { LocalPlayer=player; if(player) { player.transform.localScale = Vector3.one * 1.9f; player.isLocal=true; player.WakeUp(); KidLook.Apply(player,KidLook.Selected); } }
+        void Awake() { LocalPlayer=player; if(player) { player.transform.localScale = Vector3.one * 1.9f; var vis = player.fallPivot ? player.fallPivot.Find("Visual") : null; if (vis) vis.localPosition = Vector3.zero; /* the scene copy had the model lifted 0.33 - the kid hovered above the podium */ player.isLocal=true; player.WakeUp(); KidLook.Apply(player,KidLook.Selected); } }
         void OnDestroy() { if(LocalPlayer==player) LocalPlayer=null; }
 
         // ------------------------------------------------------------------ UI helpers
@@ -221,14 +221,18 @@ namespace MamasComing
         {
             if (!heights.TryGetValue(pc, out var e) || Time.unscaledTime - e.at > 1.5f)
             {
-                var b = MamaPosedKid.TightBounds(pc.transform);
-                e = (b.max.y - pc.transform.position.y, Time.unscaledTime); heights[pc] = e;
+                // rigid parts (head, stem, outline shells) give an honest top; skinned / baked bounds came out too high
+                float top = float.MinValue;
+                foreach (var r in pc.GetComponentsInChildren<MeshRenderer>()) if (r.enabled && r.gameObject.activeInHierarchy && !r.name.Contains("Blob")) top = Mathf.Max(top, r.bounds.max.y);
+                if (top == float.MinValue) top = MamaPosedKid.TightBounds(pc.transform).max.y;
+                e = (top - pc.transform.position.y, Time.unscaledTime); heights[pc] = e;
             }
             return pc.transform.position.y + e.h;
         }
 
         void LateUpdate()
         {
+            foreach (var pc in PlayerController.AllPlayers) if (pc && !pc.GetComponent<MamaBlobShadow>()) pc.gameObject.AddComponent<MamaBlobShadow>();   // contact shadows: kids read as standing on the podium
             if(player && !(NetSession.I && NetSession.I.Loading))
             {
                 player.controlsEnabled=true;
@@ -240,7 +244,7 @@ namespace MamasComing
             if(crown && ranked!=null && ranked.Count>0)
             {
                 var winner=NetSession.I && NetGame.Online?NetSession.I.AvatarAt(ranked[0].slot):player;
-                if(winner){crown.position=new Vector3(winner.transform.position.x,TopOf(winner)+.06f+Mathf.Sin(t*2)*.04f,winner.transform.position.z); crown.Rotate(0,Time.unscaledDeltaTime*40,0,Space.World);}
+                if(winner){crown.position=new Vector3(winner.transform.position.x,TopOf(winner)-.1f+Mathf.Sin(t*2)*.03f,winner.transform.position.z); crown.Rotate(0,Time.unscaledDeltaTime*40,0,Space.World);}
             }
             // "YOU" marker over the local kid
             var cam = Camera.main;

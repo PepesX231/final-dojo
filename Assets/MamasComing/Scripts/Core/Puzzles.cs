@@ -48,6 +48,9 @@ namespace MamasComing
             flashImg = Img(R("Flash", card, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(-14, -14)), new Color(1, 1, 1, 0), round);
             title = Tx(R("Title", card, new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), new Vector2(0, -10), new Vector2(-30, 48)), "", 32, MamaUI.Ink);
             hint = Tx(R("Hint", card, new Vector2(0, 0), new Vector2(1, 0), new Vector2(0.5f, 0), new Vector2(0, 14), new Vector2(-30, 34)), "", 22, MamaUI.Edge);
+            // long hints / titles used to run off the card: wrap them and shrink to fit instead
+            hint.horizontalOverflow = HorizontalWrapMode.Wrap; hint.verticalOverflow = VerticalWrapMode.Truncate; hint.resizeTextForBestFit = true; hint.resizeTextMinSize = 14; hint.resizeTextMaxSize = 22; hint.rectTransform.sizeDelta = new Vector2(-30, 52);
+            title.horizontalOverflow = HorizontalWrapMode.Wrap; title.verticalOverflow = VerticalWrapMode.Truncate; title.resizeTextForBestFit = true; title.resizeTextMinSize = 18; title.resizeTextMaxSize = 32;
             var tb = R("Timer", card, new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), new Vector2(0, -60), new Vector2(-60, 10));
             Img(tb, new Color(0.85f, 0.78f, 0.66f), white);
             timerBar = Img(R("Fill", tb, Vector2.zero, Vector2.one, new Vector2(0, 0.5f), Vector2.zero, Vector2.zero), MamaUI.Teal, white);
@@ -219,11 +222,14 @@ namespace MamasComing
         // ================================================================== PLUNGER  (pump when the ring hits the drain)
         void BuildPlunger()
         {
-            limit = 18f; hint.text = T("Press E when the ring lands on the drain!  5 good pumps", "กด E ตอนวงแหวนตรงกับท่อ!  ปั๊มให้ได้ 5 ครั้ง");
+            limit = 24f; hint.text = T("Press E when the ring lands on the drain!  5 good pumps", "กด E ตอนวงแหวนตรงกับท่อ!  ปั๊มให้ได้ 5 ครั้ง");
             var bowl = Img(Add("Bowl", new Vector2(0, 0), new Vector2(260, 260)), new Color(0.93f, 0.95f, 0.97f), circle); imgs.Add(bowl);
             var target = Img(Add("Target", new Vector2(0, 0), new Vector2(90, 90)), new Color(0.35f, 0.25f, 0.2f), circle); imgs.Add(target);
-            var ring = Img(Add("Ring", Vector2.zero, new Vector2(250, 250)), new Color(0, 0, 0, 0), circle);
-            var ro = ring.gameObject.AddComponent<Outline>(); ro.effectColor = MamaUI.Red; ro.effectDistance = new Vector2(5, -5); rts.Add(ring.rectTransform);
+            // the shrinking ring: a solid red disc with a bowl-coloured disc inside it (the old version was a clear
+            // image with an outline - Unity culls fully transparent images, so the ring never showed up)
+            var ring = Img(Add("Ring", Vector2.zero, new Vector2(250, 250)), MamaUI.Red, circle); rts.Add(ring.rectTransform);
+            Img(R("Inner", ring.rectTransform, Vector2.zero, Vector2.one, new Vector2(.5f, .5f), Vector2.zero, new Vector2(-16, -16)), new Color(0.93f, 0.95f, 0.97f), circle);
+            target.rectTransform.SetAsLastSibling();
             txts.Add(Tx(Add("Count", new Vector2(220, 100), new Vector2(120, 50)), "0/5", 34, MamaUI.Ink));
             a = 250f; b = 120f;
         }
@@ -231,6 +237,7 @@ namespace MamasComing
         {
             a -= b * dt; if (a < 30f) { a = 250f; Bad("gurgle"); }
             rts[0].sizeDelta = new Vector2(a, a);
+            imgs[1].color = Mathf.Abs(a - 90f) < 22f ? new Color(0.3f, 0.85f, 0.4f) : new Color(0.35f, 0.25f, 0.2f);   // drain lights up green = press now
             if (E)
             {
                 if (Mathf.Abs(a - 90f) < 22f) { step++; b += 25f; a = 250f; Good("thwop", 0.9f + step * 0.1f); imgs[1].rectTransform.localScale = Vector3.one * (1f - step * 0.12f); }

@@ -40,6 +40,7 @@ namespace MamasComing
         public virtual void Holding(CoopStation s, PlayerController p) { if (s.index < who.Length) { who[s.index] = p; seen[s.index] = Time.time; } }
         public virtual void Pressed(CoopStation s, PlayerController p) { if (s.index < who.Length) { who[s.index] = p; seen[s.index] = Time.time; } }
         public abstract string StationPrompt(CoopStation s, PlayerController p);
+        public bool IsManned(int i) => who != null && i >= 0 && i < who.Length && who[i] && Time.time - seen[i] < .25f;
 
         /// Somebody's on the OTHER station already?
         protected bool OtherManned(CoopStation s, PlayerController p) { for (int i = 0; i < who.Length; i++) if (i != s.index && who[i] && who[i] != p && Time.time - seen[i] < .25f) return true; return false; }

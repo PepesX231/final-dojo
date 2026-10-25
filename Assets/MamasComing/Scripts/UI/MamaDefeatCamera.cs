@@ -11,8 +11,11 @@ namespace MamasComing
             var canvas=MamaFlowUI.Canvas("What went wrong",transform,170);
             var top=MamaFlowUI.Panel(canvas.transform,"Failure heading",new Vector2(0,425),new Vector2(950,105),MamaTheme.PlankDarkS,Color.white);
             MamaFlowUI.Text(top,"Title",Vector2.zero,new Vector2(870,85),MamaFlowUI.T("MOM FOUND THE EVIDENCE!", "แม่เจอหลักฐานแล้ว!"),43,MamaTheme.Cream,TextAnchor.MiddleCenter);
-            var note=MamaFlowUI.Panel(canvas.transform,"Cause",new Vector2(0,-260),new Vector2(1080,110),MamaTheme.PaperS,Color.white);
-            MamaFlowUI.Text(note,"Explanation",Vector2.zero,new Vector2(1000,92),MamaRound.Data.reason,29,null,TextAnchor.MiddleCenter);
+            // tall enough for "why you lost": the worst things Mom found, one per line
+            int lines=string.IsNullOrEmpty(MamaRound.Data.reason)?1:MamaRound.Data.reason.Split('\n').Length;
+            float h=Mathf.Clamp(40+lines*40,110,280);
+            var note=MamaFlowUI.Panel(canvas.transform,"Cause",new Vector2(0,-300+h*.5f),new Vector2(1080,h),MamaTheme.PaperS,Color.white);
+            var ex=MamaFlowUI.Text(note,"Explanation",Vector2.zero,new Vector2(1000,h-22),MamaRound.Data.reason,29,null,TextAnchor.MiddleCenter); ex.resizeTextMinSize=16;
             var votes=MamaFlowUI.VotePanel(canvas.transform,new Vector2(0,-430)); votes.gameObject.SetActive(false);
             if(cam)
             {

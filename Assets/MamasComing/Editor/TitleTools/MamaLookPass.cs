@@ -24,6 +24,25 @@ namespace MamasComing.Editor
             }
         }
 
+        /// v4 (owner: "make the picture brighter"): same warm mood, just more light - exposure, ambient fill, lighter vignette.
+        [MenuItem("Mama's Coming/Brighter picture (kitchen)")]
+        public static void Brighter()
+        {
+            if (EditorApplication.isPlaying) { Debug.LogWarning("[LookPass] stop Play mode first"); return; }
+            var scene = EditorSceneManager.OpenScene(Kitchen, OpenSceneMode.Single);
+            RenderSettings.ambientIntensity = 1.25f;
+            EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
+            var p = AssetDatabase.LoadAssetAtPath<VolumeProfile>(Grade);
+            if (p)
+            {
+                if (p.TryGet(out ColorAdjustments ca)) { ca.postExposure.Override(.6f); ca.contrast.Override(12f); }
+                if (p.TryGet(out Vignette vg)) vg.intensity.Override(.12f);
+                EditorUtility.SetDirty(p);
+            }
+            AssetDatabase.SaveAssets();
+            Debug.Log("[LookPass] brighter applied");
+        }
+
         [MenuItem("Mama's Coming/Apply bright look pass (kitchen)")]
         public static void Apply()
         {

@@ -30,7 +30,7 @@ namespace MamasComing
                 if (runtimeProfile.TryGet<Bloom>(out var bloom)) bloom.intensity.Override(0.18f);
                 if (runtimeProfile.TryGet<ColorAdjustments>(out var colors))
                 {
-                    colors.saturation.Override(10f); colors.contrast.Override(12f); colors.postExposure.Override(-.08f);
+                    colors.saturation.Override(14f); colors.contrast.Override(12f); colors.postExposure.Override(.65f);   // was -0.08: this runtime pass was darkening the whole game (owner: brighter)
                 }
                 if(runtimeProfile.TryGet<Tonemapping>(out var tone))tone.mode.Override(TonemappingMode.Neutral);
                 if(runtimeProfile.TryGet<Vignette>(out var vignette))vignette.intensity.Override(.12f);

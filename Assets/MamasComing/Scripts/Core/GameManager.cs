@@ -127,6 +127,7 @@ namespace MamasComing
                 case State.Playing:
                     TimeLeft -= Time.deltaTime;
                     if (MamaInput.DevSkip) TimeLeft = Mathf.Min(TimeLeft, 3f);
+                    if (MamaInput.SkipToResults) { SkipToResults(); break; }
                     Calls();
                     if (NetGame.IsAuthority) FireDepartmentCheck();
                     FloodWarnings();
@@ -137,6 +138,7 @@ namespace MamasComing
                     if (!NetGame.IsAuthority) break;
                     FireDepartmentCheck();
                     CheckHeldEvidence();
+                    if (MamaInput.SkipToResults) { SkipToResults(); break; }
                     if (endDelay > 0f) { endDelay -= Time.deltaTime; if (endDelay <= 0f) ShowEnding(); }
                     break;
 
@@ -304,12 +306,14 @@ namespace MamasComing
         public void MomFinished() { endDelay = 2.5f; }
 
         Vector3 lastFailure; string lastFailureLine; int lastFailureSeverity;
+        readonly List<(string what, int sev)> foundWhat = new List<(string, int)>();
         void Found(object key, string line, int severity, bool isMajor)
         {
             if (key == null || found.Contains(key)) return;
             found.Add(key);
             if (severity >= lastFailureSeverity) { lastFailureSeverity = severity; lastFailureLine = line; if (key is IMess mess) lastFailure = mess.Position; else if (key is Component component) lastFailure = component.transform.position; else if (mom) lastFailure = mom.transform.position; }
             foundLines.Add(line);
+            foundWhat.Add((key is IMess fm && !string.IsNullOrEmpty(fm.Label) ? fm.Label : line, severity));
             suspicion += severity;
             if(mom && mom.TryGetComponent<MotherApplePresentation>(out var expression)) expression.IsAngry=true;
             if (isMajor) major = true;
@@ -410,7 +414,31 @@ namespace MamasComing
             if (potAvalanche && pot) return pot.transform.position;
             return lastFailureSeverity > 0 ? lastFailure : player.transform.position;
         }
-        public string FailureExplanation() => fireDept ? MamaReadability.Text("The fire spread. Put it out and switch off the stove.", "ไฟลุกลาม ดับไฟและปิดเตาให้ทัน") : potAvalanche ? MamaReadability.Text("The hidden burnt pot fell on Mom. Wash it at the sink next time.", "หม้อไหม้ที่ซ่อนไว้หล่นใส่แม่ รอบหน้าล้างที่อ่างให้สะอาด") : MamaReadability.Text("Mom found the mess here. Fix the cause, then clean up the evidence.", "แม่พบความผิดปกติตรงนี้ แก้ต้นเหตุแล้วเก็บหลักฐานให้เรียบร้อย");
+        public string FailureExplanation() => !fireDept && !potAvalanche && foundWhat.Count > 0 ? BustedReason() : fireDept ? MamaReadability.Text("The fire spread. Put it out and switch off the stove.", "ไฟลุกลาม ดับไฟและปิดเตาให้ทัน") : potAvalanche ? MamaReadability.Text("The hidden burnt pot fell on Mom. Wash it at the sink next time.", "หม้อไหม้ที่ซ่อนไว้หล่นใส่แม่ รอบหน้าล้างที่อ่างให้สะอาด") : MamaReadability.Text("Mom found the mess here. Fix the cause, then clean up the evidence.", "แม่พบความผิดปกติตรงนี้ แก้ต้นเหตุแล้วเก็บหลักฐานให้เรียบร้อย");
+        /// "Why did we lose?" - the worst things Mom found, worst first, plus how many in total.
+        string BustedReason()
+        {
+            var list = new List<(string what, int sev)>(foundWhat); list.Sort((a, b) => b.sev.CompareTo(a.sev));
+            bool th = Loc.Thai;
+            string s = th ? "แพ้เพราะแม่เจอหลักฐาน " + list.Count + " อย่าง" : "You lost: Mom found " + list.Count + (list.Count == 1 ? " problem" : " problems");
+            s += th ? " (ความสงสัย " + suspicion + ")" : " (suspicion " + suspicion + ")";
+            for (int i = 0; i < list.Count && i < 3; i++) s += "\n• " + list[i].what + (list[i].sev >= 3 ? (th ? "  [ร้ายแรง!]" : "  [MAJOR!]") : "");
+            if (list.Count > 3) s += th ? "\n...และอีก " + (list.Count - 3) + " อย่าง" : "\n...and " + (list.Count - 3) + " more";
+            s += th ? "\nรอบหน้า: แก้ต้นเหตุก่อน แล้วเก็บ/ซ่อนหลักฐานให้พ้นสายตาแม่" : "\nNext time: stop the cause first, then clean or hide the evidence";
+            return s;
+        }
+
+        /// F9 (host / solo): skip to the end right now - Mom checks every room instantly and the results / ranking come up.
+        public void SkipToResults()
+        {
+            if (!NetGame.IsAuthority || state == State.Ending || state == State.Title) return;
+            if (MiniGame.I && MiniGame.I.Active) MiniGame.I.Cancel();
+            TimeLeft = 0f;
+            if (state != State.MomHome) MomArrives();
+            if (mom && mom.route != null) foreach (var ip in mom.route) if (ip != null && ip.inspect && ip.point) MomInspect(ip, mom);
+            ShowEnding();
+        }
+
         public void PresentMom() { if (NetGame.IsAuthority && state != State.Ending) { state = State.Playing; TimeLeft = 0; MomArrives(); } }
         public void PresentResult(bool win)
         {

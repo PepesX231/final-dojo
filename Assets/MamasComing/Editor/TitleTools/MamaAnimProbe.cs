@@ -129,6 +129,14 @@ namespace MamasComing.Editor
         }
         public static void LogSofa() { var g = GameObject.Find("Floating sofa (character select)"); if (!g) return; foreach (var r in g.GetComponentsInChildren<Renderer>()) if (!r.GetComponentInParent<MamaPosedKid>()) Debug.Log("[AnimProbe] sofa part " + r.transform.parent.name + "/" + r.name + " c=" + r.bounds.center.ToString("F1")); }
         public static void LogKids() { foreach (var k in Object.FindObjectsByType<MamaPosedKid>(FindObjectsSortMode.None)) Debug.Log("[AnimProbe] kid " + k.name + " pos=" + k.transform.position.ToString("F2") + " rot=" + k.transform.eulerAngles.ToString("F0") + " floaty=" + (k.GetComponent<MamaFloaty>() != null) + " parent=" + k.transform.parent.name); }
+        public static void ListProblems()
+        {
+            foreach (var h in Object.FindObjectsByType<Hazard>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                Debug.Log("[Problems] HAZ|" + h.GetType().Name + "|" + h.name + "|" + (GameManager.RoomOf(h.transform.position) >= 0 ? GameManager.RoomNames[GameManager.RoomOf(h.transform.position)] : "-") + "|" + h.questEn + "|" + h.questTh + "|mini=" + h.puzzle + "|coop=" + h.coop + "|startAt=" + h.startAt + "|startActive=" + h.startActive + "|sev=" + h.severity);
+            foreach (var i in Object.FindObjectsByType<Interactable>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                if (!(i is Hazard)) { var k = i.MiniGameKind(null); Debug.Log("[Problems] INT|" + i.GetType().Name + "|" + i.name + "|" + (GameManager.RoomOf(i.transform.position) >= 0 ? GameManager.RoomNames[GameManager.RoomOf(i.transform.position)] : "-") + "|mini=" + k); }
+            foreach (var f in Object.FindObjectsByType<FireSource>(FindObjectsInactive.Include, FindObjectsSortMode.None)) Debug.Log("[Problems] FIRE|" + f.name + "|" + f.label + "|" + f.type);
+        }
         public static void ResetFruit() { KidLook.Selected = KidLook.Apple; }
         public static void ListIsland()
         {
