@@ -143,6 +143,31 @@ namespace MamasComing.Editor
             string w = ""; for (int i = 0; i < who.Length; i++) w += (who[i] ? who[i].name : "-") + "@" + (Time.time - seen[i]).ToString("F2") + " ";
             Debug.Log("[BugProbe] uni act=" + u.Active + " fix=" + u.Fixed + " urgent=" + u.Urgent + " air=" + typeof(UnicornHazard).GetField("air", f).GetValue(u) + " who=" + w + " sim=" + (GameManager.I == null || GameManager.I.SimRunning) + " auth=" + NetGame.IsAuthority);
         }
+        public static void Clock() { Debug.Log("[BugProbe] timeScale=" + Time.timeScale + " dt=" + Time.deltaTime + " frame=" + Time.frameCount + " solver=" + (GameObject.Find("AutoSolve") != null) + " gm=" + (GameManager.I ? GameManager.I.state.ToString() : "-") + " settings=" + MamaSettings.Open + " howto=" + MamaHowToPlay.Open); }
+        public static void World()
+        {
+            string st = "";
+            foreach (var x in Object.FindObjectsByType<Stove>(FindObjectsSortMode.None)) st += " stove.on=" + x.on;
+            foreach (var x in Object.FindObjectsByType<WaterTap>(FindObjectsSortMode.None)) st += " tap[" + x.name + "].running=" + x.running;
+            foreach (var x in Object.FindObjectsByType<MainValve>(FindObjectsSortMode.None)) st += " mainValve.open=" + x.open;
+            int fires = 0; foreach (var f in FireSource.All) if (f && f.burning) fires++;
+            st += " power=" + PowerGrid.On + " fires=" + fires + " water=" + (FloodSim.I ? FloodSim.I.TotalLiters.ToString("F0") : "-") + " smoke=" + (SmokeSim.I ? SmokeSim.I.IsProblem.ToString() : "-");
+            Debug.Log("[BugProbe] world" + st);
+        }
+        public static void Problems()
+        {
+            int n = 0;
+            foreach (var m in new System.Collections.Generic.List<IMess>(MessRegistry.All)) if (MessRegistry.Alive(m) && m.IsProblem) { n++; Debug.Log("[BugProbe] problem " + m.Kind + " '" + m.Label + "' hidden=" + m.IsHidden + " sev=" + m.Severity); }
+            Debug.Log("[BugProbe] problems total " + n);
+        }
+        public static void TimeScale(string x) { Time.timeScale = F(x); }
+        public static void Summary()
+        {
+            string s0 = "";
+            foreach (var h in Object.FindObjectsByType<Hazard>(FindObjectsSortMode.None).OrderBy(h => h.name)) s0 += h.name.Split(' ')[0] + ":" + (h.Fixed ? "F" : h.Failed ? "X" : h.Active ? "A" + Mathf.RoundToInt(h.Progress * 100) : "-") + " ";
+            var gm = GameManager.I;
+            Debug.Log("[BugProbe] t=" + (gm ? gm.TimeLeft.ToString("F0") : "?") + " state=" + (gm ? gm.state.ToString() : "?") + " | " + s0);
+        }
         public static void TripPower() { PowerGrid.Trip("probe", "probe"); }
         /// Edit mode: "name,x,y,z,yaw" moves a scene object and saves the scene.
         public static void Place(string arg)
