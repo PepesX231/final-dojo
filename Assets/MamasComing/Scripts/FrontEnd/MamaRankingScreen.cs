@@ -126,7 +126,7 @@ namespace MamasComing
             var card = Card(c.transform, "Ranking card", new Vector2(0, .5f), new Vector2(380, 0), new Vector2(640, 960), CardCream, 2.6f);
             Label(card, "Heading", new Vector2(-40, 410), new Vector2(480, 100), MamaFlowUI.T("RANKING", "อันดับทีม"), 64, Ink, TextAnchor.MiddleLeft, MamaTheme.Display);
             var crownChip = Card(card, "Cleared chip", MamaUIKit.CC, new Vector2(215, 414), new Vector2(150, 56), Gold, 4f, false);
-            Label(crownChip, "Text", Vector2.zero, new Vector2(140, 50), MamaFlowUI.T("CLEARED!", "รอดแล้ว!"), 24, Ink, TextAnchor.MiddleCenter, MamaTheme.Bold);
+            Label(crownChip, "Text", Vector2.zero, new Vector2(140, 50), (MamaRound.Data == null || MamaRound.Data.grade <= 1 ? MamaFlowUI.T("CLEARED!", "รอดแล้ว!") : MamaRound.Data.grade == 2 ? MamaFlowUI.T("PHEW...", "เฉียดฉิว") : MamaRound.Data.grade == 3 ? MamaFlowUI.T("CAUGHT!", "โดนจับ!") : MamaFlowUI.T("GAME OVER", "เกมโอเวอร์")), 24, Ink, TextAnchor.MiddleCenter, MamaTheme.Bold);
 
             // ---- quest ticker + one bar per player; the bars grow job by job (replay of the round)
             var tick = Card(card, "Quest ticker", MamaUIKit.CC, new Vector2(0, 318), new Vector2(580, 70), new Color(.25f, .2f, .24f), 4f, false);
@@ -188,20 +188,20 @@ namespace MamasComing
             var rd = MamaRound.Data;
             if (rd != null)
             {
-                var sum = Label(c.transform, "Outcome summary", new Vector2(330, 272), new Vector2(1100, 50),
+                var sum = Label(c.transform, "Outcome summary", new Vector2(330, 338), new Vector2(1100, 50),
                     MamaFlowUI.T("Fixed " + rd.fixedN + "   •   Mom found " + rd.foundN + "   •   Hidden " + rd.hiddenN, "แก้สำเร็จ " + rd.fixedN + "   •   แม่เจอ " + rd.foundN + "   •   ซ่อนเนียน " + rd.hiddenN),
                     32, new Color(1f, .97f, .9f), TextAnchor.MiddleCenter, MamaTheme.Bold);
                 var so = sum.gameObject.AddComponent<Outline>(); so.effectColor = new Color(.4f, .18f, .1f, .85f); so.effectDistance = new Vector2(2, -2);
                 if (rd.foundTop != null && rd.foundTop.Count > 0)
                 {
-                    var caught = Label(c.transform, "Outcome caught", new Vector2(330, 228), new Vector2(1100, 40),
-                        MamaFlowUI.T("Mom saw: ", "แม่เห็น: ") + string.Join(", ", rd.foundTop) + (rd.foundN > rd.foundTop.Count ? " ..." : ""),
+                    var caught = Label(c.transform, "Outcome caught", new Vector2(330, 294), new Vector2(1100, 40),
+                        MamaFlowUI.T("Mom saw: ", "แม่เห็น: ") + string.Join(",  ", rd.foundTop.ConvertAll(x => x.Length > 26 ? x.Substring(0, 24).TrimEnd() + "..." : x).GetRange(0, Mathf.Min(3, rd.foundTop.Count))) + (rd.foundN > 3 ? MamaFlowUI.T("  +" + (rd.foundN - 3) + " more", "  +อีก " + (rd.foundN - 3) + " อย่าง") : ""),
                         24, new Color(1f, .9f, .8f), TextAnchor.MiddleCenter, MamaTheme.Bold);
-                    caught.resizeTextForBestFit = true; caught.resizeTextMinSize = 16; caught.resizeTextMaxSize = 24;
+                    caught.resizeTextForBestFit = true; caught.resizeTextMinSize = 18; caught.resizeTextMaxSize = 26;
                     var co = caught.gameObject.AddComponent<Outline>(); co.effectColor = new Color(.4f, .18f, .1f, .85f); co.effectDistance = new Vector2(2, -2);
                 }
             }
-            var hint = Label(c.transform, "Move hint", new Vector2(330, 335), new Vector2(1000, 44), MamaFlowUI.T("WASD move  •  SPACE jump  •  celebrate together!", "WASD เดิน  •  SPACE กระโดด  •  ฉลองกับเพื่อนได้เลย!"), 26, new Color(1f, .97f, .9f, .9f), TextAnchor.MiddleCenter, MamaTheme.Bold);
+            var hint = Label(c.transform, "Move hint", new Vector2(330, -470), new Vector2(1000, 44), MamaFlowUI.T("WASD move  •  SPACE jump  •  celebrate together!", "WASD เดิน  •  SPACE กระโดด  •  ฉลองกับเพื่อนได้เลย!"), 26, new Color(1f, .97f, .9f, .9f), TextAnchor.MiddleCenter, MamaTheme.Bold);
             var hs = hint.gameObject.AddComponent<Outline>(); hs.effectColor = new Color(.55f, .25f, .1f, .8f); hs.effectDistance = new Vector2(2, -2);
             youBadge = Card(c.transform, "You marker", MamaUIKit.BL, Vector2.zero, new Vector2(84, 44), YouGreen, 4f, false);
             youBadge.pivot = new Vector2(.5f, 0);
